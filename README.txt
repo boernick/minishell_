@@ -12,7 +12,7 @@ PASTE CLIPBOARD IN MAKEFILE.
 CREATE REPOSITORY
 ...
 // STARTING
-	git pull
+	git pull origin master
 	git status //TO SHOW WHAT BRANCH YOU ARE ON
 	git checkout -b <BRANCH_NAME>
 	code .
@@ -23,7 +23,7 @@ CREATE REPOSITORY
 	git push -u origin <BRANCH_NAME>
 // GO BACK TO MASTER
 	git checkout master
-	git pull
+	git pull origin master
 
 **DEBUG VALGRIND**
 valgrind --trace-children=yes --track-fds=yes ./pipex_new in.txt cat cat out.txt
