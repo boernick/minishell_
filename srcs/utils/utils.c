@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 22:00:29 by nick              #+#    #+#             */
-/*   Updated: 2024/11/09 16:15:35 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/09 20:09:00 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	handle_file(char *filename, int type)
 	int	fd;
 
 	fd = 0;
-	if (type == 0)
+	if (type == 0) // if(type == REDIR_IN)
 		fd = open(filename, O_RDONLY);
 	else if (type == 1)
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);

@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/09 15:21:43 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/09 20:09:00 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,14 @@ typedef struct s_data
 typedef struct	s_execution
 {
 	pid_t	pid;
-	int		n_pipes; // to know when i reach the last pipe
+	int		n_pipes; // to know when i reach the last pipe 			/PRINCE
 	int		index_pipe; // to track the pipe where to write in
 	int		index_prev_pipe; // to track the pipe where to read from
 	int		**pipe_arr;
-	int		n_cmds; // to know how often i need to fork
+	int		n_cmds; // to know how often i need to fork // PRINCE: I NEED TO KNOW THE AMOUNT OF COMMANDS THERE ARE.
 	int		index_cmd;
-	int		infile; //first file to read from
-	int		outfile; // file to output
+	int		infile; //first file to read from // PRINCE
+	int		outfile; // file to output		// PRINCE 
 } t_execution;
 
 typedef struct s_exec
@@ -92,7 +92,7 @@ void	waitpids(pid_t *pids, int n);
 /* BUILTINS */
 void	builtin_env(t_data *shell);
 void	builtin_echo(char **argv, int n);
-
+void	builtin_cd
 
 /* ENV */
 int		t_env_init(t_data *shell, char **envp);

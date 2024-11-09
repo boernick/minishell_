@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/09 16:23:48 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/09 20:09:00 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **
 	int			i;
 	
 	exec_init(pipex, argc, argv); // tellen hoeveel cmd args er zijn en het opslaan in struct
+	// if there are pipes
 	create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
 	i = 0;
