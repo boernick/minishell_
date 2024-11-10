@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/09 20:09:00 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/10 23:07:06 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **env)
 {
 	(void) shell;
-	
 	pid_t		*pids;
 	int			i;
 	
@@ -42,7 +41,6 @@ void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **
 		else
 			update_exec(pipex);
 	}
-	ft_putstr_fd("parent waiting....\n", 2);
 	clean_pipes(pipex);
 	waitpids(pids, pipex->n_cmds); // wait for child process, but WHY these inputs in function?
 }

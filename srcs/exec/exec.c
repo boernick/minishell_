@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/09 16:07:08 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/10 22:35:13 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,13 @@
 // prepare exec struct for use
 void	exec_init(t_execution *pipex, int argc, char **argv)
 {
-	pipex->infile = handle_file(argv[1], 0); // TO-DO BUT ONLY IF THE FIRST ARGUMENT IS A FILE!
+	if (0)
+		pipex->infile = handle_file(argv[1], 0); // TO-DO BUT ONLY IF THE FIRST ARGUMENT IS A FILE!
 	// if last argument should be a file PRINCE
-	if (1)
+	if (access(argv[argc-1], F_OK) >= 0)
 		pipex->outfile = handle_file(argv[argc - 1], 1);
-	pipex->n_cmds = argc - 3;
-	pipex->n_pipes = pipex->n_cmds - 1;
+	pipex->n_cmds = 1;										// OVERWRITE FROM PRINCE'S STRUCT
+	pipex->n_pipes = pipex->n_cmds - 1;							// OVERWRITE FROM PRINCES STRUCT
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
@@ -39,7 +40,7 @@ void	create_pipes(t_execution *pipex)
 	int		i;
 
 	if (pipex->n_pipes <= 0)
-		str_error("Number of pipes must be greater than zero");	
+		return;
 	if (!(pipex->pipe_arr = malloc(sizeof(int *) * pipex->n_pipes + 1)))
 		str_error("Malloc failure while creating array of pointers");
 	pipex->pipe_arr[0] = NULL;

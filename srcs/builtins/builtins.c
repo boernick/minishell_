@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/09 15:40:34 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/10 23:16:52 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <stdio.h>
+
 
 void	builtin_env(t_data *shell)
 {
@@ -25,23 +26,25 @@ void	builtin_env(t_data *shell)
 	}
 }
 
+// write text to the terminal or to a file
 void	builtin_echo(char **argv, int n)
 {
-	n = 0;
-	
+	// case in which only argument is echo is not yet fixed
+	(void) n;
 	int i;
-	if (strncmp(argv[0], "echo", 4) == 0)
+	if (strncmp(argv[1], "echo", 4) == 0)
 	{
 		i = 2;
-		while (argv[i] && argv[i + 1])
+		while (argv[i])
 		{
-			printf("%s ", argv[i]);
+			printf("%s", argv[i]);
+			if (argv[i + 1])
+				printf(" ");
 			i++;
 		}
-		ft_putstr_fd(argv[i], 1);
 	}
-
-	// question for prince: how did you save the command line arguments that are filled in?
+	printf("\n");
+	exit(EXIT_SUCCESS); // child process needs to be stopped somehow
 }
 
 void	builtin_cd(t_data *shell)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/09 20:09:00 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/10 22:09:31 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,14 @@ typedef struct s_token
 	// 
 	//
 }	t_token;
+
+typedef struct s_redirect
+{
+	int		file; //file name
+	int	to_file; // to a file or to print
+	int		redir_type; // append/write/read
+	char	*argument; // text to write into
+}	t_redirect;
 
 typedef struct s_env
 {
@@ -92,7 +100,6 @@ void	waitpids(pid_t *pids, int n);
 /* BUILTINS */
 void	builtin_env(t_data *shell);
 void	builtin_echo(char **argv, int n);
-void	builtin_cd
 
 /* ENV */
 int		t_env_init(t_data *shell, char **envp);
