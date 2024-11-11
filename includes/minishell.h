@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/10 22:09:31 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/11 23:21:22 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ pid_t	fork_child(void);
 void	get_fd(t_execution *pipex);
 void	clean_pipes(t_execution *pipex);
 int		is_builtin(t_execution *pipex, char **argv);
-int		run_builtin(int	n, char **argv);
+int		run_builtin(int	n, char **argv, t_data *shell);
 void	waitpids(pid_t *pids, int n);
 
 /* BUILTINS */

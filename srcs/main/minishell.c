@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/10 23:07:06 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/11 23:22:09 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **env)
 {
-	(void) shell;
 	pid_t		*pids;
 	int			i;
 	
@@ -29,7 +28,7 @@ void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **
 		if (pids[i++] == 0) //case child
 		{
 			if (is_builtin(pipex, argv) != -1)
-				run_builtin(is_builtin(pipex, argv), argv);
+				run_builtin(is_builtin(pipex, argv), argv, shell);
 			else
 			{
 				get_fd(pipex);

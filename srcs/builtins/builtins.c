@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/10 23:16:52 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/11 23:38:47 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,20 @@ void	builtin_env(t_data *shell)
 		printf("%s\n", lst->content);
 		lst = lst->next;
 	}
+	exit(EXIT_SUCCESS);
 }
 
 // write text to the terminal or to a file
 void	builtin_echo(char **argv, int n)
 {
 	// case in which only argument is echo is not yet fixed
-	(void) n;
 	int i;
+	
 	if (strncmp(argv[1], "echo", 4) == 0)
 	{
 		i = 2;
+		if (!strncmp(argv[i], "-n", 2))
+			i++;
 		while (argv[i])
 		{
 			printf("%s", argv[i]);
@@ -43,7 +46,8 @@ void	builtin_echo(char **argv, int n)
 			i++;
 		}
 	}
-	printf("\n");
+	if (n == 1)
+		printf("\n");
 	exit(EXIT_SUCCESS); // child process needs to be stopped somehow
 }
 
