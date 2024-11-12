@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/12 19:35:16 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/12 23:29:50 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,12 +114,10 @@ void 	free_tokens(t_token *head);
 int		validate_input(t_token *tokens);
 char	*ft_itoa(int n);
 
-
 //-----------utils.c------------//
 char	*ft_strdup(const char *src);
 int		ft_isspace(char c);
 int		ft_isalnum(char c);
-
 
 /* SIGNALNS */
 //-----------signals.c----------//
@@ -132,7 +130,7 @@ void	start_program(t_data *data);
 //------handle_struct.c-------//
 void	reset_data(t_data *data);
 void	struct_init(t_data *shell);
- /*Start_program*/
+
 //---------env_var.c---------//
 void	replace_env_variables_in_tokens(t_token *tokens, t_data *data);
 char	*replace_variables_in_string(char *input, t_data *data);
