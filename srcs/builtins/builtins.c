@@ -6,11 +6,11 @@
 /*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/12 20:01:30 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/12 20:11:08 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 #include <stdio.h>
 
 

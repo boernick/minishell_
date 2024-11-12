@@ -6,11 +6,11 @@
 /*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 22:00:29 by nick              #+#    #+#             */
-/*   Updated: 2024/11/12 20:02:06 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/12 20:11:21 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 //MOVED TO start_program/handle_struct.c
 // //initiates start values of the shell struct
