@@ -6,11 +6,11 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 18:11:28 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/11 23:31:17 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/12 23:42:38 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 // checks if a given cmd argument is a builtin function
 int	is_builtin(t_execution *pipex, char **argv)

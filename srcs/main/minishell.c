@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/12 19:30:44 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/12 23:52:07 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **
 				get_fd(pipex);
 				clean_pipes(pipex);
 				run_ex(argv[pipex->index_cmd + 2], env);
-				exit(EXIT_SUCCESS);
+				exit(EXIT_SUCCESS); // this should be removed?
 			}
 		}
 		else

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/12 20:11:08 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/13 00:11:46 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,28 @@ void	builtin_echo(char **argv, int n)
 
 void	builtin_cd(t_data *shell)
 {
-	(void) shell;
+	
+	// retreive environment variables as linked list
+	// Use getcwd() to get the current working directory after a successful chdir() call, then update PWD accordingly.
+	// look for PWD = .... and rewrite this string to the given input
+		//case relative path ../../path
+		//case absolute path nick/42berlin/home
+		//case .. moves up directory level
+		//case - switches to the previous PWD = So overwrite with env variable OLDPWD which should constantly be updated.
+	
+	// if (argc = 1 && argv[1] == cd)
+		// reset the PWD = env variable to the HOME = env variable
+	// if (cd cannot change the specified directory -> means doesnt exist or no permissions)
+		// error handling and the working directory remains unchanged
+		
 }
 
 void	builtin_pwd(t_data *shell)
 {
+	// retreive environment variables as linked list
+	// check the PWD path en print out its current directory
+	// i can use getcwd() here aswell.
+	
 	(void) shell;
 }
 

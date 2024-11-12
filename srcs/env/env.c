@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 21:20:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/09 15:15:21 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/12 23:38:30 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 //Takes an array of environment variables envp, creates a linked list,
 //saves a copy of the env_array in SHELL->t_env and returns 0 when SUCCEED.

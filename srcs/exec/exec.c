@@ -6,11 +6,11 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/10 22:35:13 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/12 23:41:40 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 // prepare exec struct for use
 void	exec_init(t_execution *pipex, int argc, char **argv)

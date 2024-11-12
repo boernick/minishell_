@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ex_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 18:09:43 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/09 16:23:33 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/12 23:41:34 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 char	*path_join(char *path_split, char *cmd_arg)
 {
