@@ -3,21 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 22:00:29 by nick              #+#    #+#             */
-/*   Updated: 2024/11/10 22:22:59 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/12 20:02:06 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//initiates start values of the shell struct
-void	struct_init(t_data *shell)
-{
-	shell->exit = 0;
-	return;
-}
+//MOVED TO start_program/handle_struct.c
+// //initiates start values of the shell struct
+// void	struct_init(t_data *shell)
+// {
+// 	shell->exit = 0;
+// 	shell->head = NULL;
+// 	shell->tail = NULL;
+// 	shell->buf_index = 0;
+// 	shell->in_double_quote = 0;
+// 	shell->in_single_quote = 0;
+// 	shell->exit = 0;
+// }
 
 // opens files in read/write/append permissions based on a given int type
 int	handle_file(char *filename, int type)
@@ -45,13 +51,13 @@ int	handle_file(char *filename, int type)
 void	free_envlst(t_env *lst)
 {
 	t_env	*temp;
-	
+
 	temp = lst;
 	while (lst)
 	{
 		temp = lst;
 		lst = lst->next;
-		if (temp->content)	
+		if (temp->content)
 			free(temp->content);
 		free(temp);
 	}

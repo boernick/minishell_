@@ -3,27 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/11 23:22:09 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/12 19:30:44 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
 void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **env)
 {
+	(void) shell;
+
 	pid_t		*pids;
 	int			i;
-	
+
 	exec_init(pipex, argc, argv); // tellen hoeveel cmd args er zijn en het opslaan in struct
 	// if there are pipes
 	create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
 	i = 0;
 	while (pipex->index_cmd < pipex->n_cmds)
-	{	
+	{
 		pids[i] = fork_child();
 		if (pids[i++] == 0) //case child
 		{
@@ -46,12 +48,19 @@ void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **
 
 int	main(int argc, char *argv[], char **envp)
 {
-	t_execution	pipex;
+	//t_execution	pipex;
 	t_data		shell;
-	
+
+	(void) argv; //til now I didn't have any reason to keep it
 	struct_init(&shell); //function to initiate the struct and set some parameters
 	t_env_init(&shell, envp);
-	minishell(argv, argc, &shell, &pipex, envp); //run minishell
+	if (argc != 1)
+	{
+		printf("\"./minishell\" must be the only argument\n");
+		return (0);
+	}
+	start_program(&shell);
+	//minishell(argv, argc, &shell, &pipex, envp); //run minishell //prince:uncommnented for merging
 	// while (shell.exit == 0) //while no exit signal
 	// {
 	// 	//handle signals

@@ -1,11 +1,27 @@
 NAME = minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
-SRCS = srcs/parse/parse.c srcs/env/env.c srcs/exec/exec.c srcs/exec/ex_env.c \
-	srcs/exec/ex_builtin.c srcs/main/minishell.c srcs/builtins/builtins.c srcs/error/error.c \
-		srcs/utils/utils.c
+LDFLAGS = -lreadline
+
+SRCS = srcs/builtins/builtins.c\
+srcs/env/env.c\
+srcs/env/env_var_tokenize.c\
+srcs/error/error.c\
+srcs/exec/exec.c\
+srcs/exec/ex_builtin.c\
+srcs/exec/ex_env.c\
+srcs/main/minishell.c\
+srcs/parse/parse.c\
+srcs/signals/signals.c\
+srcs/start_program/handle_struct.c\
+srcs/start_program/start_program.c\
+srcs/tokenize/tokenize.c\
+srcs/tokenize/tokenize_ext.c\
+srcs/tokenize/utils_tokenize.c\
+srcs/utils/utils.c\
+
 OBJS = $(SRCS:.c=.o)
-HEADER = includes/minishell.h
+HEADER = ../../includes/minishell.h
 
 PRINTF_DIR = includes/ft_printf
 PRINTF = $(PRINTF_DIR)/libftprintf.a
@@ -17,12 +33,12 @@ INCLUDES = -I $(PRINTF_DIR) -I $(LIBFT_DIR) -I includes
 all: $(NAME)
 
 $(NAME): $(OBJS) $(PRINTF) $(LIBFT)
-	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(PRINTF) $(LIBFT) -o $(NAME)
+	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(PRINTF) $(LIBFT) $(LDFLAGS) -o $(NAME)
 
 %.o: %.c $(HEADER)
 	$(CC) $(CFLAGS) $(INCLUDES) -g -c $< -o $@
 
-$(LIBFT): 
+$(LIBFT):
 	make -C $(LIBFT_DIR) bonus
 
 $(PRINTF): $(LIBFT)

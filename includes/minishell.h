@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/11 23:21:22 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/12 19:35:16 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,27 @@
 # include <dirent.h>
 # include <sys/types.h>
 # include <sys/wait.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 # include "../includes/Libft/libft.h"
+# define BUFFER_SIZE 1024
 
-typedef struct s_token
+typedef enum
 {
-	char			*content;
-	// 
-	//
-}	t_token;
+	TOKEN_WORD,
+	TOKEN_PIPE,
+	TOKEN_REDIR_IN,			//	<
+	TOKEN_REDIR_OUT,		// >
+	TOKEN_REDIR_APPEND,		// >>
+	TOKEN_HEREDOC			// <<
+}	e_token_type;
+
+typedef struct	s_token
+{
+	e_token_type	type; //type of token
+	char			*value; //pointer to string containing token value
+	struct s_token	*next; //pointer to next token in linked list
+}					t_token;
 
 typedef struct s_redirect
 {
@@ -47,13 +60,22 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+//prichugh: "I cominbined my s_data struct and yours, can seperate mine into a parsing struct"
 // if one single struct will be too messy or data is often irrelevant in parsing/exec we could separate between token struct and execution struct
-typedef struct s_data
+typedef struct	s_data
 {
+	t_token	*head; //start of token linked list
+	t_token	*tail; //end of token linked list
+	char	buffer[BUFFER_SIZE]; //buffer to store string while tokenizing
+	int		buf_index; //index for buffer while tokenizing
+	int		in_single_quote; //var to keep track between in and out of single quote
+	int		in_double_quote; //var to keep track between in and out of double quote
+	//int		i;
+	int		last_exit_status; //needs to be implemented!
 	t_env		*env_lst; // linkedlst featuring the current envp
 	char*		cmd;
 	int			exit; // to quit minishell
-}	t_data;
+}			t_data;
 
 typedef struct	s_execution
 {
@@ -64,8 +86,8 @@ typedef struct	s_execution
 	int		**pipe_arr;
 	int		n_cmds; // to know how often i need to fork // PRINCE: I NEED TO KNOW THE AMOUNT OF COMMANDS THERE ARE.
 	int		index_cmd;
-	int		infile; //first file to read from // PRINCE
-	int		outfile; // file to output		// PRINCE 
+	int		infile; //first file to read from
+	int		outfile; // file to output
 } t_execution;
 
 typedef struct s_exec
@@ -79,8 +101,46 @@ typedef struct s_exec
 }	t_exec;
 
 /* TOKENIZATION */
+//---------tokenize.c----------//
+void	tokenize(char *input, t_data *data);
+t_token	*new_token(e_token_type type, char *value);
+void 	handle_buffer(t_data *data, e_token_type token_type);
+void	add_token_to_list(t_data *data, t_token *new_token);
 
-/* PARSE */
+//--------utils_token.c--------//
+void	print_tokens(t_token *token_list);
+char	*trim_whitespace(char *str);
+void 	free_tokens(t_token *head);
+int		validate_input(t_token *tokens);
+char	*ft_itoa(int n);
+
+
+//-----------utils.c------------//
+char	*ft_strdup(const char *src);
+int		ft_isspace(char c);
+int		ft_isalnum(char c);
+
+
+/* SIGNALNS */
+//-----------signals.c----------//
+void	handle_sigint(int sig);
+
+ /*Start_program*/
+//------start_program.c-------//
+void	start_program(t_data *data);
+
+//------handle_struct.c-------//
+void	reset_data(t_data *data);
+void	struct_init(t_data *shell);
+ /*Start_program*/
+//---------env_var.c---------//
+void	replace_env_variables_in_tokens(t_token *tokens, t_data *data);
+char	*replace_variables_in_string(char *input, t_data *data);
+
+//---------inti.c-----------//
+//void	struct_init(t_data *shell);
+int		t_env_init(t_data *shell, char **envp);
+
 
 /* EXECUTE */
 char	*path_join(char *path_split, char *cmd_arg);
@@ -117,11 +177,11 @@ int		str_error(char *error);
 /* UTILS ?*/
 void	free_array(char **array);
 void	free_envlst(t_env *lst);
-void	struct_init(t_data *shell);
 void	free_int_array(t_execution *pipex, int i);
 
 /*MINISHELL*/
 void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **env);
+
 
 
 #endif

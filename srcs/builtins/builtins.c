@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/11 23:38:47 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/12 20:01:30 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void	builtin_env(t_data *shell)
 {
 	t_env	*lst;
-	
+
 	lst = shell->env_lst;
 	while(lst)
 	{
@@ -30,10 +30,12 @@ void	builtin_env(t_data *shell)
 // write text to the terminal or to a file
 void	builtin_echo(char **argv, int n)
 {
-	// case in which only argument is echo is not yet fixed
+	n = 0;
+
+	//prince: voided n because it stopped compilation
+	(void) n;
 	int i;
-	
-	if (strncmp(argv[1], "echo", 4) == 0)
+	if (strncmp(argv[0], "echo", 4) == 0)
 	{
 		i = 2;
 		if (!strncmp(argv[i], "-n", 2))
@@ -46,9 +48,9 @@ void	builtin_echo(char **argv, int n)
 			i++;
 		}
 	}
-	if (n == 1)
-		printf("\n");
-	exit(EXIT_SUCCESS); // child process needs to be stopped somehow
+
+	// question for prince: how did you save the command line arguments that are filled in?
+	// aswer: using a struct with a linked list with each node containing a string (*value)
 }
 
 void	builtin_cd(t_data *shell)
