@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 15:44:43 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/13 15:46:18 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,11 @@ typedef struct	s_parse
 	int		exit;
 }			t_parse;
 
-typedef struct s_cmd
+typedef struct s_cmd // does prince
 {
 	char		*cmd;
 	char		**argv;
 	t_redirect	*redirections;
-	int			is_builtin;
 	int			index;
 } t_cmd;
 
