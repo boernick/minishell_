@@ -6,7 +6,7 @@
 /*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 16:59:11 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/13 18:46:33 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,12 @@ typedef struct t_shell
 
 typedef struct s_cmd // does prince
 {
-	char		*cmd;
-	char		**argv;
-	t_redirect	*redirections;
-	int			index;
-	bool		is_builtin;
+	char			*cmd;
+	char			**argv;
+	int				index;
+	bool			is_builtin;
+	struct s_cmd	*next;
+	t_redirect		*redirections;
 }				t_cmd;
 
 // NICK: splitting makes more sense. i will just copy from your struct into mine like we discussed before. name it parsing
@@ -126,6 +127,7 @@ void	tokenize(char *input, t_parse *data);
 t_token	*new_token(e_token_type type, char *value);
 void 	handle_buffer(t_parse *data, e_token_type token_type);
 void	add_token_to_list(t_parse *data, t_token *new_token);
+void	classify_token_types(t_parse *data);
 
 //--------utils_token--------//
 void	print_tokens(t_token *token_list);
@@ -135,7 +137,7 @@ int		validate_input(t_token *tokens);
 char	*ft_itoa(int n);
 
 //-----------Parse-----------//
-void	classify_token_types(t_parse *data);
+void	parse(t_parse *data);
 
 //-----------utils------------//
 char	*ft_strdup(const char *src);
@@ -145,8 +147,8 @@ int		ft_isalnum(char c);
 //-----------signals----------//
 void	handle_sigint(int sig);
 
-//------start_program-------//
-void	start_program(t_parse *parse);
+//------tokenize_and_parse-------//
+void	tokenize_and_parse(t_parse *parse);
 
 //------handle_struct-------//
 void	struct_init(t_parse *shell);

@@ -5,8 +5,8 @@ LDFLAGS = -lreadline
 
 SRCS = srcs/builtins/builtins.c srcs/env/env.c srcs/env/env_var_tokenize.c srcs/error/error.c\
 	srcs/exec/exec.c srcs/exec/ex_builtin.c srcs/exec/ex_env.c srcs/main/minishell.c\
-		srcs/parse/parse.c srcs/signals/signals.c srcs/start_program/handle_struct.c\
-			srcs/start_program/start_program.c srcs/tokenize/tokenize.c srcs/tokenize/tokenize_ext.c\
+		srcs/parse/parse.c srcs/signals/signals.c srcs/tokenize_and_parse/handle_struct.c\
+			srcs/tokenize_and_parse/tokenize_and_parse.c srcs/tokenize/tokenize.c srcs/tokenize/tokenize_ext.c\
 				srcs/tokenize/utils_tokenize.c srcs/utils/utils.c
 OBJS = $(SRCS:.c=.o)
 HEADER = ../../includes/minishell.h

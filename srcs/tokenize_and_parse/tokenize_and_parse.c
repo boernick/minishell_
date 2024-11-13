@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenize_and_parse.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/13 18:30:11 by prichugh          #+#    #+#             */
+/*   Updated: 2024/11/13 18:30:11 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 
 // Repeatedly prompts for user input, tokenizes, validates, and processes commands.
 // Exits the loop if "exit" or EOF is detected, handling cleanup and history appropriately.
-void	start_program(t_parse *data)
+void	tokenize_and_parse(t_parse *data)
 {
 	char			*input;
 	// t_token			*tokens;
@@ -31,6 +43,7 @@ void	start_program(t_parse *data)
 		{
 			classify_token_types(data); //NEXT STEPS
 			replace_env_variables_in_tokens(data->head, data);
+			parse_tokens(data);
 			print_tokens(data->head);
 			free_tokens(data->head);
 		}
@@ -40,7 +53,7 @@ void	start_program(t_parse *data)
 	rl_clear_history();//make sure to use the better one
 }
 
-//void	start_program()
+//void	tokenize_and_parse()
 //{
 	//initialize main data struct to hold tokens and other info
 	//initialize signal handlers for the various signals

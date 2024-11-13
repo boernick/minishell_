@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 14:04:17 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/13 18:19:20 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int	main(int argc, char *argv[], char **envp)
 		printf("\"./minishell\" must be the only argument\n");
 		return (0);
 	}
-	start_program(&parse);
+	tokenize_and_parse(&parse);
 	//minishell(argv, argc, &shell, &pipex, envp); //run minishell //prince:uncommnented for merging
 	// while (shell.exit == 0) //while no exit signal
 	// {
