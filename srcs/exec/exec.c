@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/12 23:41:40 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/13 16:26:16 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	exec_init(t_execution *pipex, int argc, char **argv)
 	// if last argument should be a file PRINCE
 	if (access(argv[argc-1], F_OK) >= 0)
 		pipex->outfile = handle_file(argv[argc - 1], 1);
-	pipex->n_cmds = 1;										// OVERWRITE FROM PRINCE'S STRUCT
+	pipex->n_cmds = //length of linked list struct				// OVERWRITE FROM PRINCE'S STRUCT
 	pipex->n_pipes = pipex->n_cmds - 1;							// OVERWRITE FROM PRINCES STRUCT
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;

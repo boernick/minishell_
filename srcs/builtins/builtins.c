@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/13 15:00:29 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/13 18:32:09 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,25 +53,24 @@ void	builtin_echo(char **argv, int n)
 void	builtin_cd(char **argv, t_shell *shell)
 {
 	t_env	*env;
+	char	*cwd;
 
-	(void) shell;
 	if (argv[1] && argv[2])
 		ft_putstr_fd("Error: too many arguments", STDERR_FILENO);
-	getcwd(PATH_MAX,)
+	if (argc = 1 && strncmp(argv[1], "cd", 2) == 0)
+		// reset the PWD = env variable to the HOME = env variable
+	env = shell->env_lst;
 	
-	// retreive environment variables as linked list
+	// MAKE FUNCTION GETENV THAT FINDS AND RETURNS THE CONTENT OF THE NODE IN LINKEDLIST 
+		// retreive environment variables as linked list
 	// Use getcwd() to get the current working directory after a successful chdir() call, then update PWD accordingly.
 	// look for PWD = .... and rewrite this string to the given input
 		//case relative path ../../path
 		//case absolute path nick/42berlin/home
-		//case .. moves up directory level
-		//case - switches to the previous PWD = So overwrite with env variable OLDPWD which should constantly be updated.
-	
-	// if (argc = 1 && argv[1] == cd)
-		// reset the PWD = env variable to the HOME = env variable
 	// if (cd cannot change the specified directory -> means doesnt exist or no permissions)
 		// error handling and the working directory remains unchanged
-		
+	cwd = getcwd(shell->cwd, PATH_MAX); // retrieve the absolute path name of the current working directory
+
 }
 
 void	builtin_pwd(t_shell *shell)
