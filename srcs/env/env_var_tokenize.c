@@ -1,6 +1,6 @@
 #include "../../includes/minishell.h"
 
-char *get_env_variable(char *var_name, t_data *data)
+char *get_env_variable(char *var_name, t_parse *data)
 {
 	char *exit_status_str;
 	char *env_value;
@@ -20,7 +20,7 @@ char *get_env_variable(char *var_name, t_data *data)
 //itterate throug and copy input string. If a $ sign is encountertered
 //it will be replaced by its appropiate enviornment variable while the
 //rest of the new string remains the same.
-char	*replace_variables_in_string(char *input, t_data *data)
+char	*replace_variables_in_string(char *input, t_parse *data)
 {
 	char result[1024] = {0};  // Buffer to store the final result
 	int res_index;
@@ -55,7 +55,7 @@ char	*replace_variables_in_string(char *input, t_data *data)
 
 //itterate through the list of tokens looking for WORD tokens. Call replace_variables_in_string
 //on those tokens.
-void replace_env_variables_in_tokens(t_token *tokens, t_data *data)
+void replace_env_variables_in_tokens(t_token *tokens, t_parse *data)
 {
 	char *new_value;
 

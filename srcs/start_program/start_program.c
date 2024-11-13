@@ -3,7 +3,7 @@
 
 // Repeatedly prompts for user input, tokenizes, validates, and processes commands.
 // Exits the loop if "exit" or EOF is detected, handling cleanup and history appropriately.
-void	start_program(t_data *data)
+void	start_program(t_parse *data)
 {
 	char			*input;
 	// t_token			*tokens;
@@ -25,7 +25,7 @@ void	start_program(t_data *data)
 		}
 		if (input && *input)
 			add_history(input);  //add_history causes mem leaks
-		reset_data(data);
+		reset_parse(data);
 		tokenize(input, data);
 		if (validate_input(data->head))
 		{

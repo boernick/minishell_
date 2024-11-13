@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/12 23:52:07 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/13 14:04:17 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **env)
+void	minishell(char **argv, int argc, t_shell *shell, t_execution *pipex, char **env)
 {
 	(void) shell;
 
@@ -49,17 +49,18 @@ void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **
 int	main(int argc, char *argv[], char **envp)
 {
 	//t_execution	pipex;
-	t_data		shell;
+	t_shell		shell;
+	t_parse		parse;
 
 	(void) argv; //til now I didn't have any reason to keep it
-	struct_init(&shell); //function to initiate the struct and set some parameters
+	struct_init(&parse); //function to initiate the struct and set some parameters
 	t_env_init(&shell, envp);
 	if (argc != 1)
 	{
 		printf("\"./minishell\" must be the only argument\n");
 		return (0);
 	}
-	start_program(&shell);
+	start_program(&parse);
 	//minishell(argv, argc, &shell, &pipex, envp); //run minishell //prince:uncommnented for merging
 	// while (shell.exit == 0) //while no exit signal
 	// {

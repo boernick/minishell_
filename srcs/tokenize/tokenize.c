@@ -18,7 +18,7 @@ t_token *new_token(e_token_type type, char *value)
 
 //Takes pointer to data and a pointer to a new token so it can add the new token
 //at the end (tail) of the list of tokens.
-void add_token_to_list(t_data *data, t_token *new_token)
+void add_token_to_list(t_parse *data, t_token *new_token)
 {
     if (data->head == NULL) {
         data->head = new_token;
@@ -30,7 +30,7 @@ void add_token_to_list(t_data *data, t_token *new_token)
 
 //takes the buffer containing a segment of input from the user which has been identified
 //as a token. Functions New_token and add_token_to_list are called for next steps
-void handle_buffer(t_data *data, e_token_type token_type)
+void handle_buffer(t_parse *data, e_token_type token_type)
 {
 	if (data->buf_index > 0)
 	{
@@ -44,7 +44,7 @@ void handle_buffer(t_data *data, e_token_type token_type)
 //into tokens. Tokens can consist of words (later split up into args and commands)
 //pipes, and redirect. It also pays attention to quote state to ensure words within
 //quotes are grouped in one token.
-void	tokenize(char *input, t_data *data)
+void	tokenize(char *input, t_parse *data)
 {
 	int i;
 

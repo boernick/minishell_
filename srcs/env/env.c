@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 21:20:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/12 23:38:30 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/13 13:14:30 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 //Takes an array of environment variables envp, creates a linked list,
 //saves a copy of the env_array in SHELL->t_env and returns 0 when SUCCEED.
-int	t_env_init(t_data *shell, char **envp)
+int	t_env_init(t_shell *shell, char **envp)
 {
 	t_env	*current;
 	int		i;
@@ -53,7 +53,7 @@ int	t_env_init(t_data *shell, char **envp)
 }
 // Adds a new environment variable `value` to the `envp` list. 
 // Return int to succes or failure. */
-int	env_addback(t_data *shell, char *envp)
+int	env_addback(t_shell *shell, char *envp)
 {
 	t_env	*current;
 	t_env	*new;
@@ -77,7 +77,7 @@ int	env_addback(t_data *shell, char *envp)
 
 // Deletes an environment variable from the list and
 // relinks the remaining nodes.
-int	env_del(t_data *shell, char *env)
+int	env_del(t_shell *shell, char *env)
 {
 	t_env	*lst;
 	t_env	*prev;
@@ -105,7 +105,7 @@ int	env_del(t_data *shell, char *env)
 }
 
 // Transforms lst into array of char*
-char	**envlst_to_array(t_data *shell)
+char	**envlst_to_array(t_shell *shell)
 {
 	t_env	*lst;
 	char	**array;

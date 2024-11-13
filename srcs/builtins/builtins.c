@@ -3,25 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/13 00:11:46 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/13 13:50:45 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-#include <stdio.h>
 
-
-void	builtin_env(t_data *shell)
+void	builtin_env(t_shell *shell)
 {
 	t_env	*lst;
 
 	lst = shell->env_lst;
 	while(lst)
 	{
-		printf("%s\n", lst->content);
+		ft_printf("%s\n", lst->content);
 		lst = lst->next;
 	}
 	exit(EXIT_SUCCESS);
@@ -31,8 +29,7 @@ void	builtin_env(t_data *shell)
 void	builtin_echo(char **argv, int n)
 {
 	n = 0;
-
-	//prince: voided n because it stopped compilation
+	
 	(void) n;
 	int i;
 	if (strncmp(argv[0], "echo", 4) == 0)
@@ -42,20 +39,22 @@ void	builtin_echo(char **argv, int n)
 			i++;
 		while (argv[i])
 		{
-			printf("%s", argv[i]);
+			ft_printf("%s", argv[i]);
 			if (argv[i + 1])
-				printf(" ");
+				ft_printf(" ");
 			i++;
 		}
 	}
-
+	exit(EXIT_SUCCESS);
 	// question for prince: how did you save the command line arguments that are filled in?
 	// aswer: using a struct with a linked list with each node containing a string (*value)
 }
 
-void	builtin_cd(t_data *shell)
+void	builtin_cd(char **argv, t_shell *shell)
 {
-	
+	(void) shell;
+	if (argv[1] && argv[2])
+		ft_putstr_fd("Error: too many arguments", STDERR_FILENO);
 	// retreive environment variables as linked list
 	// Use getcwd() to get the current working directory after a successful chdir() call, then update PWD accordingly.
 	// look for PWD = .... and rewrite this string to the given input
@@ -71,16 +70,16 @@ void	builtin_cd(t_data *shell)
 		
 }
 
-void	builtin_pwd(t_data *shell)
+void	builtin_pwd(t_shell *shell)
 {
 	// retreive environment variables as linked list
 	// check the PWD path en print out its current directory
 	// i can use getcwd() here aswell.
 	
-	(void) shell;
+	(void) *shell;
 }
 
-void	builtin_export(char **argv, t_data *shell)
+void	builtin_export(char **argv, t_shell *shell)
 {
 	char	*str;
 	// check if export is the first command
@@ -98,7 +97,7 @@ void	builtin_export(char **argv, t_data *shell)
 		str_error("builtin export: something else\n");
 }
 
-int	builtin_unset(char **argv, t_data *shell)
+int	builtin_unset(char **argv, t_shell *shell)
 {
 	if (!(ft_strncmp(argv[1], "unset", 5)))
 		str_error("first argument not unset");
@@ -107,7 +106,7 @@ int	builtin_unset(char **argv, t_data *shell)
 	return (0);
 }
 
-void	builtin_exit(t_data *shell)
+void	builtin_exit(t_shell *shell)
 {
 	(void) shell;
 }

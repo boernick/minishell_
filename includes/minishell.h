@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/12 23:29:50 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/13 14:07:06 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../includes/Libft/libft.h"
+# include "../includes/ft_printf/ft_printf.h"
 # define BUFFER_SIZE 1024
 
 typedef enum
@@ -38,6 +39,7 @@ typedef enum
 	TOKEN_REDIR_APPEND,		// >>
 	TOKEN_HEREDOC			// <<
 }	e_token_type;
+
 
 typedef struct	s_token
 {
@@ -60,9 +62,15 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
-//prichugh: "I cominbined my s_data struct and yours, can seperate mine into a parsing struct"
-// if one single struct will be too messy or data is often irrelevant in parsing/exec we could separate between token struct and execution struct
-typedef struct	s_data
+typedef struct t_shell
+{
+	t_env	*env_lst;
+	int		stdin;
+	int		stdout;
+}	t_shell;
+
+// NICK: splitting makes more sense. i will just copy from your struct into mine like we discussed before. name it parsing
+typedef struct	s_parse
 {
 	t_token	*head; //start of token linked list
 	t_token	*tail; //end of token linked list
@@ -70,12 +78,9 @@ typedef struct	s_data
 	int		buf_index; //index for buffer while tokenizing
 	int		in_single_quote; //var to keep track between in and out of single quote
 	int		in_double_quote; //var to keep track between in and out of double quote
-	//int		i;
 	int		last_exit_status; //needs to be implemented!
-	t_env		*env_lst; // linkedlst featuring the current envp
-	char*		cmd;
-	int			exit; // to quit minishell
-}			t_data;
+	int		exit;
+}			t_parse;
 
 typedef struct	s_execution
 {
@@ -92,20 +97,22 @@ typedef struct	s_execution
 
 typedef struct s_exec
 {
+	t_token		parse;
+	t_token		parse_list;
 	pid_t		ex_pid; // process ID number, if 0 -> process = child
 	int			ex_fdin; // FD in for pipe
 	int			ex_fdout; // FD out for pipe
 	int			ex_tag_out; // numbertag that indicates whether the outfile is read/write/append
 	int			ex_p_exit; //expand latest exit status of the most recently executed foreground pipe. (case $?)
-	char*		arg; // or cmd?
+	int			ex_n_cmd; // 
 }	t_exec;
 
 /* TOKENIZATION */
 //---------tokenize.c----------//
-void	tokenize(char *input, t_data *data);
+void	tokenize(char *input, t_parse *data);
 t_token	*new_token(e_token_type type, char *value);
-void 	handle_buffer(t_data *data, e_token_type token_type);
-void	add_token_to_list(t_data *data, t_token *new_token);
+void 	handle_buffer(t_parse *data, e_token_type token_type);
+void	add_token_to_list(t_parse *data, t_token *new_token);
 
 //--------utils_token.c--------//
 void	print_tokens(t_token *token_list);
@@ -125,19 +132,20 @@ void	handle_sigint(int sig);
 
  /*Start_program*/
 //------start_program.c-------//
-void	start_program(t_data *data);
+void	start_program(t_parse *parse);
 
 //------handle_struct.c-------//
-void	reset_data(t_data *data);
-void	struct_init(t_data *shell);
+void	struct_init(t_parse *shell);
+void	reset_parse(t_parse *data);
+
 
 //---------env_var.c---------//
-void	replace_env_variables_in_tokens(t_token *tokens, t_data *data);
-char	*replace_variables_in_string(char *input, t_data *data);
+void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data);
+char	*replace_variables_in_string(char *input, t_parse *data);
 
 //---------inti.c-----------//
-//void	struct_init(t_data *shell);
-int		t_env_init(t_data *shell, char **envp);
+//void	struct_init(t_shell *shell);
+int		t_env_init(t_shell *shell, char **envp);
 
 
 /* EXECUTE */
@@ -152,18 +160,18 @@ pid_t	fork_child(void);
 void	get_fd(t_execution *pipex);
 void	clean_pipes(t_execution *pipex);
 int		is_builtin(t_execution *pipex, char **argv);
-int		run_builtin(int	n, char **argv, t_data *shell);
+int		run_builtin(int	n, char **argv, t_shell *shell);
 void	waitpids(pid_t *pids, int n);
 
 /* BUILTINS */
-void	builtin_env(t_data *shell);
+void	builtin_env(t_shell *shell);
 void	builtin_echo(char **argv, int n);
 
 /* ENV */
-int		t_env_init(t_data *shell, char **envp);
-int		env_addback(t_data *shell, char *envp);
-int		env_del(t_data *shell, char *env);
-char	**envlst_to_array(t_data *shell);
+int		t_env_init(t_shell *shell, char **envp);
+int		env_addback(t_shell *shell, char *envp);
+int		env_del(t_shell *shell, char *env);
+char	**envlst_to_array(t_shell *shell);
 int		lst_len(t_env *lst);
 
 char	*get_path_env(char **path_env);
@@ -178,8 +186,6 @@ void	free_envlst(t_env *lst);
 void	free_int_array(t_execution *pipex, int i);
 
 /*MINISHELL*/
-void	minishell(char **argv, int argc, t_data *shell, t_execution *pipex, char **env);
-
-
+void	minishell(char **argv, int argc, t_shell *shell, t_execution *pipex, char **env);
 
 #endif

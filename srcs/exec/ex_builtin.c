@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ex_builtin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 18:11:28 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/12 23:42:38 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/13 13:53:24 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	is_builtin(t_execution *pipex, char **argv)
 }
 
 // runs a given builtin function
-int	run_builtin(int	n, char **argv, t_data *shell)
+int	run_builtin(int	n, char **argv, t_shell *shell)
 {
 	if (n == 1 || n == 2)
 		builtin_echo(argv, n);
