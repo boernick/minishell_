@@ -29,7 +29,7 @@ void	start_program(t_parse *data)
 		tokenize(input, data);
 		if (validate_input(data->head))
 		{
-			//classify_token_types(data); //NEXT STEPS
+			classify_token_types(data); //NEXT STEPS
 			replace_env_variables_in_tokens(data->head, data);
 			print_tokens(data->head);
 			free_tokens(data->head);

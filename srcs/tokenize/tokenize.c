@@ -134,5 +134,5 @@ void	tokenize(char *input, t_parse *data)
 		}
 		data->head = data->tail = NULL; // Reset head and tail
 		return;
-    }
+	}
 }

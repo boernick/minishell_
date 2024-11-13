@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 15:46:18 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/13 16:59:11 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <errno.h>
 # include <dirent.h>
 # include <sys/types.h>
+# include <stdbool.h>
 # include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -32,7 +33,11 @@
 
 typedef enum
 {
-	TOKEN_WORD,
+	TOKEN_WORD,				//all cmds and args before being split up
+	TOKEN_ARG,
+	TOKEN_CMD,
+	TOKEN_FLAG_ARG,
+	TOKEN_FILE_ARG,
 	TOKEN_PIPE,
 	TOKEN_REDIR_IN,			//	<
 	TOKEN_REDIR_OUT,		// >
@@ -45,14 +50,13 @@ typedef struct	s_token
 {
 	e_token_type	type; //type of token
 	char			*value; //pointer to string containing token value
-	t_cmd			cmd;
 	struct s_token	*next; //pointer to next token in linked list
 }					t_token;
 
 typedef struct s_redirect
 {
-	char	*file; //file name
-	int		redir_type; // append/write/read
+	char			*file; //file name
+	e_token_type	redir_type; // append/write/read
 }	t_redirect;
 
 typedef struct s_env
@@ -69,6 +73,15 @@ typedef struct t_shell
 	int		stdout;
 }	t_shell;
 
+typedef struct s_cmd // does prince
+{
+	char		*cmd;
+	char		**argv;
+	t_redirect	*redirections;
+	int			index;
+	bool		is_builtin;
+}				t_cmd;
+
 // NICK: splitting makes more sense. i will just copy from your struct into mine like we discussed before. name it parsing
 typedef struct	s_parse
 {
@@ -80,15 +93,8 @@ typedef struct	s_parse
 	int		in_double_quote; //var to keep track between in and out of double quote
 	int		last_exit_status; //needs to be implemented!
 	int		exit;
+	t_cmd			*cmd; //list of cmds to pass to Nick's execution function
 }			t_parse;
-
-typedef struct s_cmd // does prince
-{
-	char		*cmd;
-	char		**argv;
-	t_redirect	*redirections;
-	int			index;
-} t_cmd;
 
 typedef struct	s_execution // only need 1 of those, for example for n_pipes once. Its not needed 'per command'
 {
@@ -112,7 +118,7 @@ typedef struct s_exec
 	int			ex_fdout; // FD out for pipe
 	int			ex_tag_out; // numbertag that indicates whether the outfile is read/write/append
 	int			ex_p_exit; //expand latest exit status of the most recently executed foreground pipe. (case $?)
-	int			ex_n_cmd; // 
+	int			ex_n_cmd; //
 }	t_exec;
 
 //---------tokenize----------//
@@ -127,6 +133,9 @@ char	*trim_whitespace(char *str);
 void 	free_tokens(t_token *head);
 int		validate_input(t_token *tokens);
 char	*ft_itoa(int n);
+
+//-----------Parse-----------//
+void	classify_token_types(t_parse *data);
 
 //-----------utils------------//
 char	*ft_strdup(const char *src);

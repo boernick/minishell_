@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/13 15:00:29 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/13 16:28:05 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	builtin_env(t_shell *shell)
 void	builtin_echo(char **argv, int n)
 {
 	n = 0;
-	
+
 	(void) n;
 	int i;
 	if (strncmp(argv[0], "echo", 4) == 0)
@@ -52,13 +52,13 @@ void	builtin_echo(char **argv, int n)
 
 void	builtin_cd(char **argv, t_shell *shell)
 {
-	t_env	*env;
+	// t_env	*env;
 
 	(void) shell;
 	if (argv[1] && argv[2])
 		ft_putstr_fd("Error: too many arguments", STDERR_FILENO);
-	getcwd(PATH_MAX,)
-	
+	// getcwd(PATH_MAX,)
+
 	// retreive environment variables as linked list
 	// Use getcwd() to get the current working directory after a successful chdir() call, then update PWD accordingly.
 	// look for PWD = .... and rewrite this string to the given input
@@ -66,12 +66,12 @@ void	builtin_cd(char **argv, t_shell *shell)
 		//case absolute path nick/42berlin/home
 		//case .. moves up directory level
 		//case - switches to the previous PWD = So overwrite with env variable OLDPWD which should constantly be updated.
-	
+
 	// if (argc = 1 && argv[1] == cd)
 		// reset the PWD = env variable to the HOME = env variable
 	// if (cd cannot change the specified directory -> means doesnt exist or no permissions)
 		// error handling and the working directory remains unchanged
-		
+
 }
 
 void	builtin_pwd(t_shell *shell)
@@ -79,7 +79,7 @@ void	builtin_pwd(t_shell *shell)
 	// retreive environment variables as linked list
 	// check the PWD path en print out its current directory
 	// i can use getcwd() here aswell.
-	
+
 	(void) *shell;
 }
 

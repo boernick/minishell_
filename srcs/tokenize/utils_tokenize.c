@@ -17,37 +17,33 @@ char *trim_whitespace(char *str)
 	return (&str[start]);
 }
 
-// For testing: prints each token in the linked list along with its type.
+// FOR TESTING ONLY: prints each token in the linked list along with its type.
 void print_tokens(t_token *token_list)
 {
     t_token *current = token_list;
 
-    while (current != NULL) {
+    while (current != NULL)
+	{
         printf("Token: %s, Type: ", current->value);
 
-        //Check the type and print accordingly
-        if (current->type == TOKEN_WORD) {
-            printf("COMMAND");
-        } else if (current->type == TOKEN_WORD) {
-            printf("ARGUMENT");
-        } else if (current->type == TOKEN_PIPE) {
-            printf("PIPE");
-        } else if (current->type == TOKEN_HEREDOC) {
-            printf("HEREDOC");
-		} else if (current->type == TOKEN_REDIR_APPEND) {
-            printf("REDIR APPEND");
-		} else if (current->type == TOKEN_REDIR_IN) {
-            printf("REDIR IN");
-		} else if (current->type == TOKEN_REDIR_OUT) {
-            printf("REDIR OUT");
-        } else {
-            printf("UNKNOWN");
+        switch (current->type) {
+            case TOKEN_CMD:				printf("COMMAND");         break;
+            case TOKEN_FLAG_ARG:		printf("FLAG ARGUMENT");   break;
+            case TOKEN_ARG:				printf("GENERAL ARGUMENT"); break;
+            case TOKEN_FILE_ARG:		printf("FILE ARGUMENT");   break;
+            case TOKEN_PIPE:			printf("PIPE");            break;
+            case TOKEN_HEREDOC:			printf("HEREDOC");         break;
+            case TOKEN_REDIR_APPEND:	printf("REDIR APPEND");    break;
+            case TOKEN_REDIR_IN:		printf("REDIR IN");        break;
+            case TOKEN_REDIR_OUT:		printf("REDIR OUT");       break;
+            default:					printf("UNKNOWN");         break;
         }
         printf("\n");
 
         current = current->next;
     }
 }
+
 // void	free_envlst(t_env *lst)
 // {
 // 	(void)lst;
