@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 18:19:20 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/13 23:46:35 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	minishell(char **argv, int argc, t_shell *shell, t_execution *pipex, char *
 	int			i;
 
 	exec_init(pipex, argc, argv); // tellen hoeveel cmd args er zijn en het opslaan in struct
-	// if there are pipes
+	if ()
 	create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
 	i = 0;

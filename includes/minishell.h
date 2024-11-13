@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 18:46:33 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/13 23:44:22 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ typedef struct s_cmd // does prince
 	t_redirect		*redirections;
 }				t_cmd;
 
-// NICK: splitting makes more sense. i will just copy from your struct into mine like we discussed before. name it parsing
 typedef struct	s_parse
 {
 	t_token	*head; //start of token linked list
