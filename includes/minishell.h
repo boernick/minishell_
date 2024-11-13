@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 14:07:06 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/13 15:44:43 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <string.h>
 # include <signal.h>
 # include <fcntl.h>
-# include <limits.h>
+# include <linux/limits.h>
 # include <errno.h>
 # include <dirent.h>
 # include <sys/types.h>
@@ -45,15 +45,14 @@ typedef struct	s_token
 {
 	e_token_type	type; //type of token
 	char			*value; //pointer to string containing token value
+	t_cmd			cmd;
 	struct s_token	*next; //pointer to next token in linked list
 }					t_token;
 
 typedef struct s_redirect
 {
-	int		file; //file name
-	int	to_file; // to a file or to print
+	char	*file; //file name
 	int		redir_type; // append/write/read
-	char	*argument; // text to write into
 }	t_redirect;
 
 typedef struct s_env
@@ -65,6 +64,7 @@ typedef struct s_env
 typedef struct t_shell
 {
 	t_env	*env_lst;
+	char	*cwd[PATH_MAX];
 	int		stdin;
 	int		stdout;
 }	t_shell;
@@ -82,7 +82,16 @@ typedef struct	s_parse
 	int		exit;
 }			t_parse;
 
-typedef struct	s_execution
+typedef struct s_cmd
+{
+	char		*cmd;
+	char		**argv;
+	t_redirect	*redirections;
+	int			is_builtin;
+	int			index;
+} t_cmd;
+
+typedef struct	s_execution // only need 1 of those, for example for n_pipes once. Its not needed 'per command'
 {
 	pid_t	pid;
 	int		n_pipes; // to know when i reach the last pipe 			/PRINCE
@@ -107,48 +116,43 @@ typedef struct s_exec
 	int			ex_n_cmd; // 
 }	t_exec;
 
-/* TOKENIZATION */
-//---------tokenize.c----------//
+//---------tokenize----------//
 void	tokenize(char *input, t_parse *data);
 t_token	*new_token(e_token_type type, char *value);
 void 	handle_buffer(t_parse *data, e_token_type token_type);
 void	add_token_to_list(t_parse *data, t_token *new_token);
 
-//--------utils_token.c--------//
+//--------utils_token--------//
 void	print_tokens(t_token *token_list);
 char	*trim_whitespace(char *str);
 void 	free_tokens(t_token *head);
 int		validate_input(t_token *tokens);
 char	*ft_itoa(int n);
 
-//-----------utils.c------------//
+//-----------utils------------//
 char	*ft_strdup(const char *src);
 int		ft_isspace(char c);
 int		ft_isalnum(char c);
 
-/* SIGNALNS */
-//-----------signals.c----------//
+//-----------signals----------//
 void	handle_sigint(int sig);
 
- /*Start_program*/
-//------start_program.c-------//
+//------start_program-------//
 void	start_program(t_parse *parse);
 
-//------handle_struct.c-------//
+//------handle_struct-------//
 void	struct_init(t_parse *shell);
 void	reset_parse(t_parse *data);
 
-
-//---------env_var.c---------//
+//---------env_var---------//
 void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data);
 char	*replace_variables_in_string(char *input, t_parse *data);
 
-//---------inti.c-----------//
+//---------init-----------//
 //void	struct_init(t_shell *shell);
 int		t_env_init(t_shell *shell, char **envp);
 
-
-/* EXECUTE */
+//---------exec-----------//
 char	*path_join(char *path_split, char *cmd_arg);
 void	run_ex(char *arg, char **path_env);
 int		str_error(char *error);
@@ -163,11 +167,11 @@ int		is_builtin(t_execution *pipex, char **argv);
 int		run_builtin(int	n, char **argv, t_shell *shell);
 void	waitpids(pid_t *pids, int n);
 
-/* BUILTINS */
+//---------builtins-----------//
 void	builtin_env(t_shell *shell);
 void	builtin_echo(char **argv, int n);
 
-/* ENV */
+//---------env-----------//
 int		t_env_init(t_shell *shell, char **envp);
 int		env_addback(t_shell *shell, char *envp);
 int		env_del(t_shell *shell, char *env);
@@ -177,15 +181,15 @@ int		lst_len(t_env *lst);
 char	*get_path_env(char **path_env);
 char	*path_join(char *path_split, char *cmd_arg);
 
-/* ERROR */
+//---------error-----------//
 int		str_error(char *error);
 
-/* UTILS ?*/
+//---------utils-----------//
 void	free_array(char **array);
 void	free_envlst(t_env *lst);
 void	free_int_array(t_execution *pipex, int i);
 
-/*MINISHELL*/
+//---------minishell-----------//
 void	minishell(char **argv, int argc, t_shell *shell, t_execution *pipex, char **env);
 
 #endif

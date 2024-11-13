@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/13 13:50:45 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/13 15:00:29 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,13 @@ void	builtin_echo(char **argv, int n)
 
 void	builtin_cd(char **argv, t_shell *shell)
 {
+	t_env	*env;
+
 	(void) shell;
 	if (argv[1] && argv[2])
 		ft_putstr_fd("Error: too many arguments", STDERR_FILENO);
+	getcwd(PATH_MAX,)
+	
 	// retreive environment variables as linked list
 	// Use getcwd() to get the current working directory after a successful chdir() call, then update PWD accordingly.
 	// look for PWD = .... and rewrite this string to the given input
