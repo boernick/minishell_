@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 18:09:43 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/12 23:41:34 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/17 18:11:23 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	run_ex(char *arg, char **path_env)
 	char	*check_path;
 	char	**cmd_arg;
 
+	ft_printf("run exec: %s\n", arg);
 	path_split = ft_split(get_path_env(path_env), ':');
 	// if (!pathsplit)
 	cmd_arg = ft_split(arg, ' ');

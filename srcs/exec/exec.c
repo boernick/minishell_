@@ -6,22 +6,27 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/12 23:41:40 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/17 18:20:05 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
 // prepare exec struct for use
-void	exec_init(t_execution *pipex, int argc, char **argv)
+void	exec_init(t_execution *pipex, t_cmd *cmd_lst)
 {
-	if (0)
-		pipex->infile = handle_file(argv[1], 0); // TO-DO BUT ONLY IF THE FIRST ARGUMENT IS A FILE!
-	// if last argument should be a file PRINCE
-	if (access(argv[argc-1], F_OK) >= 0)
-		pipex->outfile = handle_file(argv[argc - 1], 1);
-	pipex->n_cmds = 1;										// OVERWRITE FROM PRINCE'S STRUCT
-	pipex->n_pipes = pipex->n_cmds - 1;							// OVERWRITE FROM PRINCES STRUCT
+	int i;
+	i = 0;
+	if (access(cmd_lst->redir->file, F_OK) >= 0)
+			pipex->infile = handle_file(cmd_lst->argv[1], 6);
+	pipex->outfile = handle_file(cmd_lst->redir->file, cmd_lst->redir->type); //CHANGE REDIR TO LAST IN THE LIST
+	while (cmd_lst)
+	{
+		i++;
+		cmd_lst = cmd_lst->next;
+	}
+	pipex->n_cmds = i;									// OVERWRITE FROM PRINCE'S STRUCT
+	pipex->n_pipes = pipex->n_cmds - 1;
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
@@ -39,8 +44,6 @@ void	create_pipes(t_execution *pipex)
 {
 	int		i;
 
-	if (pipex->n_pipes <= 0)
-		return;
 	if (!(pipex->pipe_arr = malloc(sizeof(int *) * pipex->n_pipes + 1)))
 		str_error("Malloc failure while creating array of pointers");
 	pipex->pipe_arr[0] = NULL;

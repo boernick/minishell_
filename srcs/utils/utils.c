@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 22:00:29 by nick              #+#    #+#             */
-/*   Updated: 2024/11/12 20:11:21 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/17 16:11:02 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ int	handle_file(char *filename, int type)
 	int	fd;
 
 	fd = 0;
-	if (type == 0) // if(type == REDIR_IN)
+	if (type == 6) // if(type == REDIR_IN)
 		fd = open(filename, O_RDONLY);
-	else if (type == 1)
+	else if (type == 7) // if (type = redir_out)
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	else if (type == 2)
+	else if (type == 8) // if (type = redir_append)
 		fd = open(filename, O_WRONLY | O_CREAT |O_APPEND, 0644);
 	else
 		str_error("wrong type argument to handle file\n");

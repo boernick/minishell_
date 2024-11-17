@@ -6,22 +6,24 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 23:46:35 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/17 18:06:08 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	minishell(char **argv, int argc, t_shell *shell, t_execution *pipex, char **env)
+void	exec_mini(char **argv, t_shell *shell, t_execution *pipex, char **env)
 {
 	(void) shell;
 
 	pid_t		*pids;
+	t_cmd		cmd_lst;
 	int			i;
-
-	exec_init(pipex, argc, argv); // tellen hoeveel cmd args er zijn en het opslaan in struct
-	if ()
-	create_pipes(pipex);
+	
+	calibrate_exec(&cmd_lst);
+	exec_init(pipex, &cmd_lst); // tellen hoeveel cmd args er zijn en het opslaan in struct
+	if (pipex->n_pipes > 0)
+		create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
 	i = 0;
 	while (pipex->index_cmd < pipex->n_cmds)
@@ -35,7 +37,7 @@ void	minishell(char **argv, int argc, t_shell *shell, t_execution *pipex, char *
 			{
 				get_fd(pipex);
 				clean_pipes(pipex);
-				run_ex(argv[pipex->index_cmd + 2], env);
+				run_ex(cmd_lst.cmd, env);
 				exit(EXIT_SUCCESS); // this should be removed?
 			}
 		}
@@ -48,7 +50,7 @@ void	minishell(char **argv, int argc, t_shell *shell, t_execution *pipex, char *
 
 int	main(int argc, char *argv[], char **envp)
 {
-	//t_execution	pipex;
+	t_execution	pipex;
 	t_shell		shell;
 	t_parse		parse;
 
@@ -60,8 +62,9 @@ int	main(int argc, char *argv[], char **envp)
 		printf("\"./minishell\" must be the only argument\n");
 		return (0);
 	}
-	tokenize_and_parse(&parse);
-	//minishell(argv, argc, &shell, &pipex, envp); //run minishell //prince:uncommnented for merging
+	// tokenize_and_parse(&parse);
+	
+	exec_mini(argv, &shell, &pipex, envp); //run minishell //prince:uncommnented for merging
 	// while (shell.exit == 0) //while no exit signal
 	// {
 	// 	//handle signals

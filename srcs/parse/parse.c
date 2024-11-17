@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 18:30:01 by prichugh          #+#    #+#             */
-/*   Updated: 2024/11/13 18:55:40 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/17 15:29:23 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,17 +35,17 @@
 // 	return (cmd);
 // }
 
-void	parse(t_parse *data)
-{
-	t_cmd	cmds;
-	t_token	*current_token;
+// void	parse(t_parse *data)
+// {
+// 	t_cmd	cmds;
+// 	t_token	*current_token;
 
-	current_token = data->head;
-	while (current_token->next)
-	{
-		if (current_token->type = TOKEN_CMD)
-		{
-			while (current_token->type != TOKEN_PIPE )
-		}
-	}
-}
+// 	current_token = data->head;
+// 	while (current_token->next)
+// 	{
+// 		if (current_token->type = TOKEN_CMD)
+// 		{
+// 			while (current_token->type != TOKEN_PIPE )
+// 		}
+// 	}
+// }

@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 23:44:22 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/17 18:17:52 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ typedef struct	s_token
 typedef struct s_redirect
 {
 	char			*file; //file name
-	e_token_type	redir_type; // append/write/read
+	e_token_type	type; // append/write/read
 }	t_redirect;
 
 typedef struct s_env
@@ -80,7 +80,7 @@ typedef struct s_cmd // does prince
 	int				index;
 	bool			is_builtin;
 	struct s_cmd	*next;
-	t_redirect		*redirections;
+	t_redirect		*redir;
 }				t_cmd;
 
 typedef struct	s_parse
@@ -99,7 +99,7 @@ typedef struct	s_parse
 typedef struct	s_execution // only need 1 of those, for example for n_pipes once. Its not needed 'per command'
 {
 	pid_t	pid;
-	int		n_pipes; // to know when i reach the last pipe 			/PRINCE
+	int		n_pipes; // to know when i reach the last pipe 
 	int		index_pipe; // to track the pipe where to write in
 	int		index_prev_pipe; // to track the pipe where to read from
 	int		**pipe_arr;
@@ -166,7 +166,7 @@ char	*path_join(char *path_split, char *cmd_arg);
 void	run_ex(char *arg, char **path_env);
 int		str_error(char *error);
 int		handle_file(char *filename, int type);
-void	exec_init(t_execution *pipex, int argc, char **argv);
+void	exec_init(t_execution *pipex, t_cmd *cmd_lst);
 void	update_exec(t_execution *pipex);
 void	create_pipes(t_execution *pipex);
 pid_t	fork_child(void);
@@ -199,6 +199,7 @@ void	free_envlst(t_env *lst);
 void	free_int_array(t_execution *pipex, int i);
 
 //---------minishell-----------//
-void	minishell(char **argv, int argc, t_shell *shell, t_execution *pipex, char **env);
+void	calibrate_exec(t_cmd *cmd_list);
+void	exec_mini(char **argv, t_shell *shell, t_execution *pipex, char **env);
 
 #endif
