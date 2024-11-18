@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/17 18:17:52 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/18 12:42:25 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ void	create_pipes(t_execution *pipex);
 pid_t	fork_child(void);
 void	get_fd(t_execution *pipex);
 void	clean_pipes(t_execution *pipex);
-int		is_builtin(t_execution *pipex, char **argv);
+int		is_builtin(char **argv);
 int		run_builtin(int	n, char **argv, t_shell *shell);
 void	waitpids(pid_t *pids, int n);
 
@@ -200,6 +200,6 @@ void	free_int_array(t_execution *pipex, int i);
 
 //---------minishell-----------//
 void	calibrate_exec(t_cmd *cmd_list);
-void	exec_mini(char **argv, t_shell *shell, t_execution *pipex, char **env);
+void	exec_mini(t_shell *shell, t_execution *pipex, char **env);
 
 #endif

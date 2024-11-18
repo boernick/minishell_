@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/17 18:20:05 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/18 12:48:26 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 void	exec_init(t_execution *pipex, t_cmd *cmd_lst)
 {
 	int i;
+	
 	i = 0;
 	if (access(cmd_lst->redir->file, F_OK) >= 0)
 			pipex->infile = handle_file(cmd_lst->argv[1], 6);
@@ -44,6 +45,7 @@ void	create_pipes(t_execution *pipex)
 {
 	int		i;
 
+	ft_putstr_fd("creating pipes..\n", 2);
 	if (!(pipex->pipe_arr = malloc(sizeof(int *) * pipex->n_pipes + 1)))
 		str_error("Malloc failure while creating array of pointers");
 	pipex->pipe_arr[0] = NULL;
@@ -68,7 +70,7 @@ void	create_pipes(t_execution *pipex)
 pid_t	fork_child(void)
 {
 	pid_t	pid;
-	
+	ft_putstr_fd("forking child..\n", 2);
 	pid = fork();
 	if (pid < 0)
 		str_error("Error: false PID");
@@ -78,6 +80,7 @@ pid_t	fork_child(void)
 //redirect STDIN to INFILE, STDOUT to OUTFILE, and between linking pipes 
 void	get_fd(t_execution *pipex)
 {
+	ft_putstr_fd("getting fds..\n", 2);
 	if (pipex->index_pipe == 0)
 		dup2(pipex->infile, STDIN_FILENO);
 	else 
@@ -97,6 +100,7 @@ void	clean_pipes(t_execution *pipex)
 		return;
 	while (i < pipex->n_pipes)
 	{
+		ft_putstr_fd("clean pipe..\n", 2);
 		close(pipex->pipe_arr[i][0]);
 		close(pipex->pipe_arr[i][1]);
 		i++;

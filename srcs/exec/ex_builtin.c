@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ex_builtin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 18:11:28 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/13 13:53:24 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/18 12:43:03 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
 // checks if a given cmd argument is a builtin function
-int	is_builtin(t_execution *pipex, char **argv)
+int	is_builtin(char **argv)
 {
-	(void) pipex;
+	ft_putstr_fd("checking builtin..\n", 2);
 	if (!(ft_strncmp(argv[1], "echo", 4)))
 	{
 		if (!(ft_strncmp(argv[2], "-n", 2)))
