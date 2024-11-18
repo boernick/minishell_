@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/18 12:42:25 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/18 16:53:53 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,7 +186,6 @@ int		env_addback(t_shell *shell, char *envp);
 int		env_del(t_shell *shell, char *env);
 char	**envlst_to_array(t_shell *shell);
 int		lst_len(t_env *lst);
-
 char	*get_path_env(char **path_env);
 char	*path_join(char *path_split, char *cmd_arg);
 
@@ -197,6 +196,7 @@ int		str_error(char *error);
 void	free_array(char **array);
 void	free_envlst(t_env *lst);
 void	free_int_array(t_execution *pipex, int i);
+t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n);
 
 //---------minishell-----------//
 void	calibrate_exec(t_cmd *cmd_list);

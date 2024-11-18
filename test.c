@@ -4,6 +4,7 @@
 
 void calibrate_exec(t_cmd *cmd_struct) 
 {
+	// First command in the pipeline
     cmd1->cmd = "cat";
     cmd1->argv = (char **)malloc(3 * sizeof(char *));
     cmd1->argv[0] = "cat";
@@ -14,6 +15,7 @@ void calibrate_exec(t_cmd *cmd_struct)
     cmd1->redir = NULL;  // No redirection for this command
     cmd1->next = cmd2;   // Link to the next command
 
+    // Second command in the pipeline (e.g., `wc -l`)
     cmd2->cmd = "wc";
     cmd2->argv = (char **)malloc(3 * sizeof(char *));
     cmd2->argv[0] = "wc";
