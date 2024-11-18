@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 22:00:29 by nick              #+#    #+#             */
-/*   Updated: 2024/11/17 16:11:02 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/18 16:53:06 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,4 +91,17 @@ void	free_array(char **array)
 		i++;
 	}
 	free(array);
+}
+
+t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n)
+{
+	t_cmd *lst;
+	
+	lst = cmd_lst;
+	while (n >= 0)
+	{
+		cmd_lst = cmd_lst->next;
+		n--;
+	}
+	return (lst)
 }
