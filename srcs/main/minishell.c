@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 15:11:24 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/19 16:16:13 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 	pid_t		*pids;
 	t_cmd		cmd_lst;
 	int			i;
-	
+
 	ft_putstr_fd("calibrate exec..\n", 2);
 	calibrate_exec(&cmd_lst);
 	ft_putstr_fd("initiating exec..\n", 2);
@@ -54,7 +54,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 
 int	main(int argc, char *argv[], char **envp)
 {
-	t_execution	pipex;
+	//t_execution	pipex;
 	t_shell		shell;
 	t_parse		parse;
 
@@ -66,8 +66,8 @@ int	main(int argc, char *argv[], char **envp)
 		printf("\"./minishell\" must be the only argument\n");
 		return (0);
 	}
-	// tokenize_and_parse(&parse);
-	exec_mini(&shell, &pipex, envp); 
+	tokenize_and_parse(&parse);
+	//exec_mini(&shell, &pipex, envp);
 	// while (shell.exit == 0) //while no exit signal
 	// {
 	// 	//handle signals

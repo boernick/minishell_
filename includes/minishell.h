@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 15:19:17 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/19 16:19:13 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ typedef struct s_redirect
 {
 	char			*file; //file name
 	e_token_type	type; // append/write/read
+	struct s_redirect	*next;
 }	t_redirect;
 
 typedef struct s_env
@@ -93,13 +94,15 @@ typedef struct	s_parse
 	int		in_double_quote; //var to keep track between in and out of double quote
 	int		last_exit_status; //needs to be implemented!
 	int		exit;
-	t_cmd			*cmd; //list of cmds to pass to Nick's execution function
+	int		n_pipes;
+	int		n_cmds;
+	t_cmd	*cmd; //list of cmds to pass to Nick's execution function
 }			t_parse;
 
 typedef struct	s_execution // only need 1 of those, for example for n_pipes once. Its not needed 'per command'
 {
 	pid_t	pid;
-	int		n_pipes; // to know when i reach the last pipe 
+	int		n_pipes; // to know when i reach the last pipe
 	int		index_pipe; // to track the pipe where to write in
 	int		index_prev_pipe; // to track the pipe where to read from
 	int		**pipe_arr;
@@ -136,7 +139,7 @@ int		validate_input(t_token *tokens);
 char	*ft_itoa(int n);
 
 //-----------Parse-----------//
-void	parse(t_parse *data);
+void	parse_tokens(t_parse *data);
 
 //-----------utils------------//
 char	*ft_strdup(const char *src);
