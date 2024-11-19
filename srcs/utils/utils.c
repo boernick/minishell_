@@ -6,24 +6,11 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 22:00:29 by nick              #+#    #+#             */
-/*   Updated: 2024/11/18 16:53:06 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/19 15:19:51 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-//MOVED TO start_program/handle_struct.c
-// //initiates start values of the shell struct
-// void	struct_init(t_data *shell)
-// {
-// 	shell->exit = 0;
-// 	shell->head = NULL;
-// 	shell->tail = NULL;
-// 	shell->buf_index = 0;
-// 	shell->in_double_quote = 0;
-// 	shell->in_single_quote = 0;
-// 	shell->exit = 0;
-// }
 
 // opens files in read/write/append permissions based on a given int type
 int	handle_file(char *filename, int type)
@@ -100,8 +87,23 @@ t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n)
 	lst = cmd_lst;
 	while (n >= 0)
 	{
-		cmd_lst = cmd_lst->next;
+		lst = lst->next;
 		n--;
 	}
-	return (lst)
+	return (lst);
+}
+
+int	cmdlst_length(t_cmd *cmd_lst)
+{
+	t_cmd	*lst;
+	int		i;
+	
+	i = 0;
+	lst = cmd_lst;
+	while (lst)
+	{
+		i++;
+		lst = lst->next;
+	}
+	return (i);
 }

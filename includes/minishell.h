@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/18 16:53:53 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/19 15:19:17 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,6 +197,8 @@ void	free_array(char **array);
 void	free_envlst(t_env *lst);
 void	free_int_array(t_execution *pipex, int i);
 t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n);
+int		cmdlst_length(t_cmd *cmd_lst);
+
 
 //---------minishell-----------//
 void	calibrate_exec(t_cmd *cmd_list);

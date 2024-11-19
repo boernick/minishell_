@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/18 12:53:08 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/19 15:11:24 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,10 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 	t_cmd		cmd_lst;
 	int			i;
 	
+	ft_putstr_fd("calibrate exec..\n", 2);
 	calibrate_exec(&cmd_lst);
+	ft_putstr_fd("initiating exec..\n", 2);
 	exec_init(pipex, &cmd_lst); // tellen hoeveel cmd args er zijn en het opslaan in struct
-	ft_putstr_fd("exec initiated\n", 2);
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
@@ -66,7 +67,7 @@ int	main(int argc, char *argv[], char **envp)
 		return (0);
 	}
 	// tokenize_and_parse(&parse);
-	exec_mini(&shell, &pipex, envp); //run minishell //prince:uncommnented for merging
+	exec_mini(&shell, &pipex, envp); 
 	// while (shell.exit == 0) //while no exit signal
 	// {
 	// 	//handle signals
