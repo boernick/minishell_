@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 21:07:53 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/19 21:21:51 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	exec_init(t_execution *pipex, t_cmd *cmd_lst)
 	ft_putstr_fd("number of cmds: ", 2); //DEBUG
 	ft_putnbr_fd(pipex->n_cmds, 2); //DEBUG
 	ft_putstr_fd("\n", 2); //DEBUG
-	setup_redirections(pipex, cmd_lst);
+	// setup_redirections(pipex, cmd_lst);
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
@@ -28,11 +28,6 @@ void	exec_init(t_execution *pipex, t_cmd *cmd_lst)
 
 void setup_redirections(t_execution *pipex, t_cmd *cmd_lst)
 {
-	t_cmd *last;
-
-	pipex->infile = STDIN_FILENO;
-	pipex->outfile = STDOUT_FILENO;
-
 	/* TO DO - since i have the index of each command in the t_cmd struct i can make it like
 	if (cmd_lst->index == 0) CASE: FIRST COMMAND
 		check file name + redir type and handle the file
@@ -42,13 +37,21 @@ void setup_redirections(t_execution *pipex, t_cmd *cmd_lst)
 		else
 			check filename + redir type and handle the file
 	*/
-	last = cmd_lst;
-	if (pipex->n_cmds > 1)
-		last = find_cmdlst_index(cmd_lst, pipex->n_cmds - 1);
-	if (cmd_lst->redir) // if there is a redirecton in the first cmd
-		pipex->infile = handle_file(cmd_lst->redir->file, cmd_lst->redir->type); //handle infile
-	if (last->redir) //if there is a redirection in the last cmd
-		pipex->outfile = handle_file(last->redir->file, last->redir->type); //handle the outfile
+	(void);
+	// t_cmd *last;
+
+	// pipex->infile = STDIN_FILENO;
+	// pipex->outfile = STDOUT_FILENO;
+
+	// if (pipex->n_cmds > 1)
+	// 	last = find_cmdlst_index(cmd_lst, pipex->n_cmds - 1);
+	// else
+	// 	last = cmd_lst;
+	// if (cmd_lst->redir && last->redir->type == 6)
+	// 	pipex->infile = handle_file(cmd_lst->redir->file, cmd_lst->redir->type);
+	// if (last->redir && (last->redir->type == 7 || last->redir->type == 8))
+	// 	pipex->outfile = handle_file(last->redir->file, last->redir->type);
+
 }
 // prepare exec struct for next call
 void	update_exec(t_execution *pipex, t_cmd *cmd_lst)
