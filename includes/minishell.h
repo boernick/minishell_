@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 16:19:13 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/19 19:18:04 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ void	run_ex(char *arg, char **path_env);
 int		str_error(char *error);
 int		handle_file(char *filename, int type);
 void	exec_init(t_execution *pipex, t_cmd *cmd_lst);
-void	update_exec(t_execution *pipex);
+void	update_exec(t_execution *pipex, t_cmd *cmd_lst);
 void	create_pipes(t_execution *pipex);
 pid_t	fork_child(void);
 void	get_fd(t_execution *pipex);
@@ -178,6 +178,7 @@ void	clean_pipes(t_execution *pipex);
 int		is_builtin(char **argv);
 int		run_builtin(int	n, char **argv, t_shell *shell);
 void	waitpids(pid_t *pids, int n);
+void	setup_redirections(t_execution *pipex, t_cmd *cmd_lst);
 
 //---------builtins-----------//
 void	builtin_env(t_shell *shell);
@@ -201,7 +202,6 @@ void	free_envlst(t_env *lst);
 void	free_int_array(t_execution *pipex, int i);
 t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n);
 int		cmdlst_length(t_cmd *cmd_lst);
-
 
 //---------minishell-----------//
 void	calibrate_exec(t_cmd *cmd_list);

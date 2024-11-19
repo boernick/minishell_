@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 16:16:13 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/19 21:00:57 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,8 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 	t_cmd		cmd_lst;
 	int			i;
 
-	ft_putstr_fd("calibrate exec..\n", 2);
 	calibrate_exec(&cmd_lst);
-	ft_putstr_fd("initiating exec..\n", 2);
-	exec_init(pipex, &cmd_lst); // tellen hoeveel cmd args er zijn en het opslaan in struct
+	exec_init(pipex, &cmd_lst);
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
@@ -46,19 +44,19 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 			}
 		}
 		else
-			update_exec(pipex);
+			update_exec(pipex, &cmd_lst);
 	}
 	clean_pipes(pipex);
 	waitpids(pids, pipex->n_cmds); // wait for child process, but WHY these inputs in function?
 }
 
-int	main(int argc, char *argv[], char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-	//t_execution	pipex;
+	t_execution	pipex;
 	t_shell		shell;
 	t_parse		parse;
 
-	(void) argv; //til now I didn't have any reason to keep it
+	(void) argv;
 	struct_init(&parse); //function to initiate the struct and set some parameters
 	t_env_init(&shell, envp);
 	if (argc != 1)
@@ -66,8 +64,8 @@ int	main(int argc, char *argv[], char **envp)
 		printf("\"./minishell\" must be the only argument\n");
 		return (0);
 	}
-	tokenize_and_parse(&parse);
-	//exec_mini(&shell, &pipex, envp);
+	// tokenize_and_parse(&parse);
+	exec_mini(&shell, &pipex, envp);
 	// while (shell.exit == 0) //while no exit signal
 	// {
 	// 	//handle signals

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ex_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 18:09:43 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/18 12:50:30 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/19 20:59:27 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,13 +48,12 @@ void	run_ex(char *arg, char **path_env)
 	char	*check_path;
 	char	**cmd_arg;
 
-	ft_putstr_fd("run exec: ", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putstr_fd("\n", 2);
 	path_split = ft_split(get_path_env(path_env), ':');
-	// if (!pathsplit)
+	if (!path_split)
+		str_error("path split failure");
 	cmd_arg = ft_split(arg, ' ');
-	// if (!cmd_arg)!!
+	if (!cmd_arg)
+		str_error("cmd_arg failure");
 	i = 0;
 	while (path_split[i])
 	{

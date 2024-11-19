@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 15:47:23 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/19 21:07:53 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,22 +17,46 @@ void	exec_init(t_execution *pipex, t_cmd *cmd_lst)
 {
 	pipex->n_cmds = cmdlst_length(cmd_lst);
 	pipex->n_pipes = pipex->n_cmds - 1;
-	if (cmd_lst->redir && access(cmd_lst->redir->file, F_OK) >= 0)
-			pipex->infile = handle_file(cmd_lst->argv[1], 6);
-	ft_putstr_fd("yes\n", 2);
-	if (find_cmdlst_index(cmd_lst, )
-		pipex->outfile = handle_file(cmd_lst->redir->file, cmd_lst->redir->type); //CHANGE REDIR TO LAST IN THE LIST
-	ft_putnbr_fd(pipex->n_cmds, 2);
+	ft_putstr_fd("number of cmds: ", 2); //DEBUG
+	ft_putnbr_fd(pipex->n_cmds, 2); //DEBUG
+	ft_putstr_fd("\n", 2); //DEBUG
+	setup_redirections(pipex, cmd_lst);
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
 }
+
+void setup_redirections(t_execution *pipex, t_cmd *cmd_lst)
+{
+	t_cmd *last;
+
+	pipex->infile = STDIN_FILENO;
+	pipex->outfile = STDOUT_FILENO;
+
+	/* TO DO - since i have the index of each command in the t_cmd struct i can make it like
+	if (cmd_lst->index == 0) CASE: FIRST COMMAND
+		check file name + redir type and handle the file
+	if (cmd_lst->n_cmds > 1)
+		if (cmd_lst->index == pipex->n_cmds - 1) LAST COMMAND
+			check if 
+		else
+			check filename + redir type and handle the file
+	*/
+	last = cmd_lst;
+	if (pipex->n_cmds > 1)
+		last = find_cmdlst_index(cmd_lst, pipex->n_cmds - 1);
+	if (cmd_lst->redir) // if there is a redirecton in the first cmd
+		pipex->infile = handle_file(cmd_lst->redir->file, cmd_lst->redir->type); //handle infile
+	if (last->redir) //if there is a redirection in the last cmd
+		pipex->outfile = handle_file(last->redir->file, last->redir->type); //handle the outfile
+}
 // prepare exec struct for next call
-void	update_exec(t_execution *pipex)
+void	update_exec(t_execution *pipex, t_cmd *cmd_lst)
 {
 	pipex->index_prev_pipe = pipex->index_pipe;
 	pipex->index_pipe++;
 	pipex->index_cmd++;
+	cmd_lst = cmd_lst->next;
 }
 
 // create an array of pointers to integers to store the total amount of pipes.
@@ -40,7 +64,7 @@ void	create_pipes(t_execution *pipex)
 {
 	int		i;
 
-	ft_putstr_fd("creating pipes..\n", 2);
+	ft_putstr_fd("creating pipes..\n", 2); //DEBUG
 	if (!(pipex->pipe_arr = malloc(sizeof(int *) * pipex->n_pipes + 1)))
 		str_error("Malloc failure while creating array of pointers");
 	pipex->pipe_arr[0] = NULL;
@@ -95,7 +119,7 @@ void	clean_pipes(t_execution *pipex)
 		return;
 	while (i < pipex->n_pipes)
 	{
-		ft_putstr_fd("clean pipe..\n", 2);
+		ft_putstr_fd("clean pipe..\n", 2); //DEBUG
 		close(pipex->pipe_arr[i][0]);
 		close(pipex->pipe_arr[i][1]);
 		i++;
