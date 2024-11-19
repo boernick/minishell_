@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 15:26:57 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/19 15:47:23 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	exec_init(t_execution *pipex, t_cmd *cmd_lst)
 	if (cmd_lst->redir && access(cmd_lst->redir->file, F_OK) >= 0)
 			pipex->infile = handle_file(cmd_lst->argv[1], 6);
 	ft_putstr_fd("yes\n", 2);
-	if (cmd_lst->redir)
+	if (find_cmdlst_index(cmd_lst, )
 		pipex->outfile = handle_file(cmd_lst->redir->file, cmd_lst->redir->type); //CHANGE REDIR TO LAST IN THE LIST
 	ft_putnbr_fd(pipex->n_cmds, 2);
 	pipex->index_pipe = 0;
