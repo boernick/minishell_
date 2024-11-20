@@ -6,66 +6,56 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 22:10:20 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/20 19:44:41 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
 // prepare exec struct for use
-void	exec_init(t_execution *pipex, t_cmd *cmd_lst)
+void	exec_init(t_execution *pipex, t_cmd *cmd)
 {
-	pipex->n_cmds = cmdlst_length(cmd_lst);
+	pipex->n_cmds = cmdlst_length(cmd);
 	pipex->n_pipes = pipex->n_cmds - 1;
-	ft_putstr_fd("number of cmds: ", 2); //DEBUG
-	ft_putnbr_fd(pipex->n_cmds, 2); //DEBUG
-	ft_putstr_fd("\n", 2); //DEBUG
-	setup_redirections(pipex, cmd_lst);
+	pipex->infile = STDIN_FILENO;
+	pipex->outfile = STDOUT_FILENO;
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
-	
 }
 
-void setup_redirections(t_execution *pipex, t_cmd *cmd)
+void setup_redirections(t_cmd *cmd)
 {
-	if (access(cmd->redir->file, F_OK) >= 0)
-			pipex->infile = handle_file(cmd->argv[1], 6); //CHECK
-	pipex->outfile = handle_file(cmd->redir->file, cmd->redir->type);
-
-	/* TO DO - since i have the index of each command in the t_cmd struct i can make it like
-	if (cmd->index == 0) CASE: FIRST COMMAND
-		check file name + redir type and handle the file
-	if (cmd->n_cmds > 1)
-		if (cmd->index == pipex->n_cmds - 1) LAST COMMAND
-			check if 
-		else
-			check filename + redir type and handle the file
-	*/
-
-	// t_cmd *last;
-
-	// pipex->infile = STDIN_FILENO;
-	// pipex->outfile = STDOUT_FILENO;
-
-	// if (pipex->n_cmds > 1)
-	// 	last = find_cmdlst_index(cmd, pipex->n_cmds - 1);
-	// else
-	// 	last = cmd;
-	// if (cmd->redir && last->redir->type == 6)
-	// 	pipex->infile = handle_file(cmd->redir->file, cmd->redir->type);
-	// if (last->redir && (last->redir->type == 7 || last->redir->type == 8))
-	// 	pipex->outfile = handle_file(last->redir->file, last->redir->type);
-
+	t_redirect	*redir;
+	cmd->fdin = -2;
+	cmd->fdout = -2;
+	
+	if (!cmd->redir)
+		return;
+	redir = cmd->redir;
+	while (redir)
+	{
+		if (redir->type == TOKEN_REDIR_IN || redir->type == TOKEN_HEREDOC)
+			cmd->fdin = handle_file(redir->file, redir->type);
+		if (cmd->fdin == -1)
+			str_error("setup_redirections(): error reading the file.");
+		if (cmd->fdout != -2)
+			close(cmd->fdout);
+		if (redir->type == TOKEN_REDIR_OUT || redir->type == 
+			TOKEN_REDIR_APPEND)
+			cmd->fdout = handle_file(redir->file, redir->type);
+		redir = redir->next;
+	}
+	ft_putstr_fd("gets here\n", 2);
 }
 
 // prepare exec struct for next call
-void	update_exec(t_execution *pipex, t_cmd *cmd_lst)
+void	update_exec(t_execution *pipex)
 {
 	pipex->index_prev_pipe = pipex->index_pipe;
 	pipex->index_pipe++;
 	pipex->index_cmd++;
-	cmd_lst = cmd_lst->next;
+	pipex->cmd = pipex->cmd->next;
 }
 
 // create an array of pointers to integers to store the total amount of pipes.
@@ -106,20 +96,28 @@ pid_t	fork_child(void)
 }
 
 //redirect STDIN to INFILE, STDOUT to OUTFILE, and between linking pipes 
-void	get_fd(t_execution *pipex)
+void	get_fd(t_execution *pipex, t_cmd *cmd)
 {
-	ft_putstr_fd("getting fds..\n", 2);
+	// ft_putstr_fd("duping fds..\n", 2);
+	// ft_putnbr_fd(cmd->fdin, 2);
+	// ft_putstr_fd("\n", 2);
+	if (cmd->fdin != -2) //if there is a redirection-> overwrite it into the pipex->infile
+		pipex->infile = cmd->fdin;	
 	if (pipex->index_pipe == 0)
-		dup2(pipex->infile, STDIN_FILENO);
-	else 
+		dup2(pipex->infile, STDIN_FILENO); 
+	else
 		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
+
+
+	if (cmd->fdout != -2) //if there is a redirection-> overwrite it into the pipex->outfile
+		pipex->outfile = cmd->fdout;	
 	if (pipex->index_cmd == pipex->n_cmds - 1)
 		dup2(pipex->outfile, STDOUT_FILENO);
 	else
 		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
 }
 // close all file descriptors in the pipe FD array
-void	clean_pipes(t_execution *pipex)
+void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 {
 	int	i;
 
@@ -133,10 +131,10 @@ void	clean_pipes(t_execution *pipex)
 		close(pipex->pipe_arr[i][1]);
 		i++;
 	}
-	if (pipex->infile >= 0)
-		close(pipex->infile);
-	if (pipex->outfile >= 0)
-		close(pipex->outfile);
+	if (cmd->fdin >= 0)
+		close(cmd->fdin); //FD ADJUSTMENTS
+	if (cmd->fdout >= 0)
+		close(cmd->fdout); //FD ADJUSTMENTS
 }
 
 // waits for a series of given child processes

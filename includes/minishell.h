@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 21:37:34 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/20 19:45:01 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ typedef struct	s_token
 
 typedef struct s_redirect
 {
-	char			*file; //file name
-	e_token_type	type; // append/write/read
+	char				*file; //file name
+	e_token_type		type; // append/write/read
 	struct s_redirect	*next;
 }	t_redirect;
 
@@ -79,6 +79,8 @@ typedef struct s_cmd // does prince
 	char			*cmd;
 	char			**argv;
 	int				index;
+	int				fdin;
+	int				fdout;
 	bool			is_builtin;
 	struct s_cmd	*next;
 	t_redirect		*redir;
@@ -110,6 +112,7 @@ typedef struct	s_execution // only need 1 of those, for example for n_pipes once
 	int		index_cmd;
 	int		infile; //first file to read from
 	int		outfile; // file to output
+	t_cmd	*cmd;
 } t_execution;
 
 typedef struct s_exec
@@ -166,19 +169,19 @@ int		t_env_init(t_shell *shell, char **envp);
 
 //---------exec-----------//
 char	*path_join(char *path_split, char *cmd_arg);
-void	run_ex(char *arg, char **path_env);
+void	run_ex(t_cmd *cmd, char **path_env);
 int		str_error(char *error);
 int		handle_file(char *filename, int type);
-void	exec_init(t_execution *pipex, t_cmd *cmd_lst);
-void	update_exec(t_execution *pipex, t_cmd *cmd_lst);
+void	exec_init(t_execution *pipex, t_cmd *cmd);
+void	update_exec(t_execution *pipex);
 void	create_pipes(t_execution *pipex);
 pid_t	fork_child(void);
-void	get_fd(t_execution *pipex);
-void	clean_pipes(t_execution *pipex);
+void	get_fd(t_execution *pipex, t_cmd *cmd);
+void	clean_pipes(t_execution *pipex, t_cmd *cmd);
 int		is_builtin(char **argv);
 int		run_builtin(int	n, char **argv, t_shell *shell);
 void	waitpids(pid_t *pids, int n);
-void	setup_redirections(t_execution *pipex, t_cmd *cmd_lst);
+void	setup_redirections(t_cmd *cmd);
 
 //---------builtins-----------//
 void	builtin_env(t_shell *shell);
@@ -204,7 +207,7 @@ t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n);
 int		cmdlst_length(t_cmd *cmd_lst);
 
 //---------minishell-----------//
-void	calibrate_exec(t_cmd *cmd_list);
+void	calibrate_exec(t_execution *pipex);
 void	exec_mini(t_shell *shell, t_execution *pipex, char **env);
 
 #endif

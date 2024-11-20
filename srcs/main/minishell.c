@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 21:00:57 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/20 19:46:57 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,12 @@
 void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 {
 	(void) shell;
-
+	
 	pid_t		*pids;
-	t_cmd		cmd_lst;
 	int			i;
 
-	calibrate_exec(&cmd_lst);
-	exec_init(pipex, &cmd_lst);
+	calibrate_exec(pipex);
+	exec_init(pipex, pipex->cmd);
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
@@ -30,24 +29,25 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 	i = 0;
 	while (pipex->index_cmd < pipex->n_cmds)
 	{
+		setup_redirections(pipex->cmd);
 		pids[i] = fork_child();
 		if (pids[i++] == 0) //case child
 		{
-			if (cmd_lst.is_builtin == 1)
-				run_builtin(is_builtin(cmd_lst.argv), cmd_lst.argv, shell);
+			if (pipex->cmd->is_builtin == 1)
+				run_builtin(is_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
 			else
 			{
-				get_fd(pipex);
-				clean_pipes(pipex);
-				run_ex(cmd_lst.cmd, env);
+				get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
+				clean_pipes(pipex, pipex->cmd); //CLOSING FDS
+				run_ex(pipex->cmd, env); //RUN EX
 				exit(EXIT_SUCCESS); // this should be removed?
 			}
 		}
 		else
-			update_exec(pipex, &cmd_lst);
+			update_exec(pipex);
 	}
-	clean_pipes(pipex);
-	waitpids(pids, pipex->n_cmds); // wait for child process, but WHY these inputs in function?
+	clean_pipes(pipex, pipex->cmd);
+	waitpids(pids, pipex->n_cmds);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -57,21 +57,20 @@ int	main(int argc, char **argv, char **envp)
 	t_parse		parse;
 
 	(void) argv;
-	struct_init(&parse); //function to initiate the struct and set some parameters
+	struct_init(&parse);
 	t_env_init(&shell, envp);
 	if (argc != 1)
 	{
 		printf("\"./minishell\" must be the only argument\n");
 		return (0);
 	}
-	// tokenize_and_parse(&parse);
-	exec_mini(&shell, &pipex, envp);
 	// while (shell.exit == 0) //while no exit signal
 	// {
 	// 	//handle signals
 	// 	if (1) //TO-DO if input is correct
-	// 		minishell(argv, argc, &shell, &pipex, envp); //run minishell
+	// tokenize_and_parse(&parse);
+	exec_mini(&shell, &pipex, envp);
 	// }
-	//free t_env
+	//free t_env()
 	return (0);
 }

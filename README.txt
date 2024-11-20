@@ -25,7 +25,7 @@ CREATE REPOSITORY
 	git checkout master
 	git pull origin master
 
-**DEBUG VALGRIND**
+** VALGRIND**
 valgrind --trace-children=yes --track-fds=yes ./pipex_new in.txt cat cat out.txt
 
 

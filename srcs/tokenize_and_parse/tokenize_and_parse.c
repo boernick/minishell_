@@ -43,7 +43,7 @@ void	tokenize_and_parse(t_parse *data)
 		{
 			classify_token_types(data); //NEXT STEPS
 			replace_env_variables_in_tokens(data->head, data);
-			parse_tokens(data); //NICK commented out for error
+			parse_tokens(data);
 			//print_tokens(data->head); //Only for testing
 			free_tokens(data->head);
 		}
