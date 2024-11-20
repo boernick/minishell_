@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/20 19:46:57 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/20 23:56:28 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 				get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
 				clean_pipes(pipex, pipex->cmd); //CLOSING FDS
 				run_ex(pipex->cmd, env); //RUN EX
-				exit(EXIT_SUCCESS); // this should be removed?
+				// exit(EXIT_SUCCESS); // this should be removed?
 			}
 		}
 		else

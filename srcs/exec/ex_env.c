@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ex_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 18:09:43 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/20 17:59:56 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/20 23:53:41 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ char	*get_path_env(char **path_env)
 // join path and run if result can be executed
 void	run_ex(t_cmd *cmd, char **path_env)
 {
-	ft_putstr_fd("run ", 2);
-	ft_putstr_fd(cmd->cmd, 2);
-	ft_putstr_fd("..\n", 2);
+	// ft_putstr_fd("run ", 2);
+	// ft_putstr_fd(cmd->cmd, 2);
+	// ft_putstr_fd("..\n", 2);
 	
 	int		i;
 	char	**path_split;

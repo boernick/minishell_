@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/20 19:44:41 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/20 23:52:27 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ void setup_redirections(t_cmd *cmd)
 			cmd->fdout = handle_file(redir->file, redir->type);
 		redir = redir->next;
 	}
-	ft_putstr_fd("gets here\n", 2);
 }
 
 // prepare exec struct for next call
@@ -63,7 +62,7 @@ void	create_pipes(t_execution *pipex)
 {
 	int		i;
 
-	ft_putstr_fd("creating pipes..\n", 2); //DEBUG
+	//ft_putstr_fd("creating pipes..\n", 2); //DEBUG
 	if (!(pipex->pipe_arr = malloc(sizeof(int *) * pipex->n_pipes + 1)))
 		str_error("Malloc failure while creating array of pointers");
 	pipex->pipe_arr[0] = NULL;
@@ -88,7 +87,7 @@ void	create_pipes(t_execution *pipex)
 pid_t	fork_child(void)
 {
 	pid_t	pid;
-	ft_putstr_fd("forking child..\n", 2);
+	// ft_putstr_fd("forking child..\n", 2); //DEBUG
 	pid = fork();
 	if (pid < 0)
 		str_error("Error: false PID");
@@ -126,15 +125,18 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 		return;
 	while (i < pipex->n_pipes)
 	{
-		ft_putstr_fd("clean pipe..\n", 2); //DEBUG
+		// ft_putstr_fd("clean pipe..\n", 2); //DEBUG
 		close(pipex->pipe_arr[i][0]);
 		close(pipex->pipe_arr[i][1]);
 		i++;
 	}
-	if (cmd->fdin >= 0)
-		close(cmd->fdin); //FD ADJUSTMENTS
-	if (cmd->fdout >= 0)
-		close(cmd->fdout); //FD ADJUSTMENTS
+	if (cmd)
+	{
+		if (cmd->fdin >= 0)
+			close(cmd->fdin); //FD ADJUSTMENTS
+		if (cmd->fdout >= 0)
+			close(cmd->fdout); //FD ADJUSTMENTS
+	}
 }
 
 // waits for a series of given child processes

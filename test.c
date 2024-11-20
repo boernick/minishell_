@@ -4,16 +4,16 @@
 
 void calibrate_exec(t_execution *pipex)
 {
-    // Allocate and initialize the first command
+// OPTION 2: TESTED AND WORKING WITH WITH REDIRECTIONS
     t_cmd *cmd1 = (t_cmd *)malloc(sizeof(t_cmd));
     if (!cmd1)
         str_error("Malloc failed for cmd1");
 
+    // First command in the pipeline
     cmd1->cmd = "cat";
     cmd1->argv = (char **)malloc(3 * sizeof(char *));
     if (!cmd1->argv)
         str_error("Malloc failed for cmd1->argv");
-
     cmd1->argv[0] = "cat";
     cmd1->argv[1] = "file.txt";
     cmd1->argv[2] = NULL;
@@ -22,57 +22,81 @@ void calibrate_exec(t_execution *pipex)
     cmd1->redir = NULL;
     cmd1->next = NULL;
 
-    // Allocate and initialize the second command
+    // Allocate and initialize the second command in the pipeline
     t_cmd *cmd2 = (t_cmd *)malloc(sizeof(t_cmd));
     if (!cmd2)
         str_error("Malloc failed for cmd2");
-
     cmd2->cmd = "wc";
     cmd2->argv = (char **)malloc(3 * sizeof(char *));
     if (!cmd2->argv)
         str_error("Malloc failed for cmd2->argv");
-
     cmd2->argv[0] = "wc";
     cmd2->argv[1] = "-l";
     cmd2->argv[2] = NULL;
     cmd2->index = 1;
     cmd2->is_builtin = false;
-    cmd2->redir = NULL;
+
+    // Add redirection to the second command
+    cmd2->redir = (t_redirect *)malloc(sizeof(t_redirect));
+    if (!cmd2->redir)
+        str_error("Malloc failed for cmd2->redir");
+    cmd2->redir->type = TOKEN_REDIR_OUT; // Redirect output
+    cmd2->redir->file = strdup("output.txt");
+    if (!cmd2->redir->file)
+        str_error("Malloc failed for cmd2->redir->file");
+    cmd2->redir->next = NULL; // No more redirections
     cmd2->next = NULL;
 
-    // Link the commands
+    // Link the first command to the second
     cmd1->next = cmd2;
 
-    // Assign the command list to the execution structure
+    // Attach the command list to the execution struct
     pipex->cmd = cmd1;
 }
-//OPTION 2: WITH REDIRECTION;
-	// // First command in the pipeline
-	// cmd_struct->cmd = "cat";
-	// cmd_struct->argv = (char **)malloc(3 * sizeof(char *));
-	// cmd_struct->argv[0] = "cat";
-	// cmd_struct->argv[1] = "file.txt";
-	// cmd_struct->argv[2] = NULL;
-	// cmd_struct->index = 0;
-	// cmd_struct->is_builtin = false;
-	// cmd_struct->redir = NULL;
 
-	// // Allocate and initialize the second command in the pipeline
-	// t_cmd *cmd2 = (t_cmd *)malloc(sizeof(t_cmd));
-	// cmd2->cmd = "wc";
-	// cmd2->argv = (char **)malloc(3 * sizeof(char *));
-	// cmd2->argv[0] = "wc";
-	// cmd2->argv[1] = "-l";
-	// cmd2->argv[2] = NULL;
-	// cmd2->index = 1;
-	// cmd2->is_builtin = false;
-	// cmd2->redir = (t_redirect *)malloc(sizeof(t_redirect));
-	// cmd2->redir->type = TOKEN_REDIR_OUT; // Redirect output
-	// cmd2->redir->file = "output.txt";
-	// cmd2->next = NULL;
+    /****OPTION 3: TESTED AND WORKING - PIPE BUT NO REDIRECTIONS */
+    // // Allocate and initialize the first command
+    // t_cmd *cmd1 = (t_cmd *)malloc(sizeof(t_cmd));
+    // if (!cmd1)
+    //     str_error("Malloc failed for cmd1");
 
-	// // Link the first command to the second
-	// cmd_struct->next = cmd2;
+    // cmd1->cmd = "cat";
+    // cmd1->argv = (char **)malloc(3 * sizeof(char *));
+    // if (!cmd1->argv)
+    //     str_error("Malloc failed for cmd1->argv");
+
+    // cmd1->argv[0] = "cat";
+    // cmd1->argv[1] = "file.txt";
+    // cmd1->argv[2] = NULL;
+    // cmd1->index = 0;
+    // cmd1->is_builtin = false;
+    // cmd1->redir = NULL;
+    // cmd1->next = NULL;
+
+    // // Allocate and initialize the second command
+    // t_cmd *cmd2 = (t_cmd *)malloc(sizeof(t_cmd));
+    // if (!cmd2)
+    //     str_error("Malloc failed for cmd2");
+
+    // cmd2->cmd = "wc";
+    // cmd2->argv = (char **)malloc(3 * sizeof(char *));
+    // if (!cmd2->argv)
+    //     str_error("Malloc failed for cmd2->argv");
+
+    // cmd2->argv[0] = "wc";
+    // cmd2->argv[1] = "-l";
+    // cmd2->argv[2] = NULL;
+    // cmd2->index = 1;
+    // cmd2->is_builtin = false;
+    // cmd2->redir = NULL;
+    // cmd2->next = NULL;
+
+    // // Link the commands
+    // cmd1->next = cmd2;
+
+    // // Assign the command list to the execution structure
+    // pipex->cmd = cmd1;
+
 
 // /****OPTION 1 - TESTED AND WORKING*****/
 //     cmd_struct->cmd = "cat";
