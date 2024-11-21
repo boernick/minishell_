@@ -22,35 +22,32 @@ void	tokenize_and_parse(t_parse *data)
 
 	// tokens = data->head;
 	signal(SIGINT, handle_sigint); // Set the signal handler for ctrl+c, ctrl+d, and ctr+\"
-	while (1)
-	{
+	//while (1)
+	//{
 		input = readline(">>> "); //readline caues mem leaks
-		if (input == NULL) //ADJUST TO SUBJECT
-		{
-			printf("EOF detected, exiting...\n");
-			break ;
-		}
-		if (strcmp(input, "exit") == 0) // add my own ft_strcmp
-		{
-			free(input);
-			break ;
-		}
+		// if (input == NULL) //ADJUST TO SUBJECT
+		// {
+		// 	printf("EOF detected, exiting...\n");
+		// 	break ;
+		// }
+		// if (strcmp(input, "exit") == 0) // add my own ft_strcmp
+		// {
+		// 	free(input);
+		// 	break ;
+		// }
 		if (input && *input)
 			add_history(input);  //add_history causes mem leaks
 		reset_parse(data);
 		tokenize(input, data);
 		if (validate_input(data->head))
 		{
-			classify_token_types(data); //NEXT STEPS
+			classify_token_types(data);
 			replace_env_variables_in_tokens(data->head, data);
 			parse_tokens(data); //NICK commented out for error
 			//print_tokens(data->head); //Only for testing
-			free_tokens(data->head);
-		}
+		//}
 		free(input);
 	}
-	clear_history();//make sure toe use the better one (this vs next line)
-	rl_clear_history();//make sure to use the better one
 }
 
 //void	tokenize_and_parse()

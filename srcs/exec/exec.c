@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 22:10:20 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/20 18:38:24 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 // prepare exec struct for use
 void	exec_init(t_execution *pipex, t_cmd *cmd_lst)
 {
-	pipex->n_cmds = cmdlst_length(cmd_lst);
+	// pipex->n_cmds = cmdlst_length(cmd_lst); Prince: commented out because i pass this info to you
 	pipex->n_pipes = pipex->n_cmds - 1;
 	ft_putstr_fd("number of cmds: ", 2); //DEBUG
 	ft_putnbr_fd(pipex->n_cmds, 2); //DEBUG
@@ -24,7 +24,7 @@ void	exec_init(t_execution *pipex, t_cmd *cmd_lst)
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
-	
+
 }
 
 void setup_redirections(t_execution *pipex, t_cmd *cmd)
@@ -38,7 +38,7 @@ void setup_redirections(t_execution *pipex, t_cmd *cmd)
 		check file name + redir type and handle the file
 	if (cmd->n_cmds > 1)
 		if (cmd->index == pipex->n_cmds - 1) LAST COMMAND
-			check if 
+			check if
 		else
 			check filename + redir type and handle the file
 	*/
@@ -105,13 +105,13 @@ pid_t	fork_child(void)
 	return (pid);
 }
 
-//redirect STDIN to INFILE, STDOUT to OUTFILE, and between linking pipes 
+//redirect STDIN to INFILE, STDOUT to OUTFILE, and between linking pipes
 void	get_fd(t_execution *pipex)
 {
 	ft_putstr_fd("getting fds..\n", 2);
 	if (pipex->index_pipe == 0)
 		dup2(pipex->infile, STDIN_FILENO);
-	else 
+	else
 		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
 	if (pipex->index_cmd == pipex->n_cmds - 1)
 		dup2(pipex->outfile, STDOUT_FILENO);
@@ -143,7 +143,7 @@ void	clean_pipes(t_execution *pipex)
 void	waitpids(pid_t *pids, int n)
 {
 	int	i;
-	
+
 	i = 0;
 	while (i < n)
 	{

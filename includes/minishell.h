@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 21:37:34 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/20 19:10:57 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,6 @@ typedef struct	s_token
 	struct s_token	*next; //pointer to next token in linked list
 }					t_token;
 
-typedef struct s_redirect
-{
-	char			*file; //file name
-	e_token_type	type; // append/write/read
-	struct s_redirect	*next;
-}	t_redirect;
-
 typedef struct s_env
 {
 	char			*content;
@@ -73,6 +66,13 @@ typedef struct t_shell
 	int		stdin;
 	int		stdout;
 }	t_shell;
+
+typedef struct s_redirect
+{
+	char			*file; //file name
+	e_token_type	type; // append/write/read
+	struct s_redirect	*next;
+}	t_redirect;
 
 typedef struct s_cmd // does prince
 {

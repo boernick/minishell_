@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/19 21:00:57 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/20 18:18:33 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,17 @@ int	main(int argc, char **argv, char **envp)
 		printf("\"./minishell\" must be the only argument\n");
 		return (0);
 	}
-	// tokenize_and_parse(&parse);
-	exec_mini(&shell, &pipex, envp);
-	// while (shell.exit == 0) //while no exit signal
-	// {
+	while (1) //currently made it a inifinite loop cuz shell has no memmber named exit//while (shell.exit == 0) //while no exit signal
+	{
+		tokenize_and_parse(&parse);
+		exec_mini(&shell, &pipex, envp);
 	// 	//handle signals
-	// 	if (1) //TO-DO if input is correct
-	// 		minishell(argv, argc, &shell, &pipex, envp); //run minishell
-	// }
+	// if (1) //TO-DO if input is correct
+	//  		minishell(argv, argc, &shell, &pipex, envp); //run minishell
+	}
 	//free t_env
+	free_tokens(parse.head);
+	clear_history();//make sure toe use the better one (this vs the one below)
+	rl_clear_history();//make sure to use the better one
 	return (0);
 }
