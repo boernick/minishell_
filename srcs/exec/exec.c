@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/20 23:52:27 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/23 21:47:53 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,15 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 		if (cmd->fdout >= 0)
 			close(cmd->fdout); //FD ADJUSTMENTS
 	}
+}
+
+void	heredoc()
+{
+	// create a temporary file
+	mkstemp()
+	// write to the file
+	// handle input - use readline to read user input line by line
+	// close the file and use its 
 }
 
 // waits for a series of given child processes
