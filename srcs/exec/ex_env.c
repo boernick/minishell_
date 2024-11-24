@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ex_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 18:09:43 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/20 23:53:41 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/24 19:48:55 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,14 @@ char	*path_join(char *path_split, char *cmd_arg)
 	return (joined_path);
 }
 
-// Search through bin folder (NOW LINKED LIST) which dir contains PATH environment variable, 
-// skips "PATH" in the string and returns it.
+// Search through bin folder (NOW LINKED LIST) which dir contains PATH 
+// environment variable, skips "PATH" in the string and returns it.
 char	*get_path_env(char **path_env)
 {
-	int i = 0;
-	while (path_env[i]) // TO DO THIS WILL BECOME LINKED LIST
+	int	i;
+
+	i = 0;
+	while (path_env[i])
 	{
 		if (!(ft_strncmp(path_env[i], "PATH=", 5)))
 			return (path_env[i] + 5); 
@@ -46,7 +48,6 @@ void	run_ex(t_cmd *cmd, char **path_env)
 	// ft_putstr_fd("run ", 2);
 	// ft_putstr_fd(cmd->cmd, 2);
 	// ft_putstr_fd("..\n", 2);
-	
 	int		i;
 	char	**path_split;
 	char	*check_path;

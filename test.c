@@ -4,7 +4,6 @@
 
 void calibrate_exec(t_execution *pipex)
 {
-// OPTION 2: TESTED AND WORKING WITH WITH REDIRECTIONS
     t_cmd *cmd1 = (t_cmd *)malloc(sizeof(t_cmd));
     if (!cmd1)
         str_error("Malloc failed for cmd1");
@@ -15,14 +14,14 @@ void calibrate_exec(t_execution *pipex)
     if (!cmd1->argv)
         str_error("Malloc failed for cmd1->argv");
     cmd1->argv[0] = "cat";
-    cmd1->argv[1] = "file.txt";
+    cmd1->argv[1] = "README.txt";
     cmd1->argv[2] = NULL;
     cmd1->index = 0;
     cmd1->is_builtin = false;
     cmd1->redir = NULL;
     cmd1->next = NULL;
 
-    // Allocate and initialize the second command in the pipeline
+    // Second command in the pipeline
     t_cmd *cmd2 = (t_cmd *)malloc(sizeof(t_cmd));
     if (!cmd2)
         str_error("Malloc failed for cmd2");
@@ -36,23 +35,35 @@ void calibrate_exec(t_execution *pipex)
     cmd2->index = 1;
     cmd2->is_builtin = false;
 
-    // Add redirection to the second command
-    cmd2->redir = (t_redirect *)malloc(sizeof(t_redirect));
-    if (!cmd2->redir)
-        str_error("Malloc failed for cmd2->redir");
-    cmd2->redir->type = TOKEN_REDIR_OUT; // Redirect output
-    cmd2->redir->file = strdup("output.txt");
-    if (!cmd2->redir->file)
-        str_error("Malloc failed for cmd2->redir->file");
-    cmd2->redir->next = NULL; // No more redirections
-    cmd2->next = NULL;
+    // Adding multiple redirections to cmd2
+    t_redirect *redir_out = (t_redirect *)malloc(sizeof(t_redirect));
+    if (!redir_out)
+        str_error("Malloc failed for redir_out");
+    redir_out->type = TOKEN_REDIR_OUT;
+    redir_out->file = strdup("output.txt");
+    if (!redir_out->file)
+        str_error("Malloc failed for redir_out->file");
 
-    // Link the first command to the second
+    t_redirect *redir_in = (t_redirect *)malloc(sizeof(t_redirect));
+    if (!redir_in)
+        str_error("Malloc failed for redir_in");
+    redir_in->type = TOKEN_REDIR_IN;
+    redir_in->file = strdup("input_override.txt");
+    if (!redir_in->file)
+        str_error("Malloc failed for redir_in->file");
+
+    // Link redirections
+    redir_in->next = redir_out;
+    redir_out->next = NULL;
+    cmd2->redir = redir_in;
+
+    cmd2->next = NULL;
     cmd1->next = cmd2;
 
-    // Attach the command list to the execution struct
+    // Attach command list to execution struct
     pipex->cmd = cmd1;
 }
+
 
     /****OPTION 3: TESTED AND WORKING - PIPE BUT NO REDIRECTIONS */
     // // Allocate and initialize the first command

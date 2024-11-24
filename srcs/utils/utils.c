@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 22:00:29 by nick              #+#    #+#             */
-/*   Updated: 2024/11/24 12:51:47 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/24 19:52:26 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	handle_file(char *filename, int type)
 
 //loops through t_env struct and frees all allocated memory
 void	free_envlst(t_env *lst)
-{	
+{
 	t_env	*temp;
 
 	temp = lst;
@@ -46,13 +46,13 @@ void	free_envlst(t_env *lst)
 }
 
 // free the pipe_array from the last index that was allocated in memory
-void	free_int_array(t_execution *pipex, int	i)
+void	free_int_array(t_execution *pipex, int i)
 {
 	int		**array;
 
 	array = pipex->pipe_arr;
 	if (!array)
-		return;
+		return ;
 	while (i >= 0)
 	{
 		if (array[i])
@@ -75,10 +75,10 @@ void	free_array(char **array)
 	free(array);
 }
 
-t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n)
+t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int n)
 {
-	t_cmd *lst;
-	
+	t_cmd	*lst;
+
 	lst = cmd_lst;
 	while (n >= 0)
 	{
@@ -92,7 +92,7 @@ int	cmdlst_length(t_cmd *cmd_lst)
 {
 	t_cmd	*lst;
 	int		i;
-	
+
 	i = 0;
 	lst = cmd_lst;
 	while (lst)

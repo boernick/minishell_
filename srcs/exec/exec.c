@@ -6,15 +6,16 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/24 14:09:08 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/24 19:50:11 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
 // prepare exec struct for use
-void	exec_init(t_execution *pipex, t_cmd *cmd)
+void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd)
 {
+	shell->exit = 0;
 	pipex->n_cmds = cmdlst_length(cmd);
 	pipex->n_pipes = pipex->n_cmds - 1;
 	pipex->infile = STDIN_FILENO;
@@ -25,26 +26,26 @@ void	exec_init(t_execution *pipex, t_cmd *cmd)
 	getcwd(shell->cwd, PATH_MAX);
 }
 
-void setup_redirections(t_cmd *cmd)
+void	setup_redirections(t_cmd *cmd)
 {
 	t_redirect	*redir;
+
 	cmd->fdin = -2;
 	cmd->fdout = -2;
-	
 	if (!cmd->redir)
-		return;
+		return ;
 	redir = cmd->redir;
 	while (redir)
 	{
-		if (redir->type == TOKEN_REDIR_IN)
+		if (redir->type == TOKEN_REDIR_IN) // HEREDOC?
 			cmd->fdin = handle_file(redir->file, redir->type);
-		if (cmd->fdin == -1)
-			str_error("setup_redirections(): error reading the file.");
 		if (cmd->fdout != -2)
 			close(cmd->fdout);
 		if (redir->type == TOKEN_REDIR_OUT || redir->type == 
 			TOKEN_REDIR_APPEND)
 			cmd->fdout = handle_file(redir->file, redir->type);
+		if (cmd->fdin == -1)
+			str_error("setup_redirections(): error reading the file.");
 		redir = redir->next;
 	}
 }
@@ -64,13 +65,15 @@ void	create_pipes(t_execution *pipex)
 	int		i;
 
 	//ft_putstr_fd("creating pipes..\n", 2); //DEBUG
-	if (!(pipex->pipe_arr = malloc(sizeof(int *) * pipex->n_pipes + 1)))
+	pipex->pipe_arr = malloc(sizeof(int *) * pipex->n_pipes + 1);
+	if (!(pipex->pipe_arr))
 		str_error("Malloc failure while creating array of pointers");
 	pipex->pipe_arr[0] = NULL;
 	i = 0;
 	while (i < pipex->n_pipes)
 	{
-		if (!(pipex->pipe_arr[i] = malloc(sizeof(int) * 2)))
+		pipex->pipe_arr[i] = malloc(sizeof(int) * 2);
+		if (!(pipex->pipe_arr[i]))
 		{
 			free_int_array(pipex, i + 1);
 			str_error("Malloc failure while creating pipes");
@@ -84,6 +87,7 @@ void	create_pipes(t_execution *pipex)
 	}
 	pipex->pipe_arr[i] = NULL;
 }
+
 // fork a child process and return error if PID is false
 pid_t	fork_child(void)
 {
@@ -107,8 +111,6 @@ void	get_fd(t_execution *pipex, t_cmd *cmd)
 		dup2(pipex->infile, STDIN_FILENO); 
 	else
 		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
-
-
 	if (cmd->fdout != -2) //if there is a redirection-> overwrite it into the pipex->outfile
 		pipex->outfile = cmd->fdout;	
 	if (pipex->index_cmd == pipex->n_cmds - 1)
@@ -116,6 +118,7 @@ void	get_fd(t_execution *pipex, t_cmd *cmd)
 	else
 		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
 }
+
 // close all file descriptors in the pipe FD array
 void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 {
@@ -123,7 +126,7 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 
 	i = 0;
 	if (!pipex->pipe_arr)
-		return;
+		return ;
 	while (i < pipex->n_pipes)
 	{
 		// ft_putstr_fd("clean pipe..\n", 2); //DEBUG
@@ -140,20 +143,20 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 	}
 }
 
-void	heredoc()
-{
-	// create a temporary file
-	mkstemp()
-	// write to the file
-	// handle input - use readline to read user input line by line
-	// close the file and use its 
-}
+// void	heredoc()
+// {
+// 	// create a temporary file
+// 	// mkstemp();
+// 	// write to the file
+// 	// handle input - use readline to read user input line by line
+// 	// close the file and use its 
+// }
 
 // waits for a series of given child processes
 void	waitpids(pid_t *pids, int n)
 {
 	int	i;
-	
+
 	i = 0;
 	while (i < n)
 	{

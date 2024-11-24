@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:17:53 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/24 14:29:23 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/24 19:19:14 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,11 @@ typedef struct s_env
 typedef struct t_shell
 {
 	t_env	*env_lst;
-	char	*cwd[PATH_MAX];
+	char	cwd[PATH_MAX];
 	int		stdin;
 	int		stdout;
+	int		last_exit;
+	int		exit;
 }	t_shell;
 
 typedef struct s_cmd // does prince
@@ -172,7 +174,7 @@ char	*path_join(char *path_split, char *cmd_arg);
 void	run_ex(t_cmd *cmd, char **path_env);
 int		str_error(char *error);
 int		handle_file(char *filename, int type);
-void	exec_init(t_execution *pipex, t_cmd *cmd);
+void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd);
 void	update_exec(t_execution *pipex);
 void	create_pipes(t_execution *pipex);
 pid_t	fork_child(void);
@@ -184,12 +186,13 @@ void	waitpids(pid_t *pids, int n);
 void	setup_redirections(t_cmd *cmd);
 
 //---------builtins-----------//
-void	builtin_env(t_shell *shell);
-void	builtin_echo(char **argv, int n);
-void	builtin_cd(char **argv, t_shell *shell);
-void	builtin_exit(char **argv, t_shell *shell);
+int		builtin_env(t_shell *shell);
+int		builtin_pwd(char **argv, t_shell *shell);
+int		builtin_echo(char **argv);
+int		builtin_cd(char **argv, t_shell *shell);
+int		builtin_exit(char **argv);
 int		builtin_unset(char **argv, t_shell *shell);
-
+int		builtin_export(char **argv, t_shell *shell);
 
 //---------env-----------//
 int		t_env_init(t_shell *shell, char **envp);
@@ -199,7 +202,7 @@ char	**envlst_to_array(t_shell *shell);
 int		lst_len(t_env *lst);
 char	*get_path_env(char **path_env);
 char	*path_join(char *path_split, char *cmd_arg);
-t_env	*get_env_lst(t_shell *shell, char *name)
+t_env	*get_env_lst(t_shell *shell, char *name);
 
 //---------error-----------//
 int		str_error(char *error);
@@ -210,6 +213,10 @@ void	free_envlst(t_env *lst);
 void	free_int_array(t_execution *pipex, int i);
 t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n);
 int		cmdlst_length(t_cmd *cmd_lst);
+int		check_num(char *str);
+int		export_lst(t_env *shell);
+
+
 
 //---------minishell-----------//
 void	calibrate_exec(t_execution *pipex);

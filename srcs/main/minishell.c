@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 19:53:08 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/24 12:41:38 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/24 18:23:19 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,11 @@
 
 void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 {
-	(void) shell;
-	
 	pid_t		*pids;
 	int			i;
 
 	calibrate_exec(pipex);
-	exec_init(pipex, pipex->cmd);
+	exec_init(shell, pipex, pipex->cmd);
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
@@ -40,7 +38,6 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 				get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
 				clean_pipes(pipex, pipex->cmd); //CLOSING FDS
 				run_ex(pipex->cmd, env); //RUN EX
-				// exit(EXIT_SUCCESS); // this should be removed?
 			}
 		}
 		else

@@ -13,7 +13,7 @@ char *get_env_variable(char *var_name, t_parse *data)
 	}
 	env_value = getenv(var_name);
 	if (!env_value)
-		return ft_strdup("");
+		return (ft_strdup(""));
 	return (ft_strdup(env_value));
 }
 
