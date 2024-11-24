@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/24 19:47:32 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/24 23:59:34 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,24 +60,24 @@ int	builtin_echo(char **argv) //finished
 int	builtin_cd(char **argv, t_shell *shell) //not yet finished
 {
 	t_env	*env;
-	// t_env	*pwd;
+	t_env	*pwd;
 	env = shell->env_lst;
 	
 	if (argv[1] && argv[2])
 		ft_putstr_fd("Error: too many arguments", STDERR_FILENO);
+	if (argv[1] && argv[1][0] == '-')
+	{
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(argv[1], 2);
+		ft_putendl_fd(": invalid option", 2);
+		return (EXIT_FAILURE);
+	}
 	getcwd(shell->cwd, PATH_MAX);
-
-	// retreive environment variables as linked list
-	// Use getcwd() to get the current working directory after a successful chdir() call, then update PWD accordingly.
-	// look for PWD = .... and rewrite this string to the given input
-		//case relative path ../../path
-		//case absolute path nick/42berlin/home
-		//case .. moves up directory level
-		//case - switches to the previous PWD = So overwrite with env variable OLDPWD which should constantly be updated.
-
-	// if (argv[2] == NULL)
-	// 	pwd = get_env_lst(env, "PWD");
-		
+	
+	if (argv[2] == NULL)
+		pwd = get_env_lst(env, "PWD");
+		ft_strlcpy()
+	while 
 		
 		// if (cd cannot change the specified directory -> means doesnt exist or no permissions)
 		// error handling and the working directory remains unchanged
@@ -102,7 +102,9 @@ int	builtin_export(char **argv, t_shell *shell) // still need to sort the linked
 	char	*env;
 
 	if (!argv[1])
+	{
 		return (export_lst(shell->env_lst));
+	}
 	env = argv[1];
 	if (env[0] == '=')
 	{
@@ -185,26 +187,47 @@ int	check_num(char *str)
 int	export_lst(t_env *env_lst)
 {
 	t_env	*lst;
+	t_env	*prev;
+	t_env	*cheapest;
 	int		i;
-	int		equal;
-	
-	lst = env_lst;
-	while(lst)
-	{
-		i = 0;
-		equal = 0;
-		ft_putstr_fd("declare -x ", STDOUT_FILENO);
-		while (lst->content[i])
+	int		j;
+
+	lst = env_lst; //?
+	j = 0;
+	i = 0;
+	while (i < lst_len(lst))
+		while(lst) // door alle heen loopen
 		{
-			ft_putchar_fd(lst->content[i], STDOUT_FILENO);
-			if (lst->content[i] == '=' && !equal++)
-				ft_putchar_fd('"', 1);
-			i++;
+			if (ft_strncmp(lst->content, prev->content, strlen(prev->content + 1)) > 0)
+			{	
+				cheapest = lst;
+				lst = env_lst;
+				if (ft_strncmp(lst->content) < the rest)) // if current > previous && current < de rest
+				{
+				}
+			}
+			lst = lst->next;
 		}
-		if (equal)
-			ft_putchar_fd('"', STDOUT_FILENO);
-		ft_putchar_fd('\n', STDOUT_FILENO);
-		lst = lst->next;
-	}
+	i++;
 	return (0);
+}
+
+void	export_lst_one(t_env *lst)
+{
+	int	i;
+	int	equal;
+
+	i = 0;
+	equal = 0;
+	ft_putstr_fd("declare -x ", STDOUT_FILENO);
+	while (lst->content[i])
+	{
+		ft_putchar_fd(lst->content[i], STDOUT_FILENO);
+		if (lst->content[i] == '=' && !equal++)
+			ft_putchar_fd('"', 1);
+		i++;
+	}
+	if (equal)
+		ft_putchar_fd('"', STDOUT_FILENO);
+	ft_putchar_fd('\n', STDOUT_FILENO);
 }
