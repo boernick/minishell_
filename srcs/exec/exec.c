@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 17:18:32 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/23 21:47:53 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/24 14:09:08 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	exec_init(t_execution *pipex, t_cmd *cmd)
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
+	getcwd(shell->cwd, PATH_MAX);
 }
 
 void setup_redirections(t_cmd *cmd)
@@ -35,7 +36,7 @@ void setup_redirections(t_cmd *cmd)
 	redir = cmd->redir;
 	while (redir)
 	{
-		if (redir->type == TOKEN_REDIR_IN || redir->type == TOKEN_HEREDOC)
+		if (redir->type == TOKEN_REDIR_IN)
 			cmd->fdin = handle_file(redir->file, redir->type);
 		if (cmd->fdin == -1)
 			str_error("setup_redirections(): error reading the file.");

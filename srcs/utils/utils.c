@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 22:00:29 by nick              #+#    #+#             */
-/*   Updated: 2024/11/20 16:51:47 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/24 12:51:47 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	handle_file(char *filename, int type)
 	int	fd;
 
 	fd = 0;
-	if (type == TOKEN_REDIR_IN) // || HEREDOC
+	if (type == TOKEN_REDIR_IN || type == TOKEN_HEREDOC) // || HEREDOC
 		fd = open(filename, O_RDONLY);
 	else if (type == TOKEN_REDIR_OUT)
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -31,7 +31,7 @@ int	handle_file(char *filename, int type)
 
 //loops through t_env struct and frees all allocated memory
 void	free_envlst(t_env *lst)
-{
+{	
 	t_env	*temp;
 
 	temp = lst;

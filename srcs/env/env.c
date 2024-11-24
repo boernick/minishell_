@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 21:20:22 by nick              #+#    #+#             */
-/*   Updated: 2024/11/13 13:14:30 by nboer            ###   ########.fr       */
+/*   Updated: 2024/11/24 14:42:56 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,4 +144,23 @@ int	lst_len(t_env *lst)
 		lst = lst->next;
 	}
 	return (len);
+}
+
+// search for an env variable name in the linked list and return a pointer to it.
+t_env	*get_env_lst(t_shell *shell, char *name)
+{
+	t_env *lst;
+	int len;
+	
+	len = ft_strlen(name);
+	lst = shell->env_lst;
+	if (!lst)
+		return (NULL);
+	while (lst)
+	{
+		if (!(ft_strncmp(name, lst->content, len) && lst->content[len] == '='))
+			return (lst);
+		lst = lst->next;
+	}
+	return (NULL);
 }

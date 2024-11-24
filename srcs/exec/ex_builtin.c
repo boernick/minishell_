@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ex_builtin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 18:11:28 by nboer             #+#    #+#             */
-/*   Updated: 2024/11/18 12:43:03 by nick             ###   ########.fr       */
+/*   Updated: 2024/11/24 14:36:21 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 // checks if a given cmd argument is a builtin function
 int	is_builtin(char **argv)
 {
-	ft_putstr_fd("checking builtin..\n", 2);
+	ft_putstr_fd("checking builtin..\n", 2); //DEBUG
 	if (!(ft_strncmp(argv[1], "echo", 4)))
 	{
 		if (!(ft_strncmp(argv[2], "-n", 2)))
@@ -30,6 +30,8 @@ int	is_builtin(char **argv)
 		return (5);
 	if (!ft_strncmp(argv[1], "env", 3))
 		return (6);
+	if (!ft_strncmp(argv[1], "exit", 4))
+		return (7);
 	return (-1);
 }
 
@@ -43,8 +45,10 @@ int	run_builtin(int	n, char **argv, t_shell *shell)
 	else if (n == 4)
 		str_error("run builtin_pwd");
 	else if (n == 5)
-		str_error("run builtin_unset");
+		builtin_unset(argv, shell);
 	else if (n == 6)
 		builtin_env(shell);
+	else if (n == 7)
+		builtin_exit(argv, shell);
 	return (0);
 }

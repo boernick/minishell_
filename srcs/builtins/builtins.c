@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 23:06:21 by nick              #+#    #+#             */
-/*   Updated: 2024/11/13 16:28:05 by prichugh         ###   ########.fr       */
+/*   Updated: 2024/11/24 14:41:17 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,13 @@ void	builtin_echo(char **argv, int n)
 
 void	builtin_cd(char **argv, t_shell *shell)
 {
-	// t_env	*env;
-
-	(void) shell;
+	t_env	*env;
+	t_env	*pwd;
+	env = shell->env_lst;
+	
 	if (argv[1] && argv[2])
 		ft_putstr_fd("Error: too many arguments", STDERR_FILENO);
-	// getcwd(PATH_MAX,)
+	getcwd(shell->cwd, PATH_MAX);
 
 	// retreive environment variables as linked list
 	// Use getcwd() to get the current working directory after a successful chdir() call, then update PWD accordingly.
@@ -67,9 +68,11 @@ void	builtin_cd(char **argv, t_shell *shell)
 		//case .. moves up directory level
 		//case - switches to the previous PWD = So overwrite with env variable OLDPWD which should constantly be updated.
 
-	// if (argc = 1 && argv[1] == cd)
-		// reset the PWD = env variable to the HOME = env variable
-	// if (cd cannot change the specified directory -> means doesnt exist or no permissions)
+	if (argv[2] == NULL)
+		pwd = get_env_lst(env, "PWD")
+		
+		
+		// if (cd cannot change the specified directory -> means doesnt exist or no permissions)
 		// error handling and the working directory remains unchanged
 
 }
@@ -103,14 +106,16 @@ void	builtin_export(char **argv, t_shell *shell)
 
 int	builtin_unset(char **argv, t_shell *shell)
 {
-	if (!(ft_strncmp(argv[1], "unset", 5)))
-		str_error("first argument not unset");
 	if (env_del(shell, argv[2]) == -1)
 		str_error("No existing env variable match found");
+	else 
+		ft_putstr_fd("ENV variable deleted", 1);
 	return (0);
 }
 
-void	builtin_exit(t_shell *shell)
+void	builtin_exit(char **argv, t_shell *shell) // need to make sure that prince is counting like the normal argv with argv[0] does aswell.
 {
-	(void) shell;
+	if (argv[2] && argv[2][0] == '-')
+		str_error("Error: no options integrated for builtin");
+	if (!ft_isalpha(argv[2] 
 }
