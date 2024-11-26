@@ -67,20 +67,20 @@ int	main(int argc, char **argv, char **envp)
 	{
 		if (parse.cmd)
 		{
-			free_command_stack(parse.cmd);
+			// free_command_stack(parse.cmd);
 			parse.cmd = NULL;
 		}
 		tokenize_and_parse(&parse);
 		pipex.cmd = parse.cmd;
 		// Print the command stack for debugging
 		print_command_stack(pipex.cmd);
-		//exec_mini(&shell, &pipex, envp);
+		exec_mini(&shell, &pipex);
 		free_tokens(parse.head);
 		parse.head = NULL; // Reset tokens to NULL
 	}
 	free_tokens(parse.head);
 	clear_history();//make sure toe use the better one (this vs the one below)
 	rl_clear_history();//make sure to use the better one
-	exec_mini(&shell, &pipex);
+	exec_mini(&shell, &pipex); // nick: why is exec_mini here?
 	//free t_env()
 }
