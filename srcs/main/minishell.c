@@ -67,7 +67,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		if (parse.cmd)
 		{
-			// free_command_stack(parse.cmd);
+			free_command_stack(parse.cmd);
 			parse.cmd = NULL;
 		}
 		tokenize_and_parse(&parse);
