@@ -1,6 +1,6 @@
 NAME = minishell
-CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -g
 LDFLAGS = -lreadline
 
 SRCS = srcs/builtins/builtins.c srcs/env/env.c srcs/env/env_var_tokenize.c srcs/error/error.c\
@@ -24,7 +24,7 @@ $(NAME): $(OBJS) $(PRINTF) $(LIBFT)
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(PRINTF) $(LIBFT) $(LDFLAGS) -o $(NAME)
 
 %.o: %.c $(HEADER)
-	$(CC) $(CFLAGS) $(INCLUDES) -g -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES)-c $< -o $@
 
 $(LIBFT):
 	make -C $(LIBFT_DIR) bonus

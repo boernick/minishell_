@@ -222,6 +222,6 @@ int		export_lst(t_env *shell);
 
 //---------minishell-----------//
 void	calibrate_exec(t_execution *pipex);
-void	exec_mini(t_shell *shell, t_execution *pipex, char **env);
+void	exec_mini(t_shell *shell, t_execution *pipex);
 
 #endif
