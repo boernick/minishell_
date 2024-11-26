@@ -145,6 +145,8 @@ char	*ft_itoa(int n);
 
 //-----------Parse-----------//
 void	parse_tokens(t_parse *data);
+void	print_command_stack(t_cmd *cmd_stack); //for testing
+void	free_command_stack(t_cmd *cmd_stack);
 
 //-----------utils------------//
 char	*ft_strdup(const char *src);

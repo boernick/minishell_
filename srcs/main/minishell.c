@@ -17,6 +17,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 	pid_t		*pids;
 	int			i;
 
+	(void) env; //prince: unused parameter ‘env’
 	calibrate_exec(pipex);
 	exec_init(shell, pipex, pipex->cmd);
 	if (pipex->n_pipes > 0)
@@ -32,7 +33,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex, char **env)
 		if (pids[i++] == 0) //case child
 		{
 			if (pipex->cmd->is_builtin == 1)
-				run_builtin(is_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
+				// run_builtin(is_builtin(pipex->cmd->argv), pipex->cmd->argv, shell); //comented out for testing
 			else
 			{
 				get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
@@ -61,13 +62,26 @@ int	main(int argc, char **argv, char **envp)
 		printf("\"./minishell\" must be the only argument\n");
 		return (0);
 	}
-	// while (shell.exit == 0) //while no exit signal
-	// {
-	// 	//handle signals
-	// 	if (1) //TO-DO if input is correct
-	// tokenize_and_parse(&parse);
+	//currently made it a inifinite loop cuz shell has no memmber named exit
+	//while (shell.exit == 0) //while no exit signal
+	while (1)
+	{
+		if (parse.cmd)
+		{
+			free_command_stack(parse.cmd);
+			parse.cmd = NULL;
+		}
+		tokenize_and_parse(&parse);
+		pipex.cmd = parse.cmd;
+		// Print the command stack for debugging
+		print_command_stack(pipex.cmd);
+		//exec_mini(&shell, &pipex, envp);
+		free_tokens(parse.head);
+		parse.head = NULL; // Reset tokens to NULL
+	}
+	free_tokens(parse.head);
+	clear_history();//make sure toe use the better one (this vs the one below)
+	rl_clear_history();//make sure to use the better one
 	exec_mini(&shell, &pipex, envp);
-	// }
 	//free t_env()
-	return (0);
 }

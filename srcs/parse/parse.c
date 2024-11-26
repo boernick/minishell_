@@ -12,6 +12,105 @@
 
 #include "../../includes/minishell.h"
 
+	//frees commands stack which includes redir stacks
+	void free_command_stack(t_cmd *cmd_stack)
+	{
+		t_cmd *temp;
+		while (cmd_stack)
+		{
+			temp = cmd_stack;
+
+			// Free command string
+			if (cmd_stack->cmd)
+				free(cmd_stack->cmd);
+
+			// Free arguments
+			if (cmd_stack->argv)
+			{
+				for (int i = 0; cmd_stack->argv[i]; i++)
+					free(cmd_stack->argv[i]);
+				free(cmd_stack->argv);
+			}
+
+			// Free redirections
+			t_redirect *redir = cmd_stack->redir;
+			while (redir)
+			{
+				t_redirect *temp_redir = redir;
+				if (redir->file)
+					free(redir->file);
+				redir = redir->next;
+				free(temp_redir);
+			}
+
+			cmd_stack = cmd_stack->next;
+			free(temp); // Free the command node
+		}
+	}
+
+	//TESTING: print command struct
+	void print_command_stack(t_cmd *cmd_stack)
+	{
+		int cmd_index = 0;
+
+		printf("\nCommand Stack:\n");
+		while (cmd_stack)
+		{
+			printf("Command %d:\n", cmd_index++);
+			printf("  Command: %s\n", cmd_stack->cmd ? cmd_stack->cmd : "NULL");
+
+			if (cmd_stack->argv)
+			{
+				printf("  Arguments:\n");
+				for (int i = 0; cmd_stack->argv[i]; i++)
+					printf("    argv[%d]: %s\n", i, cmd_stack->argv[i]);
+			}
+			else
+			{
+				printf("  Arguments: None\n");
+			}
+
+			printf("  Builtin: %s\n", cmd_stack->is_builtin ? "Yes" : "No");
+
+			if (cmd_stack->redir)
+			{
+				printf("  Redirections:\n");
+				t_redirect *redir = cmd_stack->redir;
+				while (redir)
+				{
+					const char *redir_type;
+					switch (redir->type)
+					{
+						case TOKEN_REDIR_IN:
+							redir_type = "<";
+							break;
+						case TOKEN_REDIR_OUT:
+							redir_type = ">";
+							break;
+						case TOKEN_REDIR_APPEND:
+							redir_type = ">>";
+							break;
+						case TOKEN_HEREDOC:
+							redir_type = "<<";
+							break;
+						default:
+							redir_type = "Unknown";
+					}
+
+					printf("    Type: %s, File: %s\n", redir_type, redir->file ? redir->file : "NULL");
+					redir = redir->next;
+				}
+			}
+			else
+			{
+				printf("  Redirections: None\n");
+			}
+
+			printf("\n");
+			cmd_stack = cmd_stack->next;
+		}
+	}
+
 void add_cmd_to_list(t_parse *data, t_cmd *new_cmd)
 {
     if (!new_cmd)
