@@ -1,13 +1,26 @@
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g # -g flag for debugger info
 LDFLAGS = -lreadline
 
-SRCS = srcs/builtins/builtins.c srcs/env/env.c srcs/env/env_var_tokenize.c srcs/error/error.c\
-	srcs/exec/exec.c srcs/exec/ex_builtin.c srcs/exec/ex_env.c srcs/main/minishell.c\
-		srcs/parse/parse.c srcs/signals/signals.c srcs/tokenize_and_parse/handle_struct.c\
-			srcs/tokenize_and_parse/tokenize_and_parse.c srcs/tokenize/tokenize.c srcs/tokenize/tokenize_ext.c\
-				srcs/tokenize/utils_tokenize.c srcs/utils/utils.c test.c
+SRCS = ./srcs/builtins/builtins.c \
+./srcs/env/env.c \
+./srcs/env/env_var_tokenize.c \
+./srcs/error/error.c \
+./srcs/exec/exec.c \
+./srcs/exec/ex_builtin.c \
+./srcs/exec/ex_env.c \
+./srcs/main/minishell.c \
+./srcs/parse/parse.c \
+./srcs/signals/signals.c \
+./srcs/tokenize/handle_struct.c \
+./srcs/tokenize/split_tokens.c \
+./srcs/tokenize/tokenize.c \
+./srcs/tokenize/tokenize_ext.c \
+./srcs/tokenize/utils_tokenize.c \
+./srcs/utils/utils.c \
+./test.c \
+
 OBJS = $(SRCS:.c=.o)
 HEADER = ../../includes/minishell.h
 

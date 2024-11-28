@@ -1,138 +1,65 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenize_and_parse.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/13 18:30:11 by prichugh          #+#    #+#             */
+/*   Updated: 2024/11/13 18:30:11 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
-//creats a new token and allocates memory for it. Sets the value and type of the new
-//token to the given input.
-t_token *new_token(e_token_type type, char *value)
-{
-	t_token *token = (t_token *)malloc(sizeof(t_token));
-	if (!token)
-	{
-		perror("Failed to allocate token");
-		exit(EXIT_FAILURE);
-	}
-	token->type = type;
-	token->value = ft_strdup(value);
-	token->next = NULL;
-	return (token);
-}
 
-//Takes pointer to data and a pointer to a new token so it can add the new token
-//at the end (tail) of the list of tokens.
-void add_token_to_list(t_parse *data, t_token *new_token)
+// Repeatedly prompts for user input, tokenizes, validates, and processes commands.
+// Exits the loop if "exit" or EOF is detected, handling cleanup and history appropriately.
+void	tokenize(t_parse *data)
 {
-    if (data->head == NULL) {
-        data->head = new_token;
-    } else {
-        data->tail->next = new_token;
-    }
-    data->tail = new_token;
-}
+	char			*input;
+	// t_token			*tokens;
 
-//takes the buffer containing a segment of input from the user which has been identified
-//as a token. Functions New_token and add_token_to_list are called for next steps
-void handle_buffer(t_parse *data, e_token_type token_type)
-{
-	if (data->buf_index > 0)
-	{
-		data->buffer[data->buf_index] = '\0';
-		add_token_to_list(data, new_token(token_type, data->buffer));
-		data->buf_index = 0;
-	}
-}
-
-//This function takes the input from the command line prompt and splits it up
-//into tokens. Tokens can consist of words (later split up into args and commands)
-//pipes, and redirect. It also pays attention to quote state to ensure words within
-//quotes are grouped in one token.
-void	tokenize(char *input, t_parse *data)
-{
-	int i;
-
-	i = 0;
-	while (input[i] != '\0') {
-		if (data->buf_index >= BUFFER_SIZE - 1)
+	// tokens = data->head;
+	signal(SIGINT, handle_sigint); // Set the signal handler for ctrl+c, ctrl+d, and ctr+\"
+	//while (1)
+	//{
+		input = readline("MINISHELL>>> "); //readline caues mem leaks
+		// if (input == NULL) //ADJUST TO SUBJECT
+		// {
+		// 	printf("EOF detected, exiting...\n");
+		// 	//mbreak ;
+		// }
+		// if (strcmp(input, "exit") == 0) // add my own ft_strcmp
+		// {
+		// 	free(input);
+		// 	break ;
+		// }
+		if (input && *input)
+			add_history(input);  //add_history causes mem leaks
+		reset_parse(data);
+		split_tokens(input, data);
+		if (validate_input(data->head))
 		{
-			printf("Buffer overflow detected\n");
-			exit(EXIT_FAILURE);
+			classify_token_types(data); //NEXT STEPS
+			replace_env_variables_in_tokens(data->head, data);
+			//print_tokens(data->head); //Only for testing
 		}
-
-		// Handle single quotes
-	if (input[i] == '\'' && !data->in_double_quote) {
-			data->buffer[data->buf_index++] = input[i];  // Add quote to buffer
-			data->in_single_quote = !data->in_single_quote;
-			i++;
-			continue;
-        }
-
-		// Handle double quotes
-        if (input[i] == '\"' && !data->in_single_quote) {
-			data->buffer[data->buf_index++] = input[i];  // Add quote to buffer
-			data->in_double_quote = !data->in_double_quote;
-			i++;
-			continue;
-		}
-
-		// Ignore backslashes and semicolons
-		if (input[i] == '\\' || input[i] == ';') {
-			i++;
-			continue;
-		}
-
-		// Handle whitespace outside of quotes
-		if (isspace(input[i]) && !data->in_single_quote && !data->in_double_quote) {
-			handle_buffer(data, TOKEN_WORD);
-			i++;
-			continue;
-		}
-
-		// Handle pipe
-		if (input[i] == '|') {
-			handle_buffer(data, TOKEN_WORD);
-			add_token_to_list(data, new_token(TOKEN_PIPE, "|"));
-			i++;
-			continue;
-		}
-
-		// Handle redirection: output
-		if (input[i] == '>') {
-			handle_buffer(data, TOKEN_WORD);
-			if (input[i + 1] == '>') {
-				add_token_to_list(data, new_token(TOKEN_REDIR_APPEND, ">>"));
-				i += 2;
-			} else
-			{
-				add_token_to_list(data, new_token(TOKEN_REDIR_OUT, ">"));
-				i++;
-			}
-			continue;
-		}
-
-		// Handle redirection: input
-		if (input[i] == '<') {
-			handle_buffer(data, TOKEN_WORD);
-			if (input[i + 1] == '<') {
-				add_token_to_list(data, new_token(TOKEN_HEREDOC, "<<"));
-				i += 2;
-			} else
-			{
-				add_token_to_list(data, new_token(TOKEN_REDIR_IN, "<"));
-				i++;
-			}
-			continue;
-		}
-
-		// Add regular characters to buffer
-		data->buffer[data->buf_index++] = input[i++];
-	}
-	// Finalize last token if available
-	handle_buffer(data, TOKEN_WORD);
-
-	if (data->in_single_quote || data->in_double_quote) {
-		fprintf(stderr, "Error: Unclosed quote detected\n");
-		if (data->head) {  // Only free tokens if they exist
-			free_tokens(data->head);
-		}
-		data->head = data->tail = NULL; // Reset head and tail
-		return;
-	}
+		free(input);
 }
+
+//void	tokenize_and_parse()
+//{
+	//initialize main data struct to hold tokens and other info
+	//initialize signal handlers for the various signals
+	//start of infinite while loop
+	//use readline to retrieve user input
+	//handle various bad input per subject
+	//if input is exit then call exit program function
+	//if there is in fact legal input add it to history
+	//call tokenize function to tokenize input into a linked list inside main data struct
+	//if token have been succesfully created, call syntax check function to verify correct grammar
+	//then call parse function which dettermine which execute functions to call
+	//free the input and tokens
+	//clear history
+//}
