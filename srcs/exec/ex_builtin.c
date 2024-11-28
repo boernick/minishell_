@@ -34,17 +34,20 @@ int	is_builtin(char **argv)
 // runs a given builtin function and returns last exit code
 int	run_builtin(int n, char **argv, t_shell *shell)
 {
-	if (n == 1)
-		shell->last_exit = builtin_echo(argv);
-	else if (n == 2)
-		shell->last_exit = builtin_cd(argv, shell);
-	else if (n == 3)
-		shell->last_exit = builtin_pwd(argv, shell);
-	else if (n == 4)
-		shell->last_exit = builtin_unset(argv, shell);
-	else if (n == 5)
-		shell->last_exit = builtin_env(shell);
-	else if (n == 6)
-		shell->last_exit = builtin_exit(argv);
+	(void) n;
+	(void) argv;
+	(void) shell;
+	// if (n == 1)
+	// 	shell->last_exit = builtin_echo(argv);
+	// else if (n == 2)
+	// 	shell->last_exit = builtin_cd(argv, shell);
+	// else if (n == 3)
+	// 	shell->last_exit = builtin_pwd(argv, shell);
+	// else if (n == 4)
+	// 	shell->last_exit = builtin_unset(argv, shell);
+	// else if (n == 5)
+	// 	shell->last_exit = builtin_env(shell);
+	// else if (n == 6)
+	// 	shell->last_exit = builtin_exit(argv);
 	return (0);
 }

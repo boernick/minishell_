@@ -130,7 +130,7 @@ typedef struct s_exec
 }	t_exec;
 
 //---------tokenize----------//
-void	tokenize(char *input, t_parse *data);
+void	split_tokens(char *input, t_parse *data);
 t_token	*new_token(e_token_type type, char *value);
 void 	handle_buffer(t_parse *data, e_token_type token_type);
 void	add_token_to_list(t_parse *data, t_token *new_token);
@@ -157,7 +157,7 @@ int		ft_isalnum(char c);
 void	handle_sigint(int sig);
 
 //------tokenize_and_parse-------//
-void	tokenize_and_parse(t_parse *parse);
+void	tokenize(t_parse *parse);
 
 //------handle_struct-------//
 void	struct_init(t_parse *shell);

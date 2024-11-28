@@ -63,15 +63,15 @@ void print_tokens(t_token *token_list)
 // Frees all nodes in a linked list of tokens
 void free_tokens(t_token *head)
 {
-	t_token	*temp;
+	t_token *temp;
 
 	while (head)
 	{
-		temp = head;
-		head = head->next;
-		if (temp->value)
-			free(temp->value);
-		free(temp);
+		temp = head->next;
+		if (head->value)
+			free(head->value);
+		free(head);
+		head = temp;
 	}
 }
 //Make preliminary checks on input. Ensure operators (|, <<, >) are not next to

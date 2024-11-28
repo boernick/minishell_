@@ -3,6 +3,7 @@
 // Initializes the fields of the t_data struct for starting a new shell instance.
 void	struct_init(t_parse *data)
 {
+	data->cmd = NULL;
 	//shell->arg = "cat";
 	data->exit = 0;
 	data->head = NULL;
