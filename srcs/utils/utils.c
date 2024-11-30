@@ -102,3 +102,13 @@ int	cmdlst_length(t_cmd *cmd_lst)
 	}
 	return (i);
 }
+
+void	print_lst(t_env *lst)
+{
+	while (lst)
+	{
+		ft_putstr_fd(lst->content, 2);
+		ft_putstr_fd("\n", 2);
+		lst = lst->next;
+	}
+}

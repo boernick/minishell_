@@ -181,13 +181,13 @@ void	create_pipes(t_execution *pipex);
 pid_t	fork_child(void);
 void	get_fd(t_execution *pipex, t_cmd *cmd);
 void	clean_pipes(t_execution *pipex, t_cmd *cmd);
-int		is_builtin(char **argv);
+int		do_builtin(char **argv);
 int		run_builtin(int	n, char **argv, t_shell *shell);
 void	waitpids(pid_t *pids, int n);
 void	setup_redirections(t_cmd *cmd);
 
 //---------builtins-----------//
-int		builtin_envp(t_shell *shell);
+int		builtin_env(t_shell *shell);
 int		builtin_pwd(char **argv, t_shell *shell);
 int		builtin_echo(char **argv);
 int		builtin_cd(char **argv, t_shell *shell);
@@ -216,8 +216,7 @@ t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n);
 int		cmdlst_length(t_cmd *cmd_lst);
 int		check_num(char *str);
 int		export_lst(t_env *shell);
-
-
+void	print_lst(t_env *lst);
 
 //---------minishell-----------//
 void	calibrate_exec(t_execution *pipex);

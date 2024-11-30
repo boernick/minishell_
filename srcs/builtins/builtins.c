@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-int	builtin_envp(t_shell *shell)
+int	builtin_env(t_shell *shell)
 {
 	t_env	*lst;
 
@@ -100,6 +100,7 @@ int	builtin_export(char **argv, t_shell *shell) // still need to sort the linked
 	char	*pos;
 	char	*env;
 
+	ft_putstr_fd("running export..\n", 2);
 	if (!argv[1])
 		return (export_lst(shell->env_lst));
 	env = argv[1];
@@ -109,13 +110,18 @@ int	builtin_export(char **argv, t_shell *shell) // still need to sort the linked
 		return (1);
 	}
 	pos = ft_strchr(env, '=');
+	if (!pos)
+		ft_putstr_fd("= sign not found", 2); // need to add export <NAME> without '='
 	if (pos)
 	{
-		env_addback(shell, argv[1]);
+		env_addback(shell, argv[1]); 
 		pos = NULL;
 		ft_putstr_fd("Added: ", STDOUT_FILENO);
 		ft_putendl_fd(env, STDOUT_FILENO);
+		ft_putchar_fd('\n', 2);
 	}
+	print_lst(shell->env_lst);
+	ft_putstr_fd("\n\n\n", 2);
 	return (EXIT_SUCCESS);
 }
 
