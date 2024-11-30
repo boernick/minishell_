@@ -17,7 +17,6 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	pid_t		*pids;
 	int			i;
 
-	(void) env; //prince: unused parameter ‘env’
 	//calibrate_exec(pipex);
 	exec_init(shell, pipex, pipex->cmd);
 	if (pipex->n_pipes > 0)
@@ -30,10 +29,14 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	{
 		setup_redirections(pipex->cmd);
 		pids[i] = fork_child();
-		if (pids[i++] == 0) //case child
+		if (pids[i++] == 0)
 		{
+			ft_putstr_fd("looping through pids..\n", 2); //DEBUG
 			if (pipex->cmd->is_builtin == 1)
+			{
 				run_builtin(is_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
+				break; // or exit somehow.. need to look into this
+			}
 			else
 			{
 				get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
@@ -54,7 +57,7 @@ int	main(int argc, char **argv, char **envp)
 	t_shell		shell;
 	t_parse		parse;
 
-	(void) argv;
+	(void)	argv;
 	if (argc != 1)
 	{
 		printf("\"./minishell\" must be the only argument\n");
@@ -62,9 +65,8 @@ int	main(int argc, char **argv, char **envp)
 	}
 	struct_init(&parse);
 	t_env_init(&shell, envp);
-	//currently made it a inifinite loop cuz shell has no memmber named exit
-	//while (shell.exit == 0) //while no exit signal
-	while (1)
+	shell.exit = 0;
+	while (shell.exit == 0)
 	{
 		if (parse.cmd)
 		{
@@ -73,17 +75,18 @@ int	main(int argc, char **argv, char **envp)
 		}
 		tokenize(&parse);
 		parse_tokens(&parse);
-		//print_command_stack(parse.cmd);
+		// print_command_stack(parse.cmd); //DEBUG
 		pipex.cmd = parse.cmd;
-		// Print the command stack for debugging
-		//print_command_stack(pipex.cmd);
-		exec_mini(&shell, &pipex, envp);
+		print_command_stack(pipex.cmd); //DEBUG
+		exec_mini(&shell, &pipex);
 		free_tokens(parse.head);
 		parse.head = NULL; // Reset tokens to NULL
 	}
+	//EXIT BUILTIN: REACHES THIS POINT..BUT DOES NOT EXIT MINISHELL -> prince?
+	ft_putstr_fd("freeing tokens && clearing history..\n", 2);
 	free_tokens(parse.head);
 	free_command_stack(parse.cmd);
-	clear_history();//make sure toe use the better one (this vs the one below)
+	clear_history();//make sure to use the better one (this vs the one below)
 	rl_clear_history();//make sure to use the better one
 	//free t_env()
 }

@@ -15,7 +15,6 @@
 // prepare exec struct for use
 void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd)
 {
-	shell->exit = 0;
 	pipex->n_cmds = cmdlst_length(cmd);
 	pipex->n_pipes = pipex->n_cmds - 1;
 	pipex->infile = STDIN_FILENO;

@@ -168,7 +168,6 @@ void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data);
 char	*replace_variables_in_string(char *input, t_parse *data);
 
 //---------init-----------//
-//void	struct_init(t_shell *shell);
 int		t_env_init(t_shell *shell, char **envp);
 
 //---------exec-----------//
@@ -188,11 +187,11 @@ void	waitpids(pid_t *pids, int n);
 void	setup_redirections(t_cmd *cmd);
 
 //---------builtins-----------//
-int		builtin_env(t_shell *shell);
+int		builtin_envp(t_shell *shell);
 int		builtin_pwd(char **argv, t_shell *shell);
 int		builtin_echo(char **argv);
 int		builtin_cd(char **argv, t_shell *shell);
-int		builtin_exit(char **argv);
+int		builtin_exit(char **argv, t_shell *shell);
 int		builtin_unset(char **argv, t_shell *shell);
 int		builtin_export(char **argv, t_shell *shell);
 

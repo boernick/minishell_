@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-int	builtin_env(t_shell *shell) //finished
+int	builtin_envp(t_shell *shell)
 {
 	t_env	*lst;
 
@@ -147,14 +147,15 @@ int	builtin_unset(char **argv, t_shell *shell) //finished
 	return (ret);
 }
 
-int	builtin_exit(char **argv)
+int	builtin_exit(char **argv, t_shell *shell)
 {
+	ft_putstr_fd("running exit..\n", 2);
 	if (argv[1] && argv[1][0] == '-')
 	{
 		ft_putendl_fd("Error: no options integrated for builtin", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
-	if (!(check_num(argv[1])))
+	if (argv[1] && !(check_num(argv[1])))
 	{
 		ft_putendl_fd("exit: ", 2);
 		ft_putendl_fd(argv[1], 2);
@@ -162,8 +163,11 @@ int	builtin_exit(char **argv)
 		return (2);
 	}
 	else
+	{
 		ft_putendl_fd("exit", 1);
-	return (ft_atoi(argv[1]));
+		shell->exit = 1;
+	}
+	return (0);
 }
 
 int	check_num(char *str)
