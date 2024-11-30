@@ -76,7 +76,6 @@ int	main(int argc, char **argv, char **envp)
 		free_tokens(parse.head);
 		parse.head = NULL; // Reset tokens to NULL
 	}
-	//EXIT BUILTIN: REACHES THIS POINT..BUT DOES NOT EXIT MINISHELL -> prince?
 	ft_putstr_fd("freeing tokens && clearing history..\n", 2);
 	free_tokens(parse.head);
 	free_command_stack(parse.cmd);
