@@ -64,6 +64,7 @@ typedef struct s_env
 {
 	char			*content;
 	struct s_env	*next;
+	int				export;
 }	t_env;
 
 typedef struct t_shell
@@ -215,7 +216,9 @@ void	free_int_array(t_execution *pipex, int i);
 t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n);
 int		cmdlst_length(t_cmd *cmd_lst);
 int		check_num(char *str);
-int		export_lst(t_env *shell);
+void	export_lst(t_env *env_lst);
+void	export_lst_one(t_env *lst);
+void	export_reset(t_env *lst);
 void	print_lst(t_env *lst);
 
 //---------minishell-----------//

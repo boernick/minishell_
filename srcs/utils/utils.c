@@ -103,6 +103,7 @@ int	cmdlst_length(t_cmd *cmd_lst)
 	return (i);
 }
 
+// prints the content of every t_env with newline
 void	print_lst(t_env *lst)
 {
 	while (lst)

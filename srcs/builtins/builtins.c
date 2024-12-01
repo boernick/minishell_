@@ -95,14 +95,16 @@ int	builtin_pwd(char **argv, t_shell *shell) //finished
 	return (EXIT_SUCCESS);
 }
 
-int	builtin_export(char **argv, t_shell *shell) // still need to sort the linked list when printing export
+int	builtin_export(char **argv, t_shell *shell)
 {
 	char	*pos;
 	char	*env;
 
-	ft_putstr_fd("running export..\n", 2);
-	if (!argv[1])
-		return (export_lst(shell->env_lst));
+	if (argv[0] && !argv[1])
+	{
+		export_lst(shell->env_lst);
+		return (EXIT_SUCCESS);
+	}
 	env = argv[1];
 	if (env[0] == '=')
 	{
@@ -116,16 +118,11 @@ int	builtin_export(char **argv, t_shell *shell) // still need to sort the linked
 	{
 		env_addback(shell, argv[1]); 
 		pos = NULL;
-		ft_putstr_fd("Added: ", STDOUT_FILENO);
-		ft_putendl_fd(env, STDOUT_FILENO);
-		ft_putchar_fd('\n', 2);
 	}
-	print_lst(shell->env_lst);
-	ft_putstr_fd("\n\n\n", 2);
 	return (EXIT_SUCCESS);
 }
 
-int	builtin_unset(char **argv, t_shell *shell) //finished
+int	builtin_unset(char **argv, t_shell *shell)
 {
 	int	i;
 	int	ret;
@@ -190,33 +187,41 @@ int	check_num(char *str)
 	return (1);
 }
 
-int	export_lst(t_env *env_lst)
+void	export_lst(t_env *env_lst)
 {
-	(void) env_lst;
-	// t_env	*lst;
-	// t_env	*prev;
-	// t_env	*cheapest;
-	// // int		i;
-	// // int		j;
+	t_env	*lst;
+	t_env	*cheapest;
+	int		n_printed;
+	int		len;
 
-	// lst = env_lst; //?
-	// // j = 0;
-	// // i = 0;
-	// while (i < lst_len(lst))
-	// 	while(lst) // door alle heen loopen
-	// 	{
-	// 		// if (ft_strncmp(lst->content, prev->content, strlen(prev->content + 1)) > 0)
-	// 		// {
-	// 		// 	cheapest = lst;
-	// 		// 	lst = env_lst;
-	// 		// 	if (ft_strncmp(lst->content) < the rest)) // if current > previous && current < de rest
-	// 		// 	{
-	// 		// 	}
-	// 		// }
-	// 		lst = lst->next;
-	// 	}
-	// i++;
-	return (0);
+	lst = env_lst;
+	len = lst_len(env_lst);
+	n_printed = 0;
+	while (n_printed < len)
+	{
+		cheapest = NULL;
+		while (lst)
+		{
+			if ((!cheapest && !lst->export) || 
+				(!lst->export && ft_strncmp(lst->content, 
+					cheapest->content, strlen(lst->content)) < 0))
+				cheapest = lst;
+			lst = lst->next;
+		}
+		export_lst_one(cheapest);
+		lst = env_lst;
+		n_printed++;
+	}
+	export_reset(env_lst);
+}
+
+void	export_reset(t_env *lst)
+{
+	while (lst)
+	{
+		lst->export = 0;
+		lst = lst->next;
+	}
 }
 
 void	export_lst_one(t_env *lst)
@@ -237,4 +242,5 @@ void	export_lst_one(t_env *lst)
 	if (equal)
 		ft_putchar_fd('"', STDOUT_FILENO);
 	ft_putchar_fd('\n', STDOUT_FILENO);
+	lst->export = 1;
 }
