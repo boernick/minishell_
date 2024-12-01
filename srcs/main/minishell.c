@@ -59,15 +59,11 @@ int	main(int argc, char **argv, char **envp)
 	}
 	struct_init(&parse);
 	t_env_init(&shell, envp);
+	signal(SIGINT, handle_sigint);
 	shell.exit = 0;
 	while (shell.exit == 0)
 	{
-		if (parse.cmd)
-		{
-			free_command_stack(parse.cmd);
-			parse.cmd = NULL;
-		}
-		tokenize(&parse);
+		tokenize(&parse, &shell);
 		parse_tokens(&parse);
 		// print_command_stack(parse.cmd); //DEBUG
 		pipex.cmd = parse.cmd;

@@ -15,15 +15,20 @@
 
 // Repeatedly prompts for user input, tokenizes, validates, and processes commands.
 // Exits the loop if "exit" or EOF is detected, handling cleanup and history appropriately.
-void	tokenize(t_parse *data)
+void	tokenize(t_parse *data, t_shell *shell)
 {
 	char			*input;
 	// t_token			*tokens;
 
 	// tokens = data->head;
-	signal(SIGINT, handle_sigint); // Set the signal handler for ctrl+c, ctrl+d, and ctr+\"
+	 // Set the signal handler for ctrl+c, ctrl+d, and ctr+\"
 	//while (1)
 	//{
+		if (data->cmd)
+		{
+			free_command_stack(data->cmd);
+			data->cmd = NULL;
+		}
 		input = readline("MINISHELL>>> "); //readline caues mem leaks
 		// if (input == NULL) //ADJUST TO SUBJECT
 		// {
@@ -39,9 +44,10 @@ void	tokenize(t_parse *data)
 			add_history(input);  //add_history causes mem leaks
 		reset_parse(data);
 		split_tokens(input, data);
+		data->exit = shell->exit;
 		if (validate_input(data->head))
 		{
-			classify_token_types(data); //NEXT STEPS
+			classify_token_types(data);
 			replace_env_variables_in_tokens(data->head, data);
 			//print_tokens(data->head); //Only for testing
 		}

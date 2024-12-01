@@ -157,7 +157,7 @@ int		ft_isalnum(char c);
 void	handle_sigint(int sig);
 
 //------tokenize_and_parse-------//
-void	tokenize(t_parse *parse);
+void	tokenize(t_parse *parse, t_shell *shell);
 
 //------handle_struct-------//
 void	struct_init(t_parse *shell);
