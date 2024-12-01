@@ -12,6 +12,7 @@
 
 #include "../../includes/minishell.h"
 
+// organizes execution process for minishell
 void	exec_mini(t_shell *shell, t_execution *pipex)
 {
 	pid_t		*pids;
@@ -28,14 +29,19 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	while (pipex->index_cmd < pipex->n_cmds)
 	{
 		setup_redirections(pipex->cmd);
-		if (pipex->cmd->is_builtin == 1)
-			run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell); //need to solve redirections for builtins
-		pids[i] = fork_child();
+		if (pipex->cmd->is_builtin == 1 && pipex->n_pipes == 0)
+		{
+			run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
+			return ;
+		}
 		if (pids[i++] == 0)
 		{
 			get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
 			clean_pipes(pipex, pipex->cmd); //CLOSING FDS
-			run_ex(pipex->cmd, envlst_to_array(shell)); //RUN EX
+			if (pipex->cmd->is_builtin == 1)
+				run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
+			else
+				run_ex(pipex->cmd, envlst_to_array(shell)); //RUN EX
 		}
 		else
 			update_exec(pipex);

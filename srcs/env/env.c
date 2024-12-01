@@ -65,6 +65,7 @@ int	env_addback(t_shell *shell, char *envp)
 	if (!(new))
 		return (-1);
 	new->content = ft_strdup(envp);
+	new->export = 0;
 	if (!(new->content))
 	{
 		free(new);
