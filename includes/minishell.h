@@ -186,6 +186,7 @@ int		do_builtin(char **argv);
 int		run_builtin(int	n, char **argv, t_shell *shell);
 void	waitpids(pid_t *pids, int n);
 void	setup_redirections(t_cmd *cmd);
+void	reset_fds(t_execution *pipex);
 
 //---------builtins-----------//
 int		builtin_env(t_shell *shell);

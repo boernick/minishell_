@@ -15,7 +15,7 @@
 // checks if a given cmd argument is a builtin function
 int	do_builtin(char **argv)
 {
-	ft_putstr_fd("checking builtin..\n", 2); //DEBUG
+	// ft_putstr_fd("checking builtin..\n", 2); //DEBUG
 	if (!(ft_strncmp(argv[0], "echo", 4)))
 		return (1);
 	if (!ft_strncmp(argv[0], "cd", 2))

@@ -31,7 +31,9 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 		setup_redirections(pipex->cmd);
 		if (pipex->cmd->is_builtin == 1 && pipex->n_pipes == 0)
 		{
+			get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
 			run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
+			reset_fds(pipex);
 			return ;
 		}
 		if (pids[i++] == 0)
@@ -46,7 +48,6 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 		else
 			update_exec(pipex);
 	}
-	// print_lst(shell->env_lst);
 	clean_pipes(pipex, pipex->cmd);
 	waitpids(pids, pipex->n_cmds);
 }

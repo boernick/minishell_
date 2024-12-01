@@ -42,12 +42,21 @@ void	setup_redirections(t_cmd *cmd)
 			close(cmd->fdout);
 		if (redir->type == TOKEN_REDIR_OUT || redir->type == 
 			TOKEN_REDIR_APPEND)
+		{
+			ft_putendl_fd("handles file", 2);
 			cmd->fdout = handle_file(redir->file, redir->type);
+		}
 		if (cmd->fdin == -1)
 			str_error("setup_redirections(): error reading the file.");
 		redir = redir->next;
 	}
 }
+void	reset_fds(t_execution *pipex)
+{
+	pipex->infile = STDIN_FILENO;
+	pipex->outfile = STDOUT_FILENO;
+}
+
 
 // prepare exec struct for next call
 void	update_exec(t_execution *pipex)
