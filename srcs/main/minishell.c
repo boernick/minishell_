@@ -29,8 +29,11 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	while (pipex->index_cmd < pipex->n_cmds)
 	{
 		setup_redirections(pipex->cmd);
-		if (pipex->cmd->is_builtin == 1)
-			run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell); //need to solve redirections for builtins
+		if (pipex->cmd->is_builtin == 1 && pipex->n_cmds == 1)
+		{
+			run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
+			update_exec;
+		}
 		pids[i] = fork_child();
 		if (pids[i++] == 0)
 		{
