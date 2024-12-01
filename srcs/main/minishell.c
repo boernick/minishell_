@@ -31,15 +31,22 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 		setup_redirections(pipex->cmd);
 		if (pipex->cmd->is_builtin == 1 && pipex->n_cmds == 1)
 		{
+			get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
+			close_fd_in_out(pipex->cmd);
 			run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
-			update_exec;
+			update_exec(pipex);
+			reset_fds(pipex); // find a way to keep the original STDIN && STDOUT FD's to which i can refer back to here.
+			continue;
 		}
 		pids[i] = fork_child();
 		if (pids[i++] == 0)
 		{
 			get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
 			clean_pipes(pipex, pipex->cmd); //CLOSING FDS
-			run_ex(pipex->cmd, envlst_to_array(shell)); //RUN EX
+			if (pipex->cmd->is_builtin)
+				run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
+			else
+				run_ex(pipex->cmd, envlst_to_array(shell)); //RUN EX
 		}
 		else
 			update_exec(pipex);

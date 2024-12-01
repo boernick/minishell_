@@ -40,14 +40,13 @@ void	setup_redirections(t_cmd *cmd)
 			cmd->fdin = handle_file(redir->file, redir->type);
 		if (cmd->fdout != -2)
 			close(cmd->fdout);
-		if (redir->type == TOKEN_REDIR_OUT || redir->type == 
-			TOKEN_REDIR_APPEND)
+		if (redir->type == TOKEN_REDIR_OUT || redir->type == TOKEN_REDIR_APPEND)
 		{
 			ft_putendl_fd("handles file", 2);
 			cmd->fdout = handle_file(redir->file, redir->type);
 		}
-		if (cmd->fdin == -1)
-			str_error("setup_redirections(): error reading the file.");
+		if (cmd->fdin == -1 || cmd->fdout == -1)
+			str_error("setup_redirections(): error reading/writing the file.");
 		redir = redir->next;
 	}
 }
@@ -55,6 +54,8 @@ void	reset_fds(t_execution *pipex)
 {
 	pipex->infile = STDIN_FILENO;
 	pipex->outfile = STDOUT_FILENO;
+	dup2(pipex->infile, STDIN_FILENO);
+	dup2(pipex->outfile, STDOUT_FILENO);
 }
 
 
@@ -142,13 +143,7 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 		close(pipex->pipe_arr[i][1]);
 		i++;
 	}
-	if (cmd)
-	{
-		if (cmd->fdin >= 0)
-			close(cmd->fdin); //FD ADJUSTMENTS
-		if (cmd->fdout >= 0)
-			close(cmd->fdout); //FD ADJUSTMENTS
-	}
+	close_fd_in_out(cmd);
 }
 
 // void	heredoc()
@@ -170,5 +165,16 @@ void	waitpids(pid_t *pids, int n)
 	{
 		waitpid(pids[i], NULL, 0);
 		i++;
+	}
+}
+
+void	close_fd_in_out(t_cmd *cmd)
+{	
+	if (cmd)
+	{
+		if (cmd->fdin >= 0)
+			close(cmd->fdin);
+		if (cmd->fdout >= 0)
+			close(cmd->fdout);
 	}
 }
