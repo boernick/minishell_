@@ -44,7 +44,10 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 			get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
 			clean_pipes(pipex, pipex->cmd); //CLOSING FDS
 			if (pipex->cmd->is_builtin)
+				{
 				run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
+				exit(shell->last_exit);
+				}
 			else
 				run_ex(pipex->cmd, envlst_to_array(shell)); //RUN EX
 		}

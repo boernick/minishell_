@@ -113,7 +113,7 @@ int	builtin_export(char **argv, t_shell *shell)
 	}
 	pos = ft_strchr(env, '=');
 	if (!pos)
-		ft_putstr_fd("= sign not found", 2); // need to add export <NAME> without '='
+		ft_putendl_fd("= sign not found", 2); // need to add export <NAME> without '='
 	if (pos)
 	{
 		env_addback(shell, argv[1]); 

@@ -89,7 +89,8 @@ int	env_del(t_shell *shell, char *env)
 	l = ft_strlen(env);
 	while (lst) // for every node
 	{
-		if (!ft_strncmp(lst->content, env, l) && lst->content[l] == '=')
+		if ((!ft_strncmp(lst->content, env, l) && lst->content[l] == '=') || 
+			(!ft_strncmp(lst->content, env, strlen(lst->content))))
 		{
 			if (prev)
 				prev->next = lst->next;
