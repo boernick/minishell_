@@ -22,6 +22,8 @@ void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd)
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
+	pipex->start_in = dup(STDIN_FILENO);
+	pipex->start_out = dup(STDOUT_FILENO);
 	getcwd(shell->cwd, PATH_MAX);
 }
 
@@ -54,10 +56,9 @@ void	reset_fds(t_execution *pipex)
 {
 	pipex->infile = STDIN_FILENO;
 	pipex->outfile = STDOUT_FILENO;
-	dup2(pipex->infile, STDIN_FILENO);
-	dup2(pipex->outfile, STDOUT_FILENO);
+	dup2(pipex->start_in, STDIN_FILENO);
+	dup2(pipex->start_out, STDOUT_FILENO);
 }
-
 
 // prepare exec struct for next call
 void	update_exec(t_execution *pipex)

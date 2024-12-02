@@ -115,6 +115,8 @@ typedef struct	s_execution // only need 1 of those, for example for n_pipes once
 	int		index_cmd;
 	int		infile; //first file to read from
 	int		outfile; // file to output
+	int		start_in;
+	int		start_out;
 	t_cmd	*cmd;
 } t_execution;
 

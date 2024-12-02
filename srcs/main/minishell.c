@@ -35,7 +35,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 			close_fd_in_out(pipex->cmd);
 			run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
 			update_exec(pipex);
-			reset_fds(pipex); // find a way to keep the original STDIN && STDOUT FD's to which i can refer back to here.
+			reset_fds(pipex);
 			continue;
 		}
 		pids[i] = fork_child();
