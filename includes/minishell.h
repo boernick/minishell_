@@ -225,6 +225,8 @@ void	export_lst(t_env *env_lst);
 void	export_lst_one(t_env *lst);
 void	export_reset(t_env *lst);
 void	print_lst(t_env *lst);
+char	*cd_update_path(t_shell *shell, char *str);
+int		check_dir(char *path);
 
 //---------minishell-----------//
 void	calibrate_exec(t_execution *pipex);

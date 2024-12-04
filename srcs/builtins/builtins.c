@@ -28,7 +28,7 @@ int	builtin_env(t_shell *shell)
 }
 
 // write text to the terminal or to a file
-int	builtin_echo(char **argv) //finished
+int	builtin_echo(char **argv)
 {
 	int	i;
 	int	toggle;
@@ -57,34 +57,66 @@ int	builtin_echo(char **argv) //finished
 	return (EXIT_SUCCESS);
 }
 
-int	builtin_cd(char **argv, t_shell *shell) //not yet finished
+int	builtin_cd(char **argv, t_shell *shell)
 {
-	// t_env	*env;
-	// t_env	*pwd;
-	// env = shell->env_lst;
+	t_env	*home;
 
 	if (argv[1] && argv[2])
-		ft_putstr_fd("Error: too many arguments", STDERR_FILENO);
-	if (argv[1] && argv[1][0] == '-')
+	{	
+		ft_putendl_fd("minishell: cd: too many arguments", STDERR_FILENO);
+		return (EXIT_FAILURE);
+	}
+	else if (argv[1] && argv[1][0] == '-')
 	{
 		ft_putstr_fd("minishell: cd: ", 2);
 		ft_putstr_fd(argv[1], 2);
 		ft_putendl_fd(": invalid option", 2);
 		return (EXIT_FAILURE);
 	}
-	getcwd(shell->cwd, PATH_MAX);
-
-	// if (argv[2] == NULL)
-	// 	pwd = get_env_lst(env, "PWD");
-	// 	ft_strlcpy();
-	// while
-
-		// if (cd cannot change the specified directory -> means doesnt exist or no permissions)
-		// error handling and the working directory remains unchanged
+	else
+	{
+		getcwd(shell->cwd, PATH_MAX);
+		if (!argv[1])
+		{
+			home = get_env_lst(shell, "HOME");
+			ft_strlcpy(shell->cwd, home->content + 5, PATH_MAX);
+			return (EXIT_SUCCESS);
+		}
+		cd_update_path(shell, argv[1]);
+		//check_dir;
+		//handle errors;
+	}
 	return (EXIT_SUCCESS);
 }
 
-int	builtin_pwd(char **argv, t_shell *shell) //finished
+char	*cd_update_path(t_shell *shell, char *str)
+{
+	char	*path;
+
+	if (str[0] == '/')
+		path = ft_strdup("");
+	else
+		path = ft_strjoin(shell->cwd, "/");
+	if (!path)
+		return (NULL);
+	path = ft_strjoin(path, str);
+	if (!path)
+		return (NULL);
+	return (path);
+}
+
+int	check_dir(char *path)
+{
+	DIR	*dir;
+
+	dir = opendir(path);
+	if (!dir)
+		return (EXIT_FAILURE);
+	closedir(dir);
+	return (EXIT_SUCCESS);
+}
+
+int	builtin_pwd(char **argv, t_shell *shell)
 {
 	if (argv[1] && argv[1][0] == '-')
 	{
@@ -170,6 +202,7 @@ int	builtin_exit(char **argv, t_shell *shell)
 		ft_putendl_fd("exit", 1);
 		shell->exit = 1;
 	}
+	// add exit with returning numbers
 	return (0);
 }
 
