@@ -60,6 +60,7 @@ int	builtin_echo(char **argv)
 int	builtin_cd(char **argv, t_shell *shell)
 {
 	t_env	*home;
+	char	*path;
 
 	if (argv[1] && argv[2])
 	{	
@@ -82,9 +83,18 @@ int	builtin_cd(char **argv, t_shell *shell)
 			ft_strlcpy(shell->cwd, home->content + 5, PATH_MAX);
 			return (EXIT_SUCCESS);
 		}
-		cd_update_path(shell, argv[1]);
-		//check_dir;
-		//handle errors;
+		path = cd_update_path(shell, argv[1]);
+		// if (!path)
+			//free data & return
+		if (check_dir(path) == 1)
+		{
+			ft_putstr_fd("minishell: cd: ", 2);
+			ft_putstr_fd(argv[1], 2);
+			ft_putendl_fd(": No such file or directory", 2);
+			return (EXIT_FAILURE);
+		}
+		// permission error handling
+		free(path);
 	}
 	return (EXIT_SUCCESS);
 }
@@ -102,6 +112,7 @@ char	*cd_update_path(t_shell *shell, char *str)
 	path = ft_strjoin(path, str);
 	if (!path)
 		return (NULL);
+	printf("%s\n", shell->cwd);
 	return (path);
 }
 
@@ -120,7 +131,7 @@ int	builtin_pwd(char **argv, t_shell *shell)
 {
 	if (argv[1] && argv[1][0] == '-')
 	{
-		ft_putendl_fd("Error: no options integrated for builtin", 2);
+		ft_putendl_fd("minishell: pwd: invalid option", 2);
 		return (EXIT_FAILURE);
 	}
 	ft_putendl_fd(shell->cwd, 1);
@@ -187,7 +198,7 @@ int	builtin_exit(char **argv, t_shell *shell)
 	ft_putstr_fd("running exit..\n", 2);
 	if (argv[1] && argv[1][0] == '-')
 	{
-		ft_putendl_fd("Error: no options integrated for builtin", STDERR_FILENO);
+		ft_putendl_fd("minishell: exit: invalid option", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
 	if (argv[1] && !(check_num(argv[1])))
