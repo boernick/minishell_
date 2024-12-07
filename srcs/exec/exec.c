@@ -43,12 +43,9 @@ void	setup_redirections(t_cmd *cmd)
 		if (cmd->fdout != -2)
 			close(cmd->fdout);
 		if (redir->type == TOKEN_REDIR_OUT || redir->type == TOKEN_REDIR_APPEND)
-		{
-			ft_putendl_fd("handles file", 2);
 			cmd->fdout = handle_file(redir->file, redir->type);
-		}
 		if (cmd->fdin == -1 || cmd->fdout == -1)
-			str_error("setup_redirections(): error reading/writing the file.");
+			str_error("setup_redirections(): error reading/writing the file."); //exit status?
 		redir = redir->next;
 	}
 }
@@ -112,9 +109,6 @@ pid_t	fork_child(void)
 //redirect STDIN to INFILE, STDOUT to OUTFILE, and between linking pipes 
 void	get_fd(t_execution *pipex, t_cmd *cmd)
 {
-	// ft_putstr_fd("duping fds..\n", 2);
-	// ft_putnbr_fd(cmd->fdin, 2);
-	// ft_putstr_fd("\n", 2);
 	if (cmd->fdin != -2) //if there is a redirection-> overwrite it into the pipex->infile
 		pipex->infile = cmd->fdin;	
 	if (pipex->index_pipe == 0)
@@ -147,26 +141,33 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 	close_fd_in_out(cmd);
 }
 
-// void	heredoc()
-// {
-// 	// create a temporary file
-// 	// mkstemp();
-// 	// write to the file
-// 	// handle input - use readline to read user input line by line
-// 	// close the file and use its 
-// }
-
 // waits for a series of given child processes
-void	waitpids(pid_t *pids, int n)
+void	waitpids(pid_t *pids, int n, t_shell *shell)
 {
 	int	i;
+	int	status;
+	int	tmp;
 
 	i = 0;
+	status = 0;
 	while (i < n)
 	{
-		waitpid(pids[i], NULL, 0);
+		if (pids[i] != -1)
+		{
+			if (waitpid(pids[i], &tmp, 0) == -1)
+				status = -1;
+			else if (WIFEXITED(tmp))
+				status = WEXITSTATUS(tmp);
+			else if (WTERMSIG(tmp) == SIGQUIT)
+				status = 131;
+			else if (WTERMSIG(tmp) == SIGINT)
+				status = 130;
+			else
+				status = 1;
+		}
 		i++;
 	}
+	shell->last_exit = status;
 }
 
 void	close_fd_in_out(t_cmd *cmd)

@@ -43,11 +43,8 @@ char	*get_path_env(char **path_env)
 	return (NULL);
 }
 // join path and run if result can be executed
-void	run_ex(t_cmd *cmd, char **path_env)
+int	run_ex(t_cmd *cmd, char **path_env)
 {
-	// ft_putstr_fd("run ", 2);
-	// ft_putstr_fd(cmd->cmd, 2);
-	// ft_putstr_fd("..\n", 2);
 	int		i;
 	char	**path_split;
 	char	*check_path;
@@ -68,5 +65,7 @@ void	run_ex(t_cmd *cmd, char **path_env)
 		free(check_path);
 	}
 	free_array(path_split);
-	str_error("cmd not found\n");
+	ft_putstr_fd(cmd->argv[0], 2);
+	ft_putendl_fd(": command not found", 2);
+	return (127);
 }

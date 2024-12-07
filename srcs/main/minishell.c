@@ -18,7 +18,6 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	pid_t		*pids;
 	int			i;
 
-	//calibrate_exec(pipex);
 	exec_init(shell, pipex, pipex->cmd);
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
@@ -44,19 +43,16 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 			get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
 			clean_pipes(pipex, pipex->cmd); //CLOSING FDS
 			if (pipex->cmd->is_builtin)
-				{
 				run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
-				exit(shell->last_exit);
-				}
 			else
-				run_ex(pipex->cmd, envlst_to_array(shell)); //RUN EX
+				shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
+			exit(shell->last_exit); //checked and this is 127
 		}
 		else
 			update_exec(pipex);
 	}
-	// print_lst(shell->env_lst);
 	clean_pipes(pipex, pipex->cmd);
-	waitpids(pids, pipex->n_cmds);
+	waitpids(pids, pipex->n_cmds, shell);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -81,7 +77,7 @@ int	main(int argc, char **argv, char **envp)
 		parse_tokens(&parse);
 		// print_command_stack(parse.cmd); //DEBUG
 		pipex.cmd = parse.cmd;
-		print_command_stack(pipex.cmd); //DEBUG
+		// print_command_stack(pipex.cmd); //DEBUG
 		exec_mini(&shell, &pipex);
 		free_tokens(parse.head);
 		parse.head = NULL; // Reset tokens to NULL

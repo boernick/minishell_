@@ -12,12 +12,18 @@
 
 #include "../../includes/minishell.h"
 
-int	builtin_env(t_shell *shell)
+// print the listed environment variables
+int	builtin_env(char **argv, t_shell *shell)
 {
 	t_env	*lst;
 
 	if (!shell || !shell->env_lst)
 		return (EXIT_FAILURE);
+	if (argv[1])
+	{
+		ft_putendl_fd("minishell: env: too many arguments", 2);
+		return (EXIT_FAILURE);
+	}
 	lst = shell->env_lst;
 	while (lst)
 	{
@@ -37,8 +43,8 @@ int	builtin_echo(char **argv)
 	i = 1;
 	if (argv[i] && argv[i][0] == '-' && ft_strncmp(argv[i], "-n", 3) != 0)
 	{
-		ft_putstr_fd("echo: invalid option --", STDERR_FILENO);
-		return (1);
+		ft_putstr_fd("minishell: echo: invalid option --", STDERR_FILENO);
+		return (EXIT_FAILURE);
 	}
 	if (argv[i] && !ft_strncmp(argv[i], "-n", 3))
 	{
@@ -57,6 +63,7 @@ int	builtin_echo(char **argv)
 	return (EXIT_SUCCESS);
 }
 
+// change the current working directory to an absolute or relative path
 int	builtin_cd(char **argv, t_shell *shell)
 {
 	t_env	*home;
@@ -127,17 +134,21 @@ int	check_dir(char *path)
 	return (EXIT_SUCCESS);
 }
 
+// print the present working directory
 int	builtin_pwd(char **argv, t_shell *shell)
 {
 	if (argv[1] && argv[1][0] == '-')
 	{
-		ft_putendl_fd("minishell: pwd: invalid option", 2);
+		ft_putstr_fd("minishell: pwd: ", 2);
+		ft_putstr_fd(argv[1], 2);
+		ft_putendl_fd(": invalid option", 2);
 		return (EXIT_FAILURE);
 	}
 	ft_putendl_fd(shell->cwd, 1);
 	return (EXIT_SUCCESS);
 }
 
+// export a new env variable to the list
 int	builtin_export(char **argv, t_shell *shell)
 {
 	char	*pos;
@@ -165,6 +176,7 @@ int	builtin_export(char **argv, t_shell *shell)
 	return (EXIT_SUCCESS);
 }
 
+// remove a listed env variable
 int	builtin_unset(char **argv, t_shell *shell)
 {
 	int	i;
@@ -172,30 +184,23 @@ int	builtin_unset(char **argv, t_shell *shell)
 
 	ret = 0;
 	i = 1;
-	if (!argv[1])
+	if (argv[1][0] == '=' && !argv[1][1])
+		return (ret);
+	else 
 	{
-		ft_putendl_fd("Error: no VAR provided", STDERR_FILENO);
-		ret = 1;
-	}
-	while (argv[i])
-	{
-		if (env_del(shell, argv[i]) == -1)
+		while (argv[i])
 		{
-			ft_putstr_fd("unset: ", STDERR_FILENO);
-			ft_putstr_fd(argv[i], STDERR_FILENO);
-			ft_putendl_fd(": no such variable", STDERR_FILENO);
-			ret = 1;
+			if (env_del(shell, argv[i]) == -1)
+				ret = 1;
+			i++;
 		}
-		i++;
 	}
-	if (ret == 0)
-		ft_putendl_fd("ENV variables succesfully deleted", STDOUT_FILENO);
 	return (ret);
 }
 
+// exit minishell with optional exit code
 int	builtin_exit(char **argv, t_shell *shell)
 {
-	ft_putstr_fd("running exit..\n", 2);
 	if (argv[1] && argv[1][0] == '-')
 	{
 		ft_putendl_fd("minishell: exit: invalid option", STDERR_FILENO);
@@ -209,10 +214,7 @@ int	builtin_exit(char **argv, t_shell *shell)
 		return (2);
 	}
 	else
-	{
-		ft_putendl_fd("exit", 1);
 		shell->exit = 1;
-	}
 	// add exit with returning numbers
 	return (0);
 }
@@ -231,6 +233,7 @@ int	check_num(char *str)
 	return (1);
 }
 
+// print env variable list in alphabetic order
 void	export_lst(t_env *env_lst)
 {
 	t_env	*lst;
