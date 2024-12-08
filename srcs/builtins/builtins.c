@@ -219,6 +219,7 @@ int	builtin_exit(char **argv, t_shell *shell)
 	return (0);
 }
 
+//checks if the given string only consists of numbers
 int	check_num(char *str)
 {
 	int	i;

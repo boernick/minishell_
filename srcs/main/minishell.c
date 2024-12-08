@@ -46,7 +46,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 				run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
 			else
 				shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
-			exit(shell->last_exit); //checked and this is 127
+			exit(shell->last_exit);
 		}
 		else
 			update_exec(pipex);
