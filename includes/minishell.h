@@ -55,8 +55,8 @@ typedef struct	s_token
 
 typedef struct s_redirect
 {
-	char				*file; //file name
-	e_token_type		type; // append/write/read
+	char				*file;
+	e_token_type		type;
 	struct s_redirect	*next;
 }	t_redirect;
 
@@ -77,7 +77,7 @@ typedef struct t_shell
 	int		exit;
 }	t_shell;
 
-typedef struct s_cmd // does prince
+typedef struct s_cmd
 {
 	char			*cmd;
 	char			**argv;
@@ -104,33 +104,21 @@ typedef struct	s_parse
 	t_cmd	*cmd; //list of cmds to pass to Nick's execution function
 }			t_parse;
 
-typedef struct	s_execution // only need 1 of those, for example for n_pipes once. Its not needed 'per command'
+typedef struct	s_execution
 {
 	pid_t	pid;
-	int		n_pipes; // to know when i reach the last pipe
-	int		index_pipe; // to track the pipe where to write in
-	int		index_prev_pipe; // to track the pipe where to read from
+	int		n_pipes;
+	int		index_pipe;
+	int		index_prev_pipe;
 	int		**pipe_arr;
-	int		n_cmds; // to know how often i need to fork // PRINCE: I NEED TO KNOW THE AMOUNT OF COMMANDS THERE ARE.
+	int		n_cmds;
 	int		index_cmd;
-	int		infile; //first file to read from
-	int		outfile; // file to output
+	int		infile;
+	int		outfile;
 	int		start_in;
 	int		start_out;
 	t_cmd	*cmd;
 } t_execution;
-
-typedef struct s_exec
-{
-	t_token		parse;
-	t_token		parse_list;
-	pid_t		ex_pid; // process ID number, if 0 -> process = child
-	int			ex_fdin; // FD in for pipe
-	int			ex_fdout; // FD out for pipe
-	int			ex_tag_out; // numbertag that indicates whether the outfile is read/write/append
-	int			ex_p_exit; //expand latest exit status of the most recently executed foreground pipe. (case $?)
-	int			ex_n_cmd; //
-}	t_exec;
 
 //---------tokenize----------//
 void	split_tokens(char *input, t_parse *data);
@@ -177,7 +165,7 @@ int		t_env_init(t_shell *shell, char **envp);
 
 //---------exec-----------//
 char	*path_join(char *path_split, char *cmd_arg);
-void	run_ex(t_cmd *cmd, char **path_env);
+int		run_ex(t_cmd *cmd, char **path_env);
 int		str_error(char *error);
 int		handle_file(char *filename, int type);
 void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd);
@@ -188,14 +176,14 @@ void	get_fd(t_execution *pipex, t_cmd *cmd);
 void	clean_pipes(t_execution *pipex, t_cmd *cmd);
 int		do_builtin(char **argv);
 int		run_builtin(int	n, char **argv, t_shell *shell);
-void	waitpids(pid_t *pids, int n);
+void	waitpids(pid_t *pids, int n, t_shell *shell);
 void	setup_redirections(t_cmd *cmd);
 void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 
 
 //---------builtins-----------//
-int		builtin_env(t_shell *shell);
+int		builtin_env(char **argv, t_shell *shell);
 int		builtin_pwd(char **argv, t_shell *shell);
 int		builtin_echo(char **argv);
 int		builtin_cd(char **argv, t_shell *shell);
@@ -227,6 +215,8 @@ void	export_lst(t_env *env_lst);
 void	export_lst_one(t_env *lst);
 void	export_reset(t_env *lst);
 void	print_lst(t_env *lst);
+char	*cd_update_path(t_shell *shell, char *str);
+int		check_dir(char *path);
 
 //---------minishell-----------//
 void	calibrate_exec(t_execution *pipex);

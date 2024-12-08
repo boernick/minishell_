@@ -44,7 +44,7 @@ void	tokenize(t_parse *data, t_shell *shell)
 			add_history(input);  //add_history causes mem leaks
 		reset_parse(data);
 		split_tokens(input, data);
-		data->exit = shell->exit;
+		data->exit = shell->last_exit;
 		if (validate_input(data->head))
 		{
 			classify_token_types(data);

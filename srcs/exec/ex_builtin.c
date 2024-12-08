@@ -15,7 +15,6 @@
 // checks if a given cmd argument is a builtin function
 int	do_builtin(char **argv)
 {
-	// ft_putstr_fd("checking builtin..\n", 2); //DEBUG
 	if (!(ft_strncmp(argv[0], "echo", 4)))
 		return (1);
 	if (!ft_strncmp(argv[0], "cd", 2))
@@ -36,7 +35,6 @@ int	do_builtin(char **argv)
 // runs a given builtin function and returns last exit code
 int	run_builtin(int n, char **argv, t_shell *shell)
 {
-	// ft_putstr_fd("running builtin..\n", 2); //DEBUG
 	if (n == 1)
 		shell->last_exit = builtin_echo(argv);
 	else if (n == 2)
@@ -46,7 +44,7 @@ int	run_builtin(int n, char **argv, t_shell *shell)
 	else if (n == 4)
 		shell->last_exit = builtin_unset(argv, shell);
 	else if (n == 5)
-		shell->last_exit = builtin_env(shell);
+		shell->last_exit = builtin_env(argv, shell);
 	else if (n == 6)
 		shell->last_exit = builtin_exit(argv, shell);
 	else if (n == 7)
