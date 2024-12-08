@@ -40,12 +40,12 @@ char *create_heredoc(char *delimiter)
         return NULL;
     }
 
-    printf("Debug: Created heredoc file `%s`\n", temp_file);
+    //printf("Debug: Created heredoc file `%s`\n", temp_file);
 
     char *line;
     while (1)
     {
-        printf("heredoc> ");
+        write(STDOUT_FILENO, "heredoc> ", 9);
         line = get_next_line(STDIN_FILENO);
         if (!line)
         {
@@ -67,7 +67,7 @@ char *create_heredoc(char *delimiter)
         }
 
         // Write line to file
-        printf("Debug: Writing line to `%s`: %s\n", temp_file, line);
+        //printf("Debug: Writing line to `%s`: %s\n", temp_file, line);
         write(fd, line, ft_strlen(line));
         write(fd, "\n", 1); // Add newline
         free(line);
