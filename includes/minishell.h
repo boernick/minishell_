@@ -75,6 +75,7 @@ typedef struct t_shell
 	int		stdout;
 	int		last_exit;
 	int		exit;
+	int		waitpid;
 }	t_shell;
 
 typedef struct s_cmd
@@ -172,12 +173,12 @@ void	create_pipes(t_execution *pipex);
 pid_t	fork_child(void);
 void	get_fd(t_execution *pipex, t_cmd *cmd);
 void	clean_pipes(t_execution *pipex, t_cmd *cmd);
-int		do_builtin(char **argv);
-int		run_builtin(int	n, char **argv, t_shell *shell);
+void	run_builtin(char **argv, t_shell *shell);
 void	waitpids(pid_t *pids, int n, t_shell *shell);
 void	setup_redirections(t_cmd *cmd);
 void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
+void	run_single_builtin(t_execution *pipex, t_shell *shell);
 
 
 //---------builtins-----------//
@@ -201,6 +202,7 @@ t_env	*get_env_lst(t_shell *shell, char *name);
 
 //---------error-----------//
 int		str_error(char *error);
+int		invalid_identifier(char *builtin, char *arg);
 
 //---------utils-----------//
 void	free_array(char **array);
@@ -212,6 +214,7 @@ int		check_num(char *str);
 void	export_lst(t_env *env_lst);
 void	export_lst_one(t_env *lst);
 void	export_reset(t_env *lst);
+int		export_check(char *str);
 void	print_lst(t_env *lst);
 char	*cd_update_path(t_shell *shell, char *str);
 int		check_dir(char *path);

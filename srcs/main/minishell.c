@@ -25,34 +25,39 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	if (!pids)
 		str_error("malloc failed");
 	i = 0;
-	while (pipex->index_cmd < pipex->n_cmds)
+	if (pipex->cmd->is_builtin == 1 && pipex->n_cmds == 1)
+		run_single_builtin(pipex, shell);
+	else
 	{
-		setup_redirections(pipex->cmd);
-		if (pipex->cmd->is_builtin == 1 && pipex->n_cmds == 1)
+		while (pipex->index_cmd < pipex->n_cmds)
 		{
-			get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
-			close_fd_in_out(pipex->cmd);
-			run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
-			update_exec(pipex);
-			reset_fds(pipex);
-			continue;
-		}
-		pids[i] = fork_child();
-		if (pids[i++] == 0)
-		{
-			get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
-			clean_pipes(pipex, pipex->cmd); //CLOSING FDS
-			if (pipex->cmd->is_builtin)
-				run_builtin(do_builtin(pipex->cmd->argv), pipex->cmd->argv, shell);
+			setup_redirections(pipex->cmd);
+			pids[i] = fork_child();
+			if (pids[i++] == 0)
+			{
+				get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
+				clean_pipes(pipex, pipex->cmd); //CLOSING FDS
+				if (pipex->cmd->is_builtin)
+					run_builtin(pipex->cmd->argv, shell); // exit code?
+				else
+					shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
+				exit(shell->last_exit);
+			}
 			else
-				shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
-			exit(shell->last_exit);
+				update_exec(pipex);
 		}
-		else
-			update_exec(pipex);
+		clean_pipes(pipex, pipex->cmd);
+		waitpids(pids, pipex->n_cmds, shell);
 	}
-	clean_pipes(pipex, pipex->cmd);
-	waitpids(pids, pipex->n_cmds, shell);
+}
+void	run_single_builtin(t_execution *pipex, t_shell *shell)
+{
+	setup_redirections(pipex->cmd);
+	get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
+	close_fd_in_out(pipex->cmd);
+	run_builtin(pipex->cmd->argv, shell);
+	update_exec(pipex);
+	reset_fds(pipex);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -82,7 +87,7 @@ int	main(int argc, char **argv, char **envp)
 		free_tokens(parse.head);
 		parse.head = NULL; // Reset tokens to NULL
 	}
-	ft_putstr_fd("freeing tokens && clearing history..\n", 2);
+	// ft_putstr_fd("freeing tokens && clearing history..\n", 2);
 	free_tokens(parse.head);
 	free_command_stack(parse.cmd);
 	clear_history();//make sure to use the better one (this vs the one below)

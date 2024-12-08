@@ -26,6 +26,7 @@ int					ft_tolower(int c);
 int					ft_toupper(int c);
 char				*ft_strchr(const char *str, int c);
 int					ft_atoi(const char *nptr);
+long				ft_atol(const char *nptr);
 int					ft_isalnum(const char c);
 int					ft_isalpha(int c);
 int					ft_isascii(int c);
