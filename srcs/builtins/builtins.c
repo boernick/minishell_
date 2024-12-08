@@ -21,8 +21,10 @@ int	builtin_env(char **argv, t_shell *shell)
 		return (EXIT_FAILURE);
 	if (argv[1])
 	{
-		ft_putendl_fd("minishell: env: too many arguments", 2);
-		return (EXIT_FAILURE);
+		ft_putstr_fd("env: '", STDERR_FILENO);
+		ft_putstr_fd(argv[1], STDERR_FILENO);
+		ft_putstr_fd("': No such file or directory", STDERR_FILENO);
+		return (127);
 	}
 	lst = shell->env_lst;
 	while (lst)
@@ -41,11 +43,11 @@ int	builtin_echo(char **argv)
 
 	toggle = 0;
 	i = 1;
-	if (argv[i] && argv[i][0] == '-' && ft_strncmp(argv[i], "-n", 3) != 0)
-	{
-		ft_putstr_fd("minishell: echo: invalid option --", STDERR_FILENO);
-		return (EXIT_FAILURE);
-	}
+	// if (argv[i] && argv[i][0] == '-' && ft_strncmp(argv[i], "-n", 3) != 0)
+	// {
+	// 	ft_putstr_fd("minishell: echo: invalid option --", STDERR_FILENO);
+	// 	return (EXIT_FAILURE);
+	// }
 	if (argv[i] && !ft_strncmp(argv[i], "-n", 3))
 	{
 		toggle = 1;
@@ -153,27 +155,38 @@ int	builtin_export(char **argv, t_shell *shell)
 {
 	char	*pos;
 	char	*env;
+	int		ret;
 
+	ret = 0;
 	if (argv[0] && !argv[1])
 	{
 		export_lst(shell->env_lst);
-		return (EXIT_SUCCESS);
+		return (ret);
 	}
 	env = argv[1];
-	if (env[0] == '=')
-	{
-		ft_putendl_fd("export: '=': not a valid identifier", 2);
-		return (1);
-	}
+	ret = export_check(env);
 	pos = ft_strchr(env, '=');
 	if (!pos)
+	{
 		ft_putendl_fd("= sign not found", 2); // need to add export <NAME> without '='
+		ret = 1;
+	}
 	if (pos)
 	{
 		env_addback(shell, argv[1]); 
 		pos = NULL;
 	}
-	return (EXIT_SUCCESS);
+	return (ret);
+}
+
+int	export_check(char *str)
+{
+	int		ret;
+
+	ret = 0;
+	if (str[0] == '=' || ft_isdigit(str[0]))
+		ret = invalid_identifier("export", str);
+	return (ret);
 }
 
 // remove a listed env variable
@@ -201,22 +214,24 @@ int	builtin_unset(char **argv, t_shell *shell)
 // exit minishell with optional exit code
 int	builtin_exit(char **argv, t_shell *shell)
 {
-	if (argv[1] && argv[1][0] == '-')
+	if (argv[2])
 	{
-		ft_putendl_fd("minishell: exit: invalid option", STDERR_FILENO);
+		ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
-	if (argv[1] && !(check_num(argv[1])))
+	else if (argv[1] && !(check_num(argv[1])))
 	{
-		ft_putendl_fd("exit: ", 2);
-		ft_putendl_fd(argv[1], 2);
-		ft_putendl_fd(": numeric argument required", 2);
+		ft_putstr_fd("exit: ", STDERR_FILENO);
+		ft_putstr_fd(argv[1], STDERR_FILENO);
+		ft_putendl_fd(": numeric argument required", STDERR_FILENO);
 		return (2);
 	}
-	else
-		shell->exit = 1;
+	else if (check_num(argv[1]))
+		shell->exit = ft_atoi(argv[1]); //still doing weird stuff
+	ft_putnbr_fd(shell->exit, 2);
+	ft_putendl_fd("", 2);
 	// add exit with returning numbers
-	return (0);
+	return (shell->exit);
 }
 
 //checks if the given string only consists of numbers

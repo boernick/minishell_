@@ -22,6 +22,7 @@ SRCS = ./srcs/builtins/builtins.c \
 ./srcs/tokenize/tokenize_ext.c \
 ./srcs/tokenize/utils_tokenize.c \
 ./srcs/utils/utils.c \
+./srcs/utils/error.c\
 ./srcs/utils/get_next_line.c \
 ./test.c \
 
