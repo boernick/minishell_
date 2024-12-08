@@ -256,13 +256,19 @@ void parse_tokens(t_parse *data) {
 
             add_cmd_to_list(data, new_cmd);
             current_cmd = new_cmd;
-        } else if (current_token->type == TOKEN_ARG || current_token->type == TOKEN_FLAG_ARG) {
+        }
+		else if (current_token->type == TOKEN_ARG || current_token->type == TOKEN_FLAG_ARG)
+		{
             if (current_cmd)
                 add_argument_to_cmd(current_cmd, current_token->value);
-        } else if (current_token->type == TOKEN_REDIR_IN || current_token->type == TOKEN_REDIR_OUT ||
-                   current_token->type == TOKEN_REDIR_APPEND || current_token->type == TOKEN_HEREDOC) {
-            if (current_cmd) {
-                if (current_token->next == NULL || current_token->next->value == NULL) {
+        }
+		else if (current_token->type == TOKEN_REDIR_IN || current_token->type == TOKEN_REDIR_OUT ||
+                   current_token->type == TOKEN_REDIR_APPEND)
+			{
+            if (current_cmd)
+			{
+                if (current_token->next == NULL || current_token->next->value == NULL)
+				{
                     fprintf(stderr, "Error: Missing file for redirection.\n");
                     break;
                 }
@@ -278,7 +284,29 @@ void parse_tokens(t_parse *data) {
 
                 current_token = current_token->next; // Skip the file token
             }
-        } else if (current_token->type == TOKEN_PIPE) {
+        }
+		else if (current_token->type == TOKEN_HEREDOC)
+		{
+    		if (current_cmd)
+			{
+       		 	if (!current_token->next) //|| current_token->next->type != TOKEN_WORD
+				{
+        	    		fprintf(stderr, "Error: Missing delimiter for heredoc.\n");
+        			    return;
+      			}
+      			redir = malloc(sizeof(t_redirect));
+      			if (!redir)
+      			      exit_perror("Failed to allocate memory for heredoc redirection");
+
+        // Handle heredoc input
+       			redir->file = create_heredoc(current_token->next->value);
+        		redir->type = TOKEN_HEREDOC;
+    			redir->next = current_cmd->redir;
+			    current_cmd->redir = redir;
+    			current_token = current_token->next; // Skip delimiter
+		    }
+		}
+		 else if (current_token->type == TOKEN_PIPE) {
             data->n_pipes++; // Increment pipe count
             current_cmd = NULL; // Reset command pointer after pipe
         }

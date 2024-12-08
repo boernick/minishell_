@@ -86,7 +86,8 @@ void	split_tokens(char *input, t_parse *data)
 		}
 
 		// Handle pipe
-		if (input[i] == '|') {
+		if (input[i] == '|')
+		{
 			handle_buffer(data, TOKEN_WORD);
 			add_token_to_list(data, new_token(TOKEN_PIPE, "|"));
 			i++;
@@ -94,12 +95,15 @@ void	split_tokens(char *input, t_parse *data)
 		}
 
 		// Handle redirection: output
-		if (input[i] == '>') {
+		if (input[i] == '>')
+		{
 			handle_buffer(data, TOKEN_WORD);
-			if (input[i + 1] == '>') {
+			if (input[i + 1] == '>')
+			{
 				add_token_to_list(data, new_token(TOKEN_REDIR_APPEND, ">>"));
 				i += 2;
-			} else
+			}
+			else
 			{
 				add_token_to_list(data, new_token(TOKEN_REDIR_OUT, ">"));
 				i++;
@@ -108,19 +112,21 @@ void	split_tokens(char *input, t_parse *data)
 		}
 
 		// Handle redirection: input
-		if (input[i] == '<') {
+		if (input[i] == '<')
+		{
 			handle_buffer(data, TOKEN_WORD);
-			if (input[i + 1] == '<') {
+			if (input[i + 1] == '<')
+			{
 				add_token_to_list(data, new_token(TOKEN_HEREDOC, "<<"));
 				i += 2;
-			} else
+			}
+			else
 			{
 				add_token_to_list(data, new_token(TOKEN_REDIR_IN, "<"));
 				i++;
 			}
 			continue;
 		}
-
 		// Add regular characters to buffer
 		data->buffer[data->buf_index++] = input[i++];
 	}

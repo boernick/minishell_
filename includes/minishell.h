@@ -138,6 +138,7 @@ t_token	*new_token(e_token_type type, char *value);
 void 	handle_buffer(t_parse *data, e_token_type token_type);
 void	add_token_to_list(t_parse *data, t_token *new_token);
 void	classify_token_types(t_parse *data);
+char	*create_heredoc(char *delimiter);
 
 //--------utils_token--------//
 void	print_tokens(t_token *token_list);
@@ -155,6 +156,7 @@ void	free_command_stack(t_cmd *cmd_stack);
 char	*ft_strdup(const char *src);
 int		ft_isspace(char c);
 int		ft_isalnum(char c);
+char	*get_next_line(int fd);
 
 //-----------signals----------//
 void	handle_sigint(int sig);

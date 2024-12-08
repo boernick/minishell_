@@ -78,24 +78,29 @@ void free_tokens(t_token *head)
 //eachother. That input doesn't start or end with an operator, that operator are
 //not next to eachother and check for missing args after operators. Current Error
 //msgs are incoorect for testing purposes but need to be updated to match bash!!
+//
+
 int	validate_input(t_token *tokens)
 {
 	t_token *current = tokens;
-	int token_count;
+	int token_count = 0;
 
-	token_count = 0;
-    // Check for empty input (null or no tokens)
-    if (!current) {
-        return 1; // Empty prompt for no tokens
-	}
+	// Check for empty input
+	if (!current)
+		return (1); // Empty input is valid (no tokens)
+
+	// Check if the input starts with an operator
 	if (current->value[0] == '|' || current->value[0] == '<' || current->value[0] == '>')
 	{
-		printf("Syntax error: Operator at the start of input\n");
+		printf("syntax error near unexpected token '%s'\n", current->value);
 		return (0);
 	}
+
 	while (current)
 	{
 		token_count++;
+
+		// Check for invalid sequences of operators
 		if ((current->value[0] == '<' || current->value[0] == '>' || current->value[0] == '|'))
 		{
 			if (current->next && (current->next->value[0] == '<' || current->next->value[0] == '>' || current->next->value[0] == '|'))
@@ -103,35 +108,46 @@ int	validate_input(t_token *tokens)
 				if (!(current->value[0] == '>' && current->next->value[0] == '>') &&
 					!(current->value[0] == '<' && current->next->value[0] == '<'))
 				{
-				printf("syntax error Invalid sequence '%s %s'\n", current->value, current->next->value);
+					printf("syntax error near unexpected token '%s'\n", current->next->value);
 					return (0);
 				}
 			}
 		}
-		if ((current->value[0] == '<' || current->value[0] == '>'))
+
+		// Check for missing arguments after redirection operators
+		if (current->value[0] == '<' || current->value[0] == '>')
 		{
-			if (!current->next || !current->next->value[0]
-				|| current->next->value[0] == '|'
-				|| current->next->value[0] == '<'
-				|| current->next->value[0] == '>')
+			if (!current->next || current->next->value[0] == '|' || current->next->value[0] == '<' || current->next->value[0] == '>')
 			{
-				printf("syntax error Missing argument after '%s'\n", current->value);
+				printf("syntax error near unexpected token '%s'\n", current->next ? current->next->value : "newline");
 				return (0);
 			}
 		}
+
+		// Check for heredoc (`<<`) without a delimiter
+		if (current->type == TOKEN_HEREDOC)
+		{
+			if (!current->next || current->next->type != TOKEN_WORD)
+			{
+				printf("syntax error near unexpected token '%s'\n", current->next ? current->next->value : "newline");
+				return (0);
+			}
+		}
+
 		current = current->next;
 	}
-    if (tokens)
+
+	// Check if the input ends with an operator
+	if (tokens)
 	{
-        t_token *last = tokens;
-        while (last->next) {
-            last = last->next;
-        }
-        if (last->value[0] == '|' || last->value[0] == '<' || last->value[0] == '>')
+		t_token *last = tokens;
+		while (last->next)
+			last = last->next;
+		if (last->value[0] == '|' || last->value[0] == '<' || last->value[0] == '>')
 		{
-            printf("Syntax error: Operator at the end of input\n");
-            return 0;
-        }
+			printf("syntax error near unexpected token 'newline'\n");
+			return (0);
+		}
 	}
 
 	return (1); // Input passed validation

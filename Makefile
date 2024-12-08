@@ -17,10 +17,12 @@ SRCS = ./srcs/builtins/builtins.c \
 ./srcs/signals/signals.c \
 ./srcs/tokenize/handle_struct.c \
 ./srcs/tokenize/split_tokens.c \
+./srcs/tokenize/heredoc.c \
 ./srcs/tokenize/tokenize.c \
 ./srcs/tokenize/tokenize_ext.c \
 ./srcs/tokenize/utils_tokenize.c \
 ./srcs/utils/utils.c \
+./srcs/utils/get_next_line.c \
 ./test.c \
 
 OBJS = $(SRCS:.c=.o)
