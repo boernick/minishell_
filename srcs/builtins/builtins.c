@@ -68,8 +68,8 @@ int	builtin_echo(char **argv)
 // change the current working directory to an absolute or relative path
 int	builtin_cd(char **argv, t_shell *shell)
 {
-	t_env	*home;
 	char	*path;
+	int		ret;
 
 	if (argv[1] && argv[2])
 	{	
@@ -85,13 +85,6 @@ int	builtin_cd(char **argv, t_shell *shell)
 	}
 	else
 	{
-		getcwd(shell->cwd, PATH_MAX);
-		if (!argv[1])
-		{
-			home = get_env_lst(shell, "HOME");
-			ft_strlcpy(shell->cwd, home->content + 5, PATH_MAX);
-			return (EXIT_SUCCESS);
-		}
 		path = cd_update_path(shell, argv[1]);
 		// if (!path)
 			//free data & return
@@ -102,10 +95,30 @@ int	builtin_cd(char **argv, t_shell *shell)
 			ft_putendl_fd(": No such file or directory", 2);
 			return (EXIT_FAILURE);
 		}
-		// permission error handling
+		ret = cd_check_error(chdir(path), argv[1]);
+		getcwd(shell->cwd, PATH_MAX);
 		free(path);
 	}
-	return (EXIT_SUCCESS);
+	return (ret);
+}
+
+int	cd_check_error(int err_status, char *dir)
+{
+	if (err_status == EACCES)
+	{
+		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
+		ft_putstr_fd(dir, STDERR_FILENO);
+		ft_putendl_fd(": Permission denied", STDERR_FILENO);
+	}
+	else if (err_status)
+	{
+		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
+		ft_putstr_fd(dir, STDERR_FILENO);
+		ft_putendl_fd(": No such file or directory", STDERR_FILENO);
+	}
+	else
+		return (0);
+	return (1);
 }
 
 char	*cd_update_path(t_shell *shell, char *str)
@@ -121,7 +134,6 @@ char	*cd_update_path(t_shell *shell, char *str)
 	path = ft_strjoin(path, str);
 	if (!path)
 		return (NULL);
-	printf("%s\n", shell->cwd);
 	return (path);
 }
 

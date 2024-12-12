@@ -80,14 +80,12 @@ int	main(int argc, char **argv, char **envp)
 	{
 		tokenize(&parse, &shell);
 		parse_tokens(&parse);
-		// print_command_stack(parse.cmd); //DEBUG
 		pipex.cmd = parse.cmd;
 		// print_command_stack(pipex.cmd); //DEBUG
 		exec_mini(&shell, &pipex);
 		free_tokens(parse.head);
 		parse.head = NULL; // Reset tokens to NULL
 	}
-	// ft_putstr_fd("freeing tokens && clearing history..\n", 2);
 	free_tokens(parse.head);
 	free_command_stack(parse.cmd);
 	clear_history();//make sure to use the better one (this vs the one below)

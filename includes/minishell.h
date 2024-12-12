@@ -219,6 +219,7 @@ void	export_reset(t_env *lst);
 int		export_check(char *str);
 void	print_lst(t_env *lst);
 char	*cd_update_path(t_shell *shell, char *str);
+int		cd_check_error(int err_status, char *dir);
 int		check_dir(char *path);
 
 //---------minishell-----------//
