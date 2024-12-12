@@ -137,6 +137,7 @@ char	*cd_update_path(t_shell *shell, char *str)
 	return (path);
 }
 
+//checks if directory path can be opened
 int	check_dir(char *path)
 {
 	DIR	*dir;
@@ -239,11 +240,9 @@ int	builtin_exit(char **argv, t_shell *shell)
 		return (2);
 	}
 	else if (check_num(argv[1]))
-		shell->exit = ft_atoi(argv[1]); //still doing weird stuff
-	ft_putnbr_fd(shell->exit, 2);
-	ft_putendl_fd("", 2);
-	// add exit with returning numbers
-	return (shell->exit);
+		shell->last_exit = ft_atoi(argv[1]); //still doing weird stuff
+	shell->exit = 1;
+	return (shell->last_exit);
 }
 
 //checks if the given string only consists of numbers

@@ -91,4 +91,5 @@ int	main(int argc, char **argv, char **envp)
 	clear_history();//make sure to use the better one (this vs the one below)
 	rl_clear_history();//make sure to use the better one
 	//free t_env()
+	return (shell.last_exit);
 }
