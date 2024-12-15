@@ -81,7 +81,7 @@ int	main(int argc, char **argv, char **envp)
 		tokenize(&parse, &shell);
 		parse_tokens(&parse);
 		pipex.cmd = parse.cmd;
-		// print_command_stack(pipex.cmd); //DEBUG
+		print_command_stack(pipex.cmd); //DEBUG
 		exec_mini(&shell, &pipex);
 		free_tokens(parse.head);
 		parse.head = NULL; // Reset tokens to NULL
@@ -91,5 +91,6 @@ int	main(int argc, char **argv, char **envp)
 	clear_history();//make sure to use the better one (this vs the one below)
 	rl_clear_history();//make sure to use the better one
 	//free t_env()
+	printf("last exit, on exit: %i\n", shell.last_exit);
 	return (shell.last_exit);
 }

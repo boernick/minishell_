@@ -99,7 +99,6 @@ void	create_pipes(t_execution *pipex)
 pid_t	fork_child(void)
 {
 	pid_t	pid;
-	// ft_putstr_fd("forking child..\n", 2); //DEBUG
 	pid = fork();
 	if (pid < 0)
 		str_error("Error: false PID");
@@ -109,13 +108,13 @@ pid_t	fork_child(void)
 //redirect STDIN to INFILE, STDOUT to OUTFILE, and between linking pipes 
 void	get_fd(t_execution *pipex, t_cmd *cmd)
 {
-	if (cmd->fdin != -2) //if there is a redirection-> overwrite it into the pipex->infile
+	if (cmd->fdin != -2)
 		pipex->infile = cmd->fdin;	
 	if (pipex->index_pipe == 0)
 		dup2(pipex->infile, STDIN_FILENO); 
 	else
 		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
-	if (cmd->fdout != -2) //if there is a redirection-> overwrite it into the pipex->outfile
+	if (cmd->fdout != -2)
 		pipex->outfile = cmd->fdout;	
 	if (pipex->index_cmd == pipex->n_cmds - 1)
 		dup2(pipex->outfile, STDOUT_FILENO);
@@ -133,7 +132,6 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 		return ;
 	while (i < pipex->n_pipes)
 	{
-		// ft_putstr_fd("clean pipe..\n", 2); //DEBUG
 		close(pipex->pipe_arr[i][0]);
 		close(pipex->pipe_arr[i][1]);
 		i++;

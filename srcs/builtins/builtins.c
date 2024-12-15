@@ -43,7 +43,7 @@ int	builtin_echo(char **argv)
 
 	toggle = 0;
 	i = 1;
-	// if (argv[i] && argv[i][0] == '-' && ft_strncmp(argv[i], "-n", 3) != 0)
+	// if (argv[i] && argv[i][0] == '-' && (ft_strncmp(argv[i], "-n", 3) != 0))
 	// {
 	// 	ft_putstr_fd("minishell: echo: invalid option --", STDERR_FILENO);
 	// 	return (EXIT_FAILURE);
@@ -236,22 +236,40 @@ int	builtin_unset(char **argv, t_shell *shell)
 // exit minishell with optional exit code
 int	builtin_exit(char **argv, t_shell *shell)
 {
-	if (argv[2])
+	if (argv[1] && argv[2])
 	{
 		ft_putendl_fd("minishell: exit: too many arguments", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
-	else if (argv[1] && !(check_num(argv[1])))
+	else if (argv[1] && !(exit_is_valid(argv[1])))
 	{
 		ft_putstr_fd("exit: ", STDERR_FILENO);
 		ft_putstr_fd(argv[1], STDERR_FILENO);
 		ft_putendl_fd(": numeric argument required", STDERR_FILENO);
 		return (2);
 	}
-	else if (check_num(argv[1]))
-		shell->last_exit = ft_atoi(argv[1]);
-	shell->exit = 1;
-	return (shell->last_exit);
+	else 
+	{
+		shell->last_exit = EXIT_SUCCESS;
+		if (argv[1] && exit_is_valid(argv[1]))
+			shell->last_exit = (ft_atoi(argv[1]) % 256 + 256) % 256;
+		shell->exit = 1;
+		ft_putendl_fd("exit", STDERR_FILENO);
+		return (shell->last_exit);
+	}
+}
+
+bool	exit_is_valid(char *pnum)
+{
+	while (*pnum == ' ' || (*pnum >= 9 && *pnum <= 13))
+		pnum++;
+	if (*pnum == '-' || *pnum == '+')
+		pnum++;
+	while (ft_isdigit(*pnum))
+		pnum++;
+	if (*pnum != '\0')
+		return (false);
+	return (true);
 }
 
 //checks if the given string only consists of numbers

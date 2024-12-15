@@ -221,6 +221,8 @@ void	print_lst(t_env *lst);
 char	*cd_update_path(t_shell *shell, char *str);
 int		cd_check_error(int err_status, char *dir);
 int		check_dir(char *path);
+bool	exit_is_valid(char *pnum);
+
 
 //---------minishell-----------//
 void	calibrate_exec(t_execution *pipex);
