@@ -70,6 +70,7 @@ int	builtin_cd(char **argv, t_shell *shell)
 {
 	char	*path;
 	int		ret;
+	t_env	*home;
 
 	if (argv[1] && argv[2])
 	{	
@@ -83,22 +84,33 @@ int	builtin_cd(char **argv, t_shell *shell)
 		ft_putendl_fd(": invalid option", 2);
 		return (EXIT_FAILURE);
 	}
+	else if (!argv[1])
+	{
+		home = get_env_lst(shell, "HOME");
+		if (!home || !home->content || ft_strlen(home->content) <= 5)
+			return (EXIT_FAILURE);
+		path = home->content + 5;
+		if (chdir(path) == -1)
+			return (EXIT_FAILURE);
+	}
 	else
 	{
 		path = cd_update_path(shell, argv[1]);
-		// if (!path)
-			//free data & return
+		if (!path)
+			return (EXIT_FAILURE);
 		if (check_dir(path) == 1)
 		{
 			ft_putstr_fd("minishell: cd: ", 2);
 			ft_putstr_fd(argv[1], 2);
 			ft_putendl_fd(": No such file or directory", 2);
+			free(path);
 			return (EXIT_FAILURE);
 		}
 		ret = cd_check_error(chdir(path), argv[1]);
-		getcwd(shell->cwd, PATH_MAX);
 		free(path);
 	}
+	if (getcwd(shell->cwd, PATH_MAX) == NULL)
+		ret = EXIT_FAILURE;
 	return (ret);
 }
 
@@ -180,10 +192,7 @@ int	builtin_export(char **argv, t_shell *shell)
 	ret = export_check(env);
 	pos = ft_strchr(env, '=');
 	if (!pos)
-	{
-		ft_putendl_fd("= sign not found", 2); // need to add export <NAME> without '='
-		ret = 1;
-	}
+		env_addback(shell, ft_strjoin(argv[1], "="));
 	if (pos)
 	{
 		env_addback(shell, argv[1]); 
@@ -240,7 +249,7 @@ int	builtin_exit(char **argv, t_shell *shell)
 		return (2);
 	}
 	else if (check_num(argv[1]))
-		shell->last_exit = ft_atoi(argv[1]); //still doing weird stuff
+		shell->last_exit = ft_atoi(argv[1]);
 	shell->exit = 1;
 	return (shell->last_exit);
 }

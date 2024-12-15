@@ -124,7 +124,7 @@ char	**envlst_to_array(t_shell *shell)
 	{
 		if (!(array[i] = ft_strdup(lst->content)))
 		{
-			//free_array_2
+			free_array(array);
 			return (NULL);
 		}
 		lst = lst->next;
@@ -160,7 +160,7 @@ t_env	*get_env_lst(t_shell *shell, char *name)
 		return (NULL);
 	while (lst)
 	{
-		if (!(ft_strncmp(name, lst->content, len) && lst->content[len] == '='))
+		if ((!(ft_strncmp(name, lst->content, len)) && (lst->content[len] == '=')))
 			return (lst);
 		lst = lst->next;
 	}
