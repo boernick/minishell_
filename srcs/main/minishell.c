@@ -48,6 +48,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 		}
 		clean_pipes(pipex, pipex->cmd);
 		waitpids(pids, pipex->n_cmds, shell);
+		ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
 	}
 }
 void	run_single_builtin(t_execution *pipex, t_shell *shell)
@@ -90,7 +91,7 @@ int	main(int argc, char **argv, char **envp)
 	free_command_stack(parse.cmd);
 	clear_history();//make sure to use the better one (this vs the one below)
 	rl_clear_history();//make sure to use the better one
-	//free t_env()
+	free_envlst(shell.env_lst);
 	printf("last exit, on exit: %i\n", shell.last_exit);
 	return (shell.last_exit);
 }

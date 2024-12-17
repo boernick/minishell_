@@ -62,6 +62,7 @@ void	free_int_array(t_execution *pipex, int i)
 	free(array);
 }
 
+//loop through array and free all values
 void	free_array(char **array)
 {
 	int	i;

@@ -181,7 +181,7 @@ void	setup_redirections(t_cmd *cmd);
 void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 void	run_single_builtin(t_execution *pipex, t_shell *shell);
-
+int		run_path(t_cmd *cmd, char **path_env);
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);
@@ -201,6 +201,7 @@ int		lst_len(t_env *lst);
 char	*get_path_env(char **path_env);
 char	*path_join(char *path_split, char *cmd_arg);
 t_env	*get_env_lst(t_shell *shell, char *name);
+void	free_t_env(t_shell *shell);
 
 //---------error-----------//
 int		str_error(char *error);
@@ -217,6 +218,7 @@ void	export_lst(t_env *env_lst);
 void	export_lst_one(t_env *lst);
 void	export_reset(t_env *lst);
 int		export_check(char *str);
+int		export_deldup(t_shell *shell, char *name);
 void	print_lst(t_env *lst);
 char	*cd_update_path(t_shell *shell, char *str);
 int		cd_check_error(int err_status, char *dir);

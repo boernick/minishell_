@@ -12,6 +12,7 @@
 
 #include "../../includes/minishell.h"
 
+//joins and formats to a correct path 
 char	*path_join(char *path_split, char *cmd_arg)
 {
 	char	*temp;
@@ -49,6 +50,8 @@ int	run_ex(t_cmd *cmd, char **path_env)
 	char	**path_split;
 	char	*check_path;
 
+	if (ft_strchr(cmd->argv[0], '/'))
+		return (run_path(cmd, path_env));
 	path_split = ft_split(get_path_env(path_env), ':');
 	if (!path_split)
 		str_error("path split failure");
@@ -65,7 +68,19 @@ int	run_ex(t_cmd *cmd, char **path_env)
 		free(check_path);
 	}
 	free_array(path_split);
-	ft_putstr_fd(cmd->argv[0], 2);
+	ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
 	ft_putendl_fd(": command not found", 2);
 	return (127);
+}
+
+//runs given path directly from prompt
+int	run_path(t_cmd *cmd, char **path_env)
+{
+	if (!access(cmd->argv[0], X_OK))
+		if (execve(cmd->argv[0], cmd->argv, path_env) == -1)
+			str_error("exec error");
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
+	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
+	return (126);
 }

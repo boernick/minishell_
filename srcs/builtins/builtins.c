@@ -43,11 +43,6 @@ int	builtin_echo(char **argv)
 
 	toggle = 0;
 	i = 1;
-	// if (argv[i] && argv[i][0] == '-' && (ft_strncmp(argv[i], "-n", 3) != 0))
-	// {
-	// 	ft_putstr_fd("minishell: echo: invalid option --", STDERR_FILENO);
-	// 	return (EXIT_FAILURE);
-	// }
 	if (argv[i] && !ft_strncmp(argv[i], "-n", 3))
 	{
 		toggle = 1;
@@ -55,9 +50,14 @@ int	builtin_echo(char **argv)
 	}
 	while (argv[i])
 	{
+		if (!(ft_strncmp(argv[i], "-n", 3)))
+		{
+			i++;
+			continue;
+		}
 		ft_printf("%s", argv[i]);
 		if (argv[i + 1])
-			ft_printf(" ");
+				ft_printf(" ");
 		i++;
 	}
 	if (!toggle)
@@ -184,19 +184,45 @@ int	builtin_export(char **argv, t_shell *shell)
 
 	ret = 0;
 	if (argv[0] && !argv[1])
-	{
 		export_lst(shell->env_lst);
-		return (ret);
-	}
-	env = argv[1];
-	ret = export_check(env);
-	pos = ft_strchr(env, '=');
-	if (!pos)
-		env_addback(shell, ft_strjoin(argv[1], "="));
-	if (pos)
+	else if (!ft_strncmp(argv[1], "", 2))
+		ret = invalid_identifier("export", argv[1]);
+	else
 	{
-		env_addback(shell, argv[1]); 
-		pos = NULL;
+		env = argv[1];
+		ret = export_check(env);
+		pos = ft_strchr(env, '=');
+		export_deldup(shell, env);
+		if (!pos)
+			env_addback(shell, ft_strjoin(env, "="));
+		if (pos)
+		{
+			env_addback(shell, env); 
+			pos = NULL;
+		}
+	}
+	return (ret);
+}
+
+int	export_deldup(t_shell *shell, char *name)
+{
+	t_env	*lst;
+	int		len;
+	int		ret;
+
+	ret = EXIT_SUCCESS;
+	lst = shell->env_lst;
+	len = 0;
+	while (name[len] && name[len] != '=')
+		len++;
+	while (lst)
+	{
+		if (lst->content && !(ft_strncmp(lst->content, name, len)))
+		{
+			ret = env_del(shell, name);
+			return (ret);
+		}
+		lst = lst->next;
 	}
 	return (ret);
 }
@@ -205,7 +231,7 @@ int	export_check(char *str)
 {
 	int		ret;
 
-	ret = 0;
+	ret = EXIT_SUCCESS;
 	if (str[0] == '=' || ft_isdigit(str[0]))
 		ret = invalid_identifier("export", str);
 	return (ret);
@@ -217,7 +243,7 @@ int	builtin_unset(char **argv, t_shell *shell)
 	int	i;
 	int	ret;
 
-	ret = 0;
+	ret = EXIT_SUCCESS;
 	i = 1;
 	if (argv[1][0] == '=' && !argv[1][1])
 		return (ret);
@@ -226,7 +252,7 @@ int	builtin_unset(char **argv, t_shell *shell)
 		while (argv[i])
 		{
 			if (env_del(shell, argv[i]) == -1)
-				ret = 1;
+				ret = EXIT_FAILURE;
 			i++;
 		}
 	}
