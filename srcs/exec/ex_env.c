@@ -73,14 +73,33 @@ int	run_ex(t_cmd *cmd, char **path_env)
 	return (127);
 }
 
-//runs given path directly from prompt
+//runs given path directly from prompt and prints errors
 int	run_path(t_cmd *cmd, char **path_env)
 {
-	if (!access(cmd->argv[0], X_OK))
+	if (!(check_dir(cmd->argv[0])))
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
+		ft_putendl_fd(": is a directory", STDERR_FILENO);
+		return (126);
+	}
+	if (access(cmd->argv[0], X_OK) == 0)
+	{
 		if (execve(cmd->argv[0], cmd->argv, path_env) == -1)
-			str_error("exec error");
+		{
+			if (errno == EACCES)
+			{
+				ft_putstr_fd("minishell: ", STDERR_FILENO);
+				ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
+				ft_putendl_fd(": Permission denied", STDERR_FILENO);
+				return (126);
+			}
+			str_error("minishell: error: execve failed");
+		}
+	}
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
 	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
-	return (126);
+	return (127);
 }
+
