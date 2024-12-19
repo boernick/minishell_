@@ -42,10 +42,14 @@ void	setup_redirections(t_cmd *cmd)
 			cmd->fdin = handle_file(redir->file, redir->type);
 		if (cmd->fdout != -2)
 			close(cmd->fdout);
-		if (redir->type == TOKEN_REDIR_OUT || redir->type == TOKEN_REDIR_APPEND)
+		if (redir->type == TOKEN_REDIR_OUT || redir->type == 
+			TOKEN_REDIR_APPEND)
+		{
+			ft_putendl_fd("handles file", 2);
 			cmd->fdout = handle_file(redir->file, redir->type);
-		if (cmd->fdin == -1 || cmd->fdout == -1)
-			str_error("setup_redirections(): error reading/writing the file."); //exit status?
+		}
+		if (cmd->fdin == -1)
+			str_error("setup_redirections(): error reading the file.");
 		redir = redir->next;
 	}
 }
