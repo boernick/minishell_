@@ -19,6 +19,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	int			i;
 
 	exec_init(shell, pipex, pipex->cmd);
+	ft_printf("%i pipes\n", pipex->n_pipes); //DEBUG
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
@@ -35,7 +36,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 			pids[i] = fork_child();
 			if (pids[i++] == 0)
 			{
-				get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
+				get_fd(pipex, pipex->cmd); //DUP2 TO STDIN
 				clean_pipes(pipex, pipex->cmd); //CLOSING FDS
 				if (pipex->cmd->is_builtin)
 					run_builtin(pipex->cmd->argv, shell); // exit code?

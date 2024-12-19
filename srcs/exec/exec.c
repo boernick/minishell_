@@ -22,8 +22,8 @@ void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd)
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
-	pipex->start_in = dup(STDIN_FILENO);
-	pipex->start_out = dup(STDOUT_FILENO);
+	// pipex->start_in = dup(STDIN_FILENO);
+	// pipex->start_out = dup(STDOUT_FILENO);
 	getcwd(shell->cwd, PATH_MAX);
 }
 
@@ -44,10 +44,7 @@ void	setup_redirections(t_cmd *cmd)
 			close(cmd->fdout);
 		if (redir->type == TOKEN_REDIR_OUT || redir->type == 
 			TOKEN_REDIR_APPEND)
-		{
-			ft_putendl_fd("handles file", 2);
 			cmd->fdout = handle_file(redir->file, redir->type);
-		}
 		if (cmd->fdin == -1)
 			str_error("setup_redirections(): error reading the file.");
 		redir = redir->next;
@@ -57,8 +54,10 @@ void	reset_fds(t_execution *pipex)
 {
 	pipex->infile = STDIN_FILENO;
 	pipex->outfile = STDOUT_FILENO;
-	dup2(pipex->start_in, STDIN_FILENO);
-	dup2(pipex->start_out, STDOUT_FILENO);
+	dup2(pipex->infile, STDIN_FILENO);
+	dup2(pipex->outfile, STDOUT_FILENO);
+	// dup2(pipex->start_in, STDIN_FILENO);
+	// dup2(pipex->start_out, STDOUT_FILENO);
 }
 
 // prepare exec struct for next call
