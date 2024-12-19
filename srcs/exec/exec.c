@@ -57,8 +57,8 @@ void	reset_fds(t_execution *pipex)
 {
 	pipex->infile = STDIN_FILENO;
 	pipex->outfile = STDOUT_FILENO;
-	dup2(pipex->start_in, STDIN_FILENO);
-	dup2(pipex->start_out, STDOUT_FILENO);
+	// dup2(pipex->start_in, STDIN_FILENO);
+	// dup2(pipex->start_out, STDOUT_FILENO);
 }
 
 // prepare exec struct for next call
@@ -115,13 +115,21 @@ void	get_fd(t_execution *pipex, t_cmd *cmd)
 	if (cmd->fdin != -2)
 		pipex->infile = cmd->fdin;	
 	if (pipex->index_pipe == 0)
+	{
 		dup2(pipex->infile, STDIN_FILENO); 
+		ft_putstr_fd("\nget_fd: pipex->infile = ", 2); //debug
+		ft_putnbr_fd(pipex->infile, 2);				//debug
+	}
 	else
 		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
 	if (cmd->fdout != -2)
 		pipex->outfile = cmd->fdout;	
 	if (pipex->index_cmd == pipex->n_cmds - 1)
+	{
 		dup2(pipex->outfile, STDOUT_FILENO);
+		ft_putstr_fd("\nget_fd: pipex->infile = ", 2); //debug
+		ft_putnbr_fd(pipex->outfile, 2);				//debug
+	}
 	else
 		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
 }
