@@ -127,7 +127,7 @@ void	get_fd(t_execution *pipex, t_cmd *cmd)
 	if (pipex->index_cmd == pipex->n_cmds - 1)
 	{
 		dup2(pipex->outfile, STDOUT_FILENO);
-		ft_putstr_fd("\nget_fd: pipex->infile = ", 2); //debug
+		ft_putstr_fd("\nget_fd: pipex->outfile = ", 2); //debug
 		ft_putnbr_fd(pipex->outfile, 2);				//debug
 	}
 	else
