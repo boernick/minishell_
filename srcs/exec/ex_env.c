@@ -62,12 +62,8 @@ int	run_ex(t_cmd *cmd, char **path_env)
 	{
 		check_path = path_join(path_split[i], cmd->argv[0]);
 		if (!(access(check_path, X_OK)))
-		{
-			ft_putstr_fd("\n running: ", STDERR_FILENO); //debug
-			ft_putstr_fd(cmd->argv[0], STDERR_FILENO); //debug
 			if (execve(check_path, cmd->argv, path_env) == -1)
 				str_error("exec error");
-		}
 		i++;
 		free(check_path);
 	}
