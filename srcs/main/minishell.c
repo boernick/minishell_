@@ -19,7 +19,6 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	int			i;
 
 	exec_init(shell, pipex, pipex->cmd);
-	ft_printf("%i pipes\n", pipex->n_pipes); //DEBUG
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
@@ -35,15 +34,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 			setup_redirections(pipex->cmd);
 			pids[i] = fork_child();
 			if (pids[i++] == 0)
-			{
-				get_fd(pipex, pipex->cmd); //DUP2 TO STDIN
-				clean_pipes(pipex, pipex->cmd); //CLOSING FDS
-				if (pipex->cmd->is_builtin)
-					run_builtin(pipex->cmd->argv, shell); // exit code?
-				else
-					shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
-				exit(shell->last_exit);
-			}
+				run_child_exec(pipex, shell);
 			else
 				update_exec(pipex);
 		}
@@ -52,6 +43,17 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 		ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
 	}
 }
+void	run_child_exec(t_execution *pipex, t_shell *shell)
+{
+	get_fd(pipex, pipex->cmd); //DUP2 TO STDIN
+	clean_pipes(pipex, pipex->cmd); //CLOSING FDS
+	if (pipex->cmd->is_builtin)
+		run_builtin(pipex->cmd->argv, shell); // exit code?
+	else
+		shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
+	exit(shell->last_exit); //how does parent know exit code?
+}
+
 void	run_single_builtin(t_execution *pipex, t_shell *shell)
 {
 	setup_redirections(pipex->cmd);

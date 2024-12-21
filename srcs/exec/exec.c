@@ -22,8 +22,8 @@ void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd)
 	pipex->index_pipe = 0;
 	pipex->index_cmd = 0;
 	pipex->index_prev_pipe = -1;
-	// pipex->start_in = dup(STDIN_FILENO);
-	// pipex->start_out = dup(STDOUT_FILENO);
+	pipex->start_in = dup(STDIN_FILENO);
+	pipex->start_out = dup(STDOUT_FILENO);
 	getcwd(shell->cwd, PATH_MAX);
 }
 
@@ -54,10 +54,8 @@ void	reset_fds(t_execution *pipex)
 {
 	pipex->infile = STDIN_FILENO;
 	pipex->outfile = STDOUT_FILENO;
-	dup2(pipex->infile, STDIN_FILENO);
-	dup2(pipex->outfile, STDOUT_FILENO);
-	// dup2(pipex->start_in, STDIN_FILENO);
-	// dup2(pipex->start_out, STDOUT_FILENO);
+	dup2(pipex->start_in, STDIN_FILENO);
+	dup2(pipex->start_out, STDOUT_FILENO);
 }
 
 // prepare exec struct for next call
@@ -75,7 +73,7 @@ void	create_pipes(t_execution *pipex)
 	int		i;
 
 	//ft_putstr_fd("creating pipes..\n", 2); //DEBUG
-	pipex->pipe_arr = malloc(sizeof(int *) * pipex->n_pipes + 1);
+	pipex->pipe_arr = malloc(sizeof(int *) * (pipex->n_pipes + 1));
 	if (!(pipex->pipe_arr))
 		str_error("Malloc failure while creating array of pointers");
 	pipex->pipe_arr[0] = NULL;
@@ -111,26 +109,24 @@ pid_t	fork_child(void)
 //redirect STDIN to INFILE, STDOUT to OUTFILE, and between linking pipes 
 void	get_fd(t_execution *pipex, t_cmd *cmd)
 {
-	if (cmd->fdin != -2)
-		pipex->infile = cmd->fdin;	
-	if (pipex->index_pipe == 0)
-	{
-		dup2(pipex->infile, STDIN_FILENO); 
-		ft_putstr_fd("\nget_fd: pipex->infile = ", 2); //debug
-		ft_putnbr_fd(pipex->infile, 2);				//debug
-	}
-	else
+	if (cmd->fdin != -2) //als er wel redirections zijn (want -2 is geen)
+		pipex->infile = cmd->fdin;	//infile is de redirection INFILE van de cmd
+	if (pipex->index_pipe == 0)	 //bij de eerste pipe, duplicate infile naar STDIN.
+		dup2(pipex->infile, STDIN_FILENO);
+	else // in ander geval dupliate de vorige pipes READ end naar STDIN
 		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
-	if (cmd->fdout != -2)
-		pipex->outfile = cmd->fdout;	
-	if (pipex->index_cmd == pipex->n_cmds - 1)
-	{
+
+	if (cmd->fdout != -2) // als er wel redirections zijn voor output
+		pipex->outfile = cmd->fdout;	//outfile is de redirection OUTFILE van de command.
+	if (pipex->index_cmd == pipex->n_cmds - 1) // als het de laatste command is, 
 		dup2(pipex->outfile, STDOUT_FILENO);
-		ft_putstr_fd("\nget_fd: pipex->outfile = ", 2); //debug
-		ft_putnbr_fd(pipex->outfile, 2);				//debug
-	}
 	else
-		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
+	{
+		if (cmd->fdout == -2)
+			dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
+		else
+			dup2(pipex->outfile, STDOUT_FILENO);
+	}
 }
 
 // close all file descriptors in the pipe FD array

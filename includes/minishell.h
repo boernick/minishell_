@@ -182,6 +182,7 @@ void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 void	run_single_builtin(t_execution *pipex, t_shell *shell);
 int		run_path(t_cmd *cmd, char **path_env);
+void	run_child_exec(t_execution *pipex, t_shell *shell);
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);
@@ -224,7 +225,6 @@ char	*cd_update_path(t_shell *shell, char *str);
 int		cd_check_error(int err_status, char *dir);
 int		check_dir(char *path);
 bool	exit_is_valid(char *pnum);
-
 
 //---------minishell-----------//
 void	calibrate_exec(t_execution *pipex);
