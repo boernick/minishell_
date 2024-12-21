@@ -39,7 +39,11 @@ void	setup_redirections(t_cmd *cmd)
 	while (redir)
 	{
 		if (redir->type == TOKEN_REDIR_IN) // HEREDOC?
+		{
+			if (cmd->fdin != -2)
+				close(cmd->fdin);
 			cmd->fdin = handle_file(redir->file, redir->type);
+		}			
 		if (cmd->fdout != -2)
 			close(cmd->fdout);
 		if (redir->type == TOKEN_REDIR_OUT || redir->type == 
@@ -106,28 +110,35 @@ pid_t	fork_child(void)
 	return (pid);
 }
 
-//redirect STDIN to INFILE, STDOUT to OUTFILE, and between linking pipes 
 void	get_fd(t_execution *pipex, t_cmd *cmd)
 {
-	if (cmd->fdin != -2) //als er wel redirections zijn (want -2 is geen)
-		pipex->infile = cmd->fdin;	//infile is de redirection INFILE van de cmd
-	if (pipex->index_pipe == 0)	 //bij de eerste pipe, duplicate infile naar STDIN.
-		dup2(pipex->infile, STDIN_FILENO);
-	else // in ander geval dupliate de vorige pipes READ end naar STDIN
-		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
-
-	if (cmd->fdout != -2) // als er wel redirections zijn voor output
-		pipex->outfile = cmd->fdout;	//outfile is de redirection OUTFILE van de command.
-	if (pipex->index_cmd == pipex->n_cmds - 1) // als het de laatste command is, 
-		dup2(pipex->outfile, STDOUT_FILENO);
-	else
+	// STDIN instellen
+	if (cmd->fdin != -2) // Als er een inputredirectie is
+		dup2(cmd->fdin, STDIN_FILENO); // Gebruik de inputredirectie
+	else if (pipex->index_pipe == 0) // Bij de eerste command
 	{
-		if (cmd->fdout == -2)
-			dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
-		else
-			dup2(pipex->outfile, STDOUT_FILENO);
+		if (pipex->infile != -2) // Als er een infile is
+			dup2(pipex->infile, STDIN_FILENO); // Gebruik de infile
+		else // Geen inputredirectie en geen infile, gebruik standaardinvoer
+			dup2(pipex->start_in, STDIN_FILENO);
 	}
+	else // Bij andere commands
+		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO); // Gebruik de vorige pipe
+
+	// STDOUT instellen
+	if (cmd->fdout != -2) // Als er een outputredirectie is
+		dup2(cmd->fdout, STDOUT_FILENO); // Gebruik de outputredirectie
+	else if (pipex->index_cmd == pipex->n_cmds - 1) // Als dit de laatste command is
+	{
+		if (pipex->outfile != -2) // Als er een algemene outfile is
+			dup2(pipex->outfile, STDOUT_FILENO); // Gebruik de outfile
+		else // Geen outfile, schrijf naar standaarduitvoer
+			dup2(pipex->start_out, STDOUT_FILENO);
+	}
+	else // Bij andere commands in de pipereeks
+		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO); // Gebruik de huidige pipe
 }
+
 
 // close all file descriptors in the pipe FD array
 void	clean_pipes(t_execution *pipex, t_cmd *cmd)
