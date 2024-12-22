@@ -16,33 +16,41 @@
 void	exec_mini(t_shell *shell, t_execution *pipex)
 {
 	pid_t		*pids;
-	int			i;
-
+	pid_t		pid_last;
+	
 	exec_init(shell, pipex, pipex->cmd);
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));
 	if (!pids)
 		str_error("malloc failed");
-	i = 0;
 	if (pipex->cmd->is_builtin == 1 && pipex->n_cmds == 1)
 		run_single_builtin(pipex, shell);
 	else
 	{
 		while (pipex->index_cmd < pipex->n_cmds)
-		{
-			setup_redirections(pipex->cmd);
-			pids[i] = fork_child();
-			if (pids[i++] == 0)
-				run_child_exec(pipex, shell);
-			else
-				update_exec(pipex);
-		}
+			pid_last = run_single_cmd(shell, pipex, pids);
 		clean_pipes(pipex, pipex->cmd);
-		waitpids(pids, pipex->n_cmds, shell);
+		waitpids(pids, pipex->n_cmds, shell, pid_last);
 		ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
 	}
 }
+//organizing execution process for a single command
+pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
+{
+	int	i;
+
+	i = pipex->index_cmd;
+	if (setup_redirections(pipex->cmd) == 1)
+		shell->last_exit = 1;
+	pids[i] = fork_child();
+	if (pids[i++] == 0)
+		run_child_exec(pipex, shell);
+	else
+		update_exec(pipex);
+	return (pids[i]);
+}
+
 void	run_child_exec(t_execution *pipex, t_shell *shell)
 {
 	get_fd(pipex, pipex->cmd); //DUP2 TO STDIN
@@ -50,13 +58,16 @@ void	run_child_exec(t_execution *pipex, t_shell *shell)
 	if (pipex->cmd->is_builtin)
 		run_builtin(pipex->cmd->argv, shell); // exit code?
 	else
-		shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
-	exit(shell->last_exit); //how does parent know exit code?
+		run_ex(pipex->cmd, envlst_to_array(shell));
 }
 
 void	run_single_builtin(t_execution *pipex, t_shell *shell)
 {
-	setup_redirections(pipex->cmd);
+	if (setup_redirections(pipex->cmd) == 1)
+	{
+		shell->last_exit = 1;
+		return;
+	}
 	get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
 	close_fd_in_out(pipex->cmd);
 	run_builtin(pipex->cmd->argv, shell);
@@ -85,7 +96,7 @@ int	main(int argc, char **argv, char **envp)
 		tokenize(&parse, &shell);
 		parse_tokens(&parse);
 		pipex.cmd = parse.cmd;
-		print_command_stack(pipex.cmd); //DEBUG
+		// print_command_stack(pipex.cmd); //DEBUG
 		exec_mini(&shell, &pipex);
 		free_tokens(parse.head);
 		parse.head = NULL; // Reset tokens to NULL

@@ -27,14 +27,14 @@ void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd)
 	getcwd(shell->cwd, PATH_MAX);
 }
 
-void	setup_redirections(t_cmd *cmd)
+int	setup_redirections(t_cmd *cmd)
 {
 	t_redirect	*redir;
 
 	cmd->fdin = -2;
 	cmd->fdout = -2;
 	if (!cmd->redir)
-		return ;
+		return (EXIT_SUCCESS);
 	redir = cmd->redir;
 	while (redir)
 	{
@@ -50,9 +50,15 @@ void	setup_redirections(t_cmd *cmd)
 			TOKEN_REDIR_APPEND)
 			cmd->fdout = handle_file(redir->file, redir->type);
 		if (cmd->fdin == -1)
-			str_error("setup_redirections(): error reading the file.");
+			{
+				ft_putstr_fd("minishell: ", STDERR_FILENO);
+				ft_putstr_fd(redir->file, STDERR_FILENO);
+				ft_putendl_fd(": No such file or directory", STDERR_FILENO);
+				return (EXIT_FAILURE);
+			}
 		redir = redir->next;
 	}
+	return (EXIT_SUCCESS);
 }
 void	reset_fds(t_execution *pipex)
 {
@@ -158,7 +164,7 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 }
 
 // waits for a series of given child processes
-void	waitpids(pid_t *pids, int n, t_shell *shell)
+void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last)
 {
 	int	i;
 	int	status;
@@ -166,7 +172,7 @@ void	waitpids(pid_t *pids, int n, t_shell *shell)
 
 	i = 0;
 	status = 0;
-	while (i < n)
+	while (i < n_pids)
 	{
 		if (pids[i] != -1)
 		{
@@ -180,10 +186,12 @@ void	waitpids(pid_t *pids, int n, t_shell *shell)
 				status = 130;
 			else
 				status = 1;
+			// printf("Child %i exit status: %d\n", pids[i], WEXITSTATUS(tmp));
 		}
 		i++;
 	}
-	shell->last_exit = status;
+	if (pids[i] == pid_last)
+		shell->last_exit = status;
 }
 
 void	close_fd_in_out(t_cmd *cmd)

@@ -176,13 +176,15 @@ pid_t	fork_child(void);
 void	get_fd(t_execution *pipex, t_cmd *cmd);
 void	clean_pipes(t_execution *pipex, t_cmd *cmd);
 void	run_builtin(char **argv, t_shell *shell);
-void	waitpids(pid_t *pids, int n, t_shell *shell);
-void	setup_redirections(t_cmd *cmd);
-void	reset_fds(t_execution *pipex);
-void	close_fd_in_out(t_cmd *cmd);
+pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids);
 void	run_single_builtin(t_execution *pipex, t_shell *shell);
 int		run_path(t_cmd *cmd, char **path_env);
 void	run_child_exec(t_execution *pipex, t_shell *shell);
+void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last);
+int		setup_redirections(t_cmd *cmd);
+void	reset_fds(t_execution *pipex);
+void	close_fd_in_out(t_cmd *cmd);
+
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);
