@@ -49,13 +49,15 @@ int	setup_redirections(t_cmd *cmd)
 		if (redir->type == TOKEN_REDIR_OUT || redir->type == 
 			TOKEN_REDIR_APPEND)
 			cmd->fdout = handle_file(redir->file, redir->type);
-		if (cmd->fdin == -1)
+		if (cmd->fdin == -1 )
 			{
 				ft_putstr_fd("minishell: ", STDERR_FILENO);
 				ft_putstr_fd(redir->file, STDERR_FILENO);
 				ft_putendl_fd(": No such file or directory", STDERR_FILENO);
 				return (EXIT_FAILURE);
 			}
+		if (cmd->fdout == 1)
+			return (EXIT_FAILURE);
 		redir = redir->next;
 	}
 	return (EXIT_SUCCESS);

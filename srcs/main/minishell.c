@@ -39,12 +39,15 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 {
 	int	i;
+	int	redir_status;
 
 	i = pipex->index_cmd;
-	if (setup_redirections(pipex->cmd) == 1)
+	redir_status = 0;
+	redir_status = setup_redirections(pipex->cmd);
+	if (redir_status == 1)
 		shell->last_exit = 1;
 	pids[i] = fork_child();
-	if (pids[i++] == 0)
+	if (pids[i++] == 0 && redir_status != 1)
 		run_child_exec(pipex, shell);
 	else
 		update_exec(pipex);
@@ -58,7 +61,8 @@ void	run_child_exec(t_execution *pipex, t_shell *shell)
 	if (pipex->cmd->is_builtin)
 		run_builtin(pipex->cmd->argv, shell); // exit code?
 	else
-		run_ex(pipex->cmd, envlst_to_array(shell));
+		shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
+	exit(shell->last_exit); //added to stop infinite loop when command not found
 }
 
 void	run_single_builtin(t_execution *pipex, t_shell *shell)
