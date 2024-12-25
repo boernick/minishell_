@@ -222,6 +222,18 @@ printf("Number of commands: %d\n", data->n_cmds);
 printf("Number of pipes: %d\n", data->n_pipes);
 }
 
+void add_redirection_to_cmd(t_cmd *cmd, t_redirect *new_redir)
+{
+    if (!cmd->redir) {
+        cmd->redir = new_redir; // If no redirections exist, set the first redirection
+    } else {
+        t_redirect *current = cmd->redir;
+        while (current->next) {
+            current = current->next; // Traverse to the end of the list
+        }
+        current->next = new_redir; // Append the new redirection
+    }
+}
 void parse_tokens(t_parse *data) {
     t_token *current_token = data->head;
     t_cmd *current_cmd = NULL;
@@ -275,13 +287,11 @@ void parse_tokens(t_parse *data) {
 
                 redir = (t_redirect *)malloc(sizeof(t_redirect));
                 if (!redir)
-                    exit_perror("Failed to allocate memory for redirection");
-
+                    exit_perror("Failed to allocate memory for redirection"); //get correct exit on error.
                 redir->file = ft_strdup(current_token->next->value);
                 redir->type = current_token->type;
-                redir->next = current_cmd->redir;
-                current_cmd->redir = redir;
-
+                redir->next = NULL;
+				add_redirection_to_cmd(current_cmd, redir);
                 current_token = current_token->next; // Skip the file token
             }
         }

@@ -72,12 +72,6 @@ void	split_tokens(char *input, t_parse *data)
 			continue;
 		}
 
-		// Ignore backslashes and semicolons
-		if (input[i] == '\\' || input[i] == ';') {
-			i++;
-			continue;
-		}
-
 		// Handle whitespace outside of quotes
 		if (isspace(input[i]) && !data->in_single_quote && !data->in_double_quote) {
 			handle_buffer(data, TOKEN_WORD);

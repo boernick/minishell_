@@ -17,7 +17,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 {
 	pid_t		*pids;
 	pid_t		pid_last;
-	
+
 	exec_init(shell, pipex, pipex->cmd);
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
@@ -96,8 +96,9 @@ int	main(int argc, char **argv, char **envp)
 		tokenize(&parse, &shell);
 		parse_tokens(&parse);
 		pipex.cmd = parse.cmd;
-		// print_command_stack(pipex.cmd); //DEBUG
-		exec_mini(&shell, &pipex);
+		//print_command_stack(pipex.cmd); //DEBUG
+		if(parse.head)
+			exec_mini(&shell, &pipex);
 		free_tokens(parse.head);
 		parse.head = NULL; // Reset tokens to NULL
 	}
