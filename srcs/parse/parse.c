@@ -234,90 +234,211 @@ void add_redirection_to_cmd(t_cmd *cmd, t_redirect *new_redir)
         current->next = new_redir; // Append the new redirection
     }
 }
+// void parse_tokens(t_parse *data) {
+//     t_token *current_token = data->head;
+//     t_cmd *current_cmd = NULL;
+//     t_redirect *redir;
+
+//     data->n_cmds = 0;
+//     data->n_pipes = 0;
+
+//     while (current_token)
+// 	{
+//         if (current_token->type == TOKEN_CMD) {
+//             if (current_cmd != NULL) {
+//                 // Skip if a new command is attempted while another is already active
+//                 current_cmd = NULL;
+//             }
+
+//             data->n_cmds++; // Increment command count
+
+//             t_cmd *new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+//             if (!new_cmd)
+//                 exit_perror("Failed to allocate memory for command");
+
+//             // Initialize new command
+//             new_cmd->cmd = ft_strdup(current_token->value);
+//             new_cmd->argv = (char **)malloc(sizeof(char *) * 2);
+//             new_cmd->argv[0] = ft_strdup(current_token->value);
+//             new_cmd->argv[1] = NULL;
+//             new_cmd->index = data->n_cmds - 1;
+//             new_cmd->is_builtin = is_builtin_(new_cmd->cmd);
+//             new_cmd->redir = NULL;
+//             new_cmd->next = NULL;
+
+//             add_cmd_to_list(data, new_cmd);
+//             current_cmd = new_cmd;
+//         }
+// 		else if (current_token->type == TOKEN_ARG || current_token->type == TOKEN_FLAG_ARG)
+// 		{
+//             if (current_cmd)
+//                 add_argument_to_cmd(current_cmd, current_token->value);
+//         }
+// 		else if (current_token->type == TOKEN_REDIR_IN || current_token->type == TOKEN_REDIR_OUT ||
+//                    current_token->type == TOKEN_REDIR_APPEND)
+// 			{
+//             if (current_cmd)
+// 			{
+//                 if (current_token->next == NULL || current_token->next->value == NULL)
+// 				{
+//                     fprintf(stderr, "Error: Missing file for redirection.\n");
+//                     break;
+//                 }
+
+//                 redir = (t_redirect *)malloc(sizeof(t_redirect));
+//                 if (!redir)
+//                     exit_perror("Failed to allocate memory for redirection"); //get correct exit on error.
+//                 redir->file = ft_strdup(current_token->next->value);
+//                 redir->type = current_token->type;
+//                 redir->next = NULL;
+// 				add_redirection_to_cmd(current_cmd, redir);
+//                 current_token = current_token->next; // Skip the file token
+//             }
+//         }
+// 		else if (current_token->type == TOKEN_HEREDOC)
+// 		{
+//     		if (current_cmd)
+// 			{
+//        		 	if (!current_token->next) //|| current_token->next->type != TOKEN_WORD
+// 				{
+//         	    		fprintf(stderr, "Error: Missing delimiter for heredoc.\n");
+//         			    return;
+//       			}
+//       			redir = malloc(sizeof(t_redirect));
+//       			if (!redir)
+//       			      exit_perror("Failed to allocate memory for heredoc redirection");
+
+//         // Handle heredoc input
+//        			redir->file = create_heredoc(current_token->next->value);
+//         		redir->type = TOKEN_HEREDOC;
+//     			redir->next = current_cmd->redir;
+// 			    current_cmd->redir = redir;
+//     			current_token = current_token->next; // Skip delimiter
+// 		    }
+// 		}
+// 		 else if (current_token->type == TOKEN_PIPE) {
+//             data->n_pipes++; // Increment pipe count
+//             current_cmd = NULL; // Reset command pointer after pipe
+//         }
+
+//         current_token = current_token->next;
+//     }
+// }
+
 void parse_tokens(t_parse *data) {
     t_token *current_token = data->head;
     t_cmd *current_cmd = NULL;
-    t_redirect *redir;
+    t_redirect *redir = NULL;
 
     data->n_cmds = 0;
     data->n_pipes = 0;
 
-    while (current_token)
-	{
+    while (current_token) {
         if (current_token->type == TOKEN_CMD) {
-            if (current_cmd != NULL) {
-                // Skip if a new command is attempted while another is already active
-                current_cmd = NULL;
+            if (!current_cmd) {
+                // Create a new command node if none exists
+                t_cmd *new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+                if (!new_cmd)
+                    exit_perror("Failed to allocate memory for command");
+
+                // Initialize new command
+                new_cmd->cmd = ft_strdup(current_token->value);
+                new_cmd->argv = (char **)malloc(sizeof(char *) * 2);
+                new_cmd->argv[0] = ft_strdup(current_token->value);
+                new_cmd->argv[1] = NULL;
+                new_cmd->index = data->n_cmds;
+                new_cmd->is_builtin = is_builtin_(new_cmd->cmd);
+                new_cmd->redir = NULL;
+                new_cmd->next = NULL;
+
+                add_cmd_to_list(data, new_cmd);
+                current_cmd = new_cmd;
+                data->n_cmds++;
+            } else if (current_cmd->cmd == NULL) {
+                // If a placeholder exists, set the command value
+                current_cmd->cmd = ft_strdup(current_token->value);
+                current_cmd->argv = (char **)malloc(sizeof(char *) * 2);
+                current_cmd->argv[0] = ft_strdup(current_token->value);
+                current_cmd->argv[1] = NULL;
+                current_cmd->is_builtin = is_builtin_(current_cmd->cmd);
             }
-
-            data->n_cmds++; // Increment command count
-
-            t_cmd *new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
-            if (!new_cmd)
-                exit_perror("Failed to allocate memory for command");
-
-            // Initialize new command
-            new_cmd->cmd = ft_strdup(current_token->value);
-            new_cmd->argv = (char **)malloc(sizeof(char *) * 2);
-            new_cmd->argv[0] = ft_strdup(current_token->value);
-            new_cmd->argv[1] = NULL;
-            new_cmd->index = data->n_cmds - 1;
-            new_cmd->is_builtin = is_builtin_(new_cmd->cmd);
-            new_cmd->redir = NULL;
-            new_cmd->next = NULL;
-
-            add_cmd_to_list(data, new_cmd);
-            current_cmd = new_cmd;
-        }
-		else if (current_token->type == TOKEN_ARG || current_token->type == TOKEN_FLAG_ARG)
-		{
+        } else if (current_token->type == TOKEN_ARG || current_token->type == TOKEN_FLAG_ARG) {
             if (current_cmd)
                 add_argument_to_cmd(current_cmd, current_token->value);
-        }
-		else if (current_token->type == TOKEN_REDIR_IN || current_token->type == TOKEN_REDIR_OUT ||
-                   current_token->type == TOKEN_REDIR_APPEND)
-			{
-            if (current_cmd)
-			{
-                if (current_token->next == NULL || current_token->next->value == NULL)
-				{
-                    fprintf(stderr, "Error: Missing file for redirection.\n");
-                    break;
-                }
+        } else if (current_token->type == TOKEN_REDIR_IN || current_token->type == TOKEN_REDIR_OUT ||
+                   current_token->type == TOKEN_REDIR_APPEND) {
+            if (!current_cmd) {
+                // Create a placeholder command for redirection
+                t_cmd *new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+                if (!new_cmd)
+                    exit_perror("Failed to allocate memory for placeholder command");
 
-                redir = (t_redirect *)malloc(sizeof(t_redirect));
-                if (!redir)
-                    exit_perror("Failed to allocate memory for redirection"); //get correct exit on error.
-                redir->file = ft_strdup(current_token->next->value);
-                redir->type = current_token->type;
-                redir->next = NULL;
-				add_redirection_to_cmd(current_cmd, redir);
-                current_token = current_token->next; // Skip the file token
+                // Initialize placeholder command
+                new_cmd->cmd = NULL;
+                new_cmd->argv = NULL;
+                new_cmd->index = data->n_cmds;
+                new_cmd->is_builtin = false;
+                new_cmd->redir = NULL;
+                new_cmd->next = NULL;
+
+                add_cmd_to_list(data, new_cmd);
+                current_cmd = new_cmd;
+                data->n_cmds++;
             }
-        }
-		else if (current_token->type == TOKEN_HEREDOC)
-		{
-    		if (current_cmd)
-			{
-       		 	if (!current_token->next) //|| current_token->next->type != TOKEN_WORD
-				{
-        	    		fprintf(stderr, "Error: Missing delimiter for heredoc.\n");
-        			    return;
-      			}
-      			redir = malloc(sizeof(t_redirect));
-      			if (!redir)
-      			      exit_perror("Failed to allocate memory for heredoc redirection");
 
-        // Handle heredoc input
-       			redir->file = create_heredoc(current_token->next->value);
-        		redir->type = TOKEN_HEREDOC;
-    			redir->next = current_cmd->redir;
-			    current_cmd->redir = redir;
-    			current_token = current_token->next; // Skip delimiter
-		    }
-		}
-		 else if (current_token->type == TOKEN_PIPE) {
-            data->n_pipes++; // Increment pipe count
+            // Handle redirection
+            if (current_token->next == NULL || current_token->next->value == NULL) {
+                fprintf(stderr, "Error: Missing file for redirection.\n");
+                break;
+            }
+
+            redir = (t_redirect *)malloc(sizeof(t_redirect));
+            if (!redir)
+                exit_perror("Failed to allocate memory for redirection");
+
+            redir->file = ft_strdup(current_token->next->value);
+            redir->type = current_token->type;
+            redir->next = NULL;
+
+            add_redirection_to_cmd(current_cmd, redir);
+            current_token = current_token->next; // Skip the file token
+        } else if (current_token->type == TOKEN_HEREDOC) {
+            if (!current_cmd) {
+                // Create a placeholder command for heredoc
+                t_cmd *new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+                if (!new_cmd)
+                    exit_perror("Failed to allocate memory for placeholder command");
+
+                // Initialize placeholder command
+                new_cmd->cmd = NULL;
+                new_cmd->argv = NULL;
+                new_cmd->index = data->n_cmds;
+                new_cmd->is_builtin = false;
+                new_cmd->redir = NULL;
+                new_cmd->next = NULL;
+
+                add_cmd_to_list(data, new_cmd);
+                current_cmd = new_cmd;
+                data->n_cmds++;
+            }
+
+            if (!current_token->next) {
+                fprintf(stderr, "Error: Missing delimiter for heredoc.\n");
+                break;
+            }
+
+            redir = malloc(sizeof(t_redirect));
+            if (!redir)
+                exit_perror("Failed to allocate memory for heredoc redirection");
+
+            redir->file = create_heredoc(current_token->next->value);
+            redir->type = TOKEN_HEREDOC;
+            redir->next = NULL;
+
+            add_redirection_to_cmd(current_cmd, redir);
+            current_token = current_token->next; // Skip delimiter
+        } else if (current_token->type == TOKEN_PIPE) {
+            data->n_pipes++;
             current_cmd = NULL; // Reset command pointer after pipe
         }
 

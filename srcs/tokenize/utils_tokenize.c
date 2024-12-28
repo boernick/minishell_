@@ -88,9 +88,8 @@ int	validate_input(t_token *tokens)
 	// Check for empty input
 	if (!current)
 		return (1); // Empty input is valid (no tokens)
-
-	// Check if the input starts with an operator
-	if (current->value[0] == '|' || current->value[0] == '<' || current->value[0] == '>')
+	// Check if the input starts with a |
+	if (current->value[0] == '|')
 	{
 		printf("syntax error near unexpected token '%s'\n", current->value);
 		return (0);
@@ -113,7 +112,6 @@ int	validate_input(t_token *tokens)
 				}
 			}
 		}
-
 		// Check for missing arguments after redirection operators
 		if (current->value[0] == '<' || current->value[0] == '>')
 		{
@@ -123,7 +121,6 @@ int	validate_input(t_token *tokens)
 				return (0);
 			}
 		}
-
 		// Check for heredoc (`<<`) without a delimiter
 		if (current->type == TOKEN_HEREDOC)
 		{
@@ -133,15 +130,13 @@ int	validate_input(t_token *tokens)
 				return (0);
 			}
 		}
-
 		current = current->next;
 	}
-
 	// Check if the input ends with an operator
 	if (tokens)
 	{
 		t_token *last = tokens;
-		while (last->next)
+		while (last && last->next)
 			last = last->next;
 		if (last->value[0] == '|' || last->value[0] == '<' || last->value[0] == '>')
 		{
@@ -149,6 +144,5 @@ int	validate_input(t_token *tokens)
 			return (0);
 		}
 	}
-
 	return (1); // Input passed validation
 }
