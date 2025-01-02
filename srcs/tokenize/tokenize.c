@@ -11,7 +11,53 @@
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+#include <signal.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <unistd.h>
 
+void handle_sigint(int sig)
+{
+    (void)sig;
+    write(STDOUT_FILENO, "\n", 1);           // Move to a new line
+    rl_replace_line("", 0);                 // Clear the current input
+    rl_on_new_line();                       // Inform readline of a new prompt
+    rl_redisplay();                         // Refresh the display
+}
+
+void handle_sigquit(int sig)
+{
+    (void)sig;
+    // You can either clear the current line or reset the shell prompt
+    rl_replace_line("", 0);         // Clear the current input
+   	rl_on_new_line();               // Inform readline of a new prompt
+    rl_redisplay();                 // Refresh the display to show the correct prompt
+}
+
+
+void setup_signal_handlers()
+{
+    struct sigaction sa_int;
+    struct sigaction sa_quit;
+
+    // SIGINT
+    sa_int.sa_handler = handle_sigint;
+    sa_int.sa_flags = SA_RESTART;           // Automatically restart interrupted syscalls
+    sigemptyset(&sa_int.sa_mask);
+    sigaction(SIGINT, &sa_int, NULL);
+
+    // SIGQUIT
+    sa_quit.sa_handler = handle_sigquit;
+    sa_quit.sa_flags = 0;
+    sigemptyset(&sa_quit.sa_mask);
+    sigaction(SIGQUIT, &sa_quit, NULL);
+}
+
+void handle_eof()
+{
+	printf("exit\n");
+	exit(0);
+}
 
 // Repeatedly prompts for user input, tokenizes, validates, and processes commands.
 // Exits the loop if "exit" or EOF is detected, handling cleanup and history appropriately.
@@ -24,16 +70,19 @@ void	tokenize(t_parse *data, t_shell *shell)
 	 // Set the signal handler for ctrl+c, ctrl+d, and ctr+\"
 	//while (1)
 	//{
+		setup_signal_handlers();
 		if (data->cmd)
 		{
 			free_command_stack(data->cmd);
 			data->cmd = NULL;
 		}
 		input = readline("MINISHELL>>> "); //readline caues mem leaks
+		if (!input) // Ctrl+D sends EOF, readline returns NULL.
+			handle_eof();
 		// if (input == NULL) //ADJUST TO SUBJECT
 		// {
 		// 	printf("EOF detected, exiting...\n");
-		// 	//mbreak ;
+		// 	//break ;
 		// }
 		// if (strcmp(input, "exit") == 0) // add my own ft_strcmp
 		// {

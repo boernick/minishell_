@@ -93,7 +93,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	struct_init(&parse);
 	t_env_init(&shell, envp);
-	signal(SIGINT, handle_sigint);
+	//signal(SIGINT, handle_sigint);
 	shell.exit = 0;
 	while (shell.exit == 0)
 	{
