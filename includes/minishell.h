@@ -209,6 +209,7 @@ void	free_t_env(t_shell *shell);
 
 //---------error-----------//
 int		str_error(char *error);
+int		invalid_option(char *builtin, char *arg);
 int		invalid_identifier(char *builtin, char *arg);
 
 //---------utils-----------//

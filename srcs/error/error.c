@@ -14,6 +14,27 @@
 
 int	str_error(char *error)
 {
-	write(2, error, ft_strlen(error));
+	write(STDERR_FILENO, error, ft_strlen(error));
 	exit(2);
 }
+
+int	invalid_option(char *builtin, char *arg)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(builtin, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putstr_fd(arg, STDERR_FILENO);
+	ft_putendl_fd(": invalid option", STDERR_FILENO);
+	return (EXIT_FAILURE);
+}
+
+int	invalid_identifier(char *builtin, char *arg)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(builtin, STDERR_FILENO);
+	ft_putstr_fd(": '", STDERR_FILENO);
+	ft_putstr_fd(arg, STDERR_FILENO);
+	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+	return (EXIT_FAILURE);
+}
+

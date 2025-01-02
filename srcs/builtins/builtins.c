@@ -78,12 +78,7 @@ int	builtin_cd(char **argv, t_shell *shell)
 		return (EXIT_FAILURE);
 	}
 	else if (argv[1] && argv[1][0] == '-')
-	{
-		ft_putstr_fd("minishell: cd: ", 2);
-		ft_putstr_fd(argv[1], 2);
-		ft_putendl_fd(": invalid option", 2);
-		return (EXIT_FAILURE);
-	}
+		return (invalid_option("cd", argv[1]));
 	else if (!argv[1])
 	{
 		home = get_env_lst(shell, "HOME");
