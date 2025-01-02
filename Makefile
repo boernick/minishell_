@@ -10,6 +10,7 @@ SRCS = ./srcs/builtins/builtins.c \
 ./srcs/env/env_var_tokenize.c \
 ./srcs/error/error.c \
 ./srcs/exec/exec.c \
+./srcs/exec/ex_heredoc.c \
 ./srcs/exec/ex_builtin.c \
 ./srcs/exec/ex_env.c \
 ./srcs/main/minishell.c \
