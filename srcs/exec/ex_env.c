@@ -63,7 +63,7 @@ int	run_ex(t_cmd *cmd, char **path_env)
 		check_path = path_join(path_split[i], cmd->argv[0]);
 		if (!(access(check_path, X_OK)))
 			if (execve(check_path, cmd->argv, path_env) == -1)
-				str_error("exec error");
+				str_error("exec error\n");
 		i++;
 		free(check_path);
 	}
