@@ -89,26 +89,32 @@ int	builtin_cd(char **argv, t_shell *shell)
 			return (EXIT_FAILURE);
 	}
 	else
-	{
-		path = cd_update_path(shell, argv[1]);
-		if (!path)
-			return (EXIT_FAILURE);
-		if (check_dir(path) == 1)
-		{
-			ft_putstr_fd("minishell: cd: ", 2);
-			ft_putstr_fd(argv[1], 2);
-			ft_putendl_fd(": No such file or directory", 2);
-			free(path);
-			return (EXIT_FAILURE);
-		}
-		ret = cd_check_error(chdir(path), argv[1]);
-		free(path);
-	}
+		ret = cd_to_path(shell, argv[1]);
 	if (getcwd(shell->cwd, PATH_MAX) == NULL)
 		ret = EXIT_FAILURE;
 	return (ret);
 }
 
+// Extract the part that updates the path check directory, and change it.
+int cd_to_path(t_shell *shell, char *arg)
+{
+	char	*path;
+	int		ret;
+
+	path = cd_update_path(shell, arg);
+	if (!path)
+		return (EXIT_FAILURE);
+	if (check_dir(path) == 1)
+	{
+		free(path);
+		return (invalid_filedir_builtin("cd", arg));
+	}
+	ret = cd_check_error(chdir(path), arg);
+	free(path);
+	return (ret);
+}
+
+// check the directory for potential errors and return exit code.
 int	cd_check_error(int err_status, char *dir)
 {
 	if (err_status == EACCES)
@@ -124,8 +130,8 @@ int	cd_check_error(int err_status, char *dir)
 		ft_putendl_fd(": No such file or directory", STDERR_FILENO);
 	}
 	else
-		return (0);
-	return (1);
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }
 
 char	*cd_update_path(t_shell *shell, char *str)
@@ -199,6 +205,7 @@ int	builtin_export(char **argv, t_shell *shell)
 	return (ret);
 }
 
+// remove duplicates in the env list to be exported
 int	export_deldup(t_shell *shell, char *name)
 {
 	t_env	*lst;
@@ -222,6 +229,7 @@ int	export_deldup(t_shell *shell, char *name)
 	return (ret);
 }
 
+// check if export builtin identifiers are valid
 int	export_check(char *str)
 {
 	int		ret;
@@ -280,6 +288,7 @@ int	builtin_exit(char **argv, t_shell *shell)
 	}
 }
 
+// check if exit code is valid
 bool	exit_is_valid(char *pnum)
 {
 	while (*pnum == ' ' || (*pnum >= 9 && *pnum <= 13))
@@ -337,6 +346,7 @@ void	export_lst(t_env *env_lst)
 	export_reset(env_lst);
 }
 
+// reset env linked list for the next export command
 void	export_reset(t_env *lst)
 {
 	while (lst)
@@ -346,6 +356,7 @@ void	export_reset(t_env *lst)
 	}
 }
 
+// print one env variable for export builtin
 void	export_lst_one(t_env *lst)
 {
 	int	i;

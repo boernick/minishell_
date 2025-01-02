@@ -38,3 +38,20 @@ int	invalid_identifier(char *builtin, char *arg)
 	return (EXIT_FAILURE);
 }
 
+int	invalid_filedir(char *file)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(file, STDERR_FILENO);
+	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
+	return (EXIT_FAILURE);
+}
+
+int	invalid_filedir_builtin(char *builtin, char *file)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(builtin, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putstr_fd(file, STDERR_FILENO);
+	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
+	return (EXIT_FAILURE);
+}

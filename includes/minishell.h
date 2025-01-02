@@ -211,6 +211,8 @@ void	free_t_env(t_shell *shell);
 int		str_error(char *error);
 int		invalid_option(char *builtin, char *arg);
 int		invalid_identifier(char *builtin, char *arg);
+int		invalid_filedir(char *file);
+int		invalid_filedir_builtin(char *builtin, char *file);
 
 //---------utils-----------//
 void	free_array(char **array);
@@ -227,6 +229,7 @@ int		export_deldup(t_shell *shell, char *name);
 void	print_lst(t_env *lst);
 char	*cd_update_path(t_shell *shell, char *str);
 int		cd_check_error(int err_status, char *dir);
+int 	cd_to_path(t_shell *shell, char *arg);
 int		check_dir(char *path);
 bool	exit_is_valid(char *pnum);
 

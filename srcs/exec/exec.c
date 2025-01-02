@@ -27,41 +27,36 @@ void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd)
 	getcwd(shell->cwd, PATH_MAX);
 }
 
-int	setup_redirections(t_cmd *cmd)
+//process tokens for all redirections for a single command.
+int setup_redirections(t_cmd *cmd)
 {
-	t_redirect	*redir;
-
+	t_redirect *rdir;
+	
+	rdir = cmd->redir;
 	cmd->fdin = -2;
 	cmd->fdout = -2;
-	if (!cmd->redir)
-		return (EXIT_SUCCESS);
-	redir = cmd->redir;
-	while (redir)
+	while (rdir)
 	{
-		if (redir->type == TOKEN_REDIR_IN) // HEREDOC?
+		if (rdir->type == TOKEN_REDIR_IN) // HEREDOC?
 		{
 			if (cmd->fdin != -2)
 				close(cmd->fdin);
-			cmd->fdin = handle_file(redir->file, redir->type);
-		}			
+			cmd->fdin = handle_file(rdir->file, rdir->type);
+		}
 		if (cmd->fdout != -2)
 			close(cmd->fdout);
-		if (redir->type == TOKEN_REDIR_OUT || redir->type == 
-			TOKEN_REDIR_APPEND)
-			cmd->fdout = handle_file(redir->file, redir->type);
-		if (cmd->fdin == -1 )
-			{
-				ft_putstr_fd("minishell: ", STDERR_FILENO);
-				ft_putstr_fd(redir->file, STDERR_FILENO);
-				ft_putendl_fd(": No such file or directory", STDERR_FILENO);
-				return (EXIT_FAILURE);
-			}
-		if (cmd->fdout == 1)
-			return (EXIT_FAILURE);
-		redir = redir->next;
+		if (rdir->type == TOKEN_REDIR_OUT || rdir->type == TOKEN_REDIR_APPEND)
+			cmd->fdout = handle_file(rdir->file, rdir->type);
+		if (cmd->fdin == -1)
+			return (invalid_filedir(rdir->file));
+		if (cmd->fdout == -1)
+			return EXIT_FAILURE;
+		rdir = rdir->next;
 	}
 	return (EXIT_SUCCESS);
 }
+
+// reset FDs after execution process.
 void	reset_fds(t_execution *pipex)
 {
 	pipex->infile = STDIN_FILENO;
@@ -70,7 +65,7 @@ void	reset_fds(t_execution *pipex)
 	dup2(pipex->start_out, STDOUT_FILENO);
 }
 
-// prepare exec struct for next call
+// prepare exec struct for next call.
 void	update_exec(t_execution *pipex)
 {
 	pipex->index_prev_pipe = pipex->index_pipe;
@@ -118,35 +113,33 @@ pid_t	fork_child(void)
 	return (pid);
 }
 
+//organizes filedescriptors for input and output redirection
 void	get_fd(t_execution *pipex, t_cmd *cmd)
 {
-	// STDIN instellen
-	if (cmd->fdin != -2) // Als er een inputredirectie is
-		dup2(cmd->fdin, STDIN_FILENO); // Gebruik de inputredirectie
-	else if (pipex->index_pipe == 0) // Bij de eerste command
+	if (cmd->fdin != -2)
+		dup2(cmd->fdin, STDIN_FILENO);
+	else if (pipex->index_pipe == 0)
 	{
-		if (pipex->infile != -2) // Als er een infile is
-			dup2(pipex->infile, STDIN_FILENO); // Gebruik de infile
-		else // Geen inputredirectie en geen infile, gebruik standaardinvoer
+		if (pipex->infile != -2)
+			dup2(pipex->infile, STDIN_FILENO);
+		else
 			dup2(pipex->start_in, STDIN_FILENO);
 	}
-	else // Bij andere commands
-		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO); // Gebruik de vorige pipe
+	else
+		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
 
-	// STDOUT instellen
-	if (cmd->fdout != -2) // Als er een outputredirectie is
-		dup2(cmd->fdout, STDOUT_FILENO); // Gebruik de outputredirectie
-	else if (pipex->index_cmd == pipex->n_cmds - 1) // Als dit de laatste command is
+	if (cmd->fdout != -2)
+		dup2(cmd->fdout, STDOUT_FILENO);
+	else if (pipex->index_cmd == pipex->n_cmds - 1)
 	{
-		if (pipex->outfile != -2) // Als er een algemene outfile is
-			dup2(pipex->outfile, STDOUT_FILENO); // Gebruik de outfile
-		else // Geen outfile, schrijf naar standaarduitvoer
+		if (pipex->outfile != -2)
+			dup2(pipex->outfile, STDOUT_FILENO);
+		else
 			dup2(pipex->start_out, STDOUT_FILENO);
 	}
-	else // Bij andere commands in de pipereeks
-		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO); // Gebruik de huidige pipe
+	else
+		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
 }
-
 
 // close all file descriptors in the pipe FD array
 void	clean_pipes(t_execution *pipex, t_cmd *cmd)
@@ -196,6 +189,7 @@ void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last)
 		shell->last_exit = status;
 }
 
+//close open input and output filedescriptors for a single command
 void	close_fd_in_out(t_cmd *cmd)
 {	
 	if (cmd)
