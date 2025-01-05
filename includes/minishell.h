@@ -150,6 +150,9 @@ int		ft_isalnum(char c);
 char	*get_next_line(int fd);
 
 //-----------signals----------//
+void	handle_eof(void);
+void	setup_signal_handlers(void);
+void	handle_sigquit(int sig);
 void	handle_sigint(int sig);
 
 //------tokenize_and_parse-------//

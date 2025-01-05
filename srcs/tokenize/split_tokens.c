@@ -53,6 +53,7 @@ void	split_tokens(char *input, t_parse *data)
 		if (data->buf_index >= BUFFER_SIZE - 1)
 		{
 			printf("Buffer overflow detected\n");
+			data->valid_input = 0;
 			exit(EXIT_FAILURE);
 		}
 
@@ -127,8 +128,10 @@ void	split_tokens(char *input, t_parse *data)
 	// Finalize last token if available
 	handle_buffer(data, TOKEN_WORD);
 
-	if (data->in_single_quote || data->in_double_quote) {
-		fprintf(stderr, "Error: Unclosed quote detected\n");
+	if (data->in_single_quote || data->in_double_quote)
+	{
+		data->valid_input = 0;
+		fprintf(stderr, "minishell: syntax error unclosed quote detected\n");
 		if (data->head) {  // Only free tokens if they exist
 			free_tokens(data->head);
 		}
