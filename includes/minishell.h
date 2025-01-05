@@ -100,6 +100,7 @@ typedef struct	s_parse
 	int		in_double_quote; //var to keep track between in and out of double quote
 	int		last_exit_status; //needs to be implemented!
 	int		exit;
+	int		valid_input;
 	int		n_pipes;
 	int		n_cmds;
 	t_cmd	*cmd; //list of cmds to pass to Nick's execution function
@@ -133,7 +134,8 @@ char	*create_heredoc(char *delimiter);
 void	print_tokens(t_token *token_list);
 char	*trim_whitespace(char *str);
 void 	free_tokens(t_token *head);
-int		validate_input(t_token *tokens);
+//int		validate_input(t_token *tokens);
+int		validate_input(t_token *tokens, t_parse *data);
 char	*ft_itoa(int n);
 
 //-----------Parse-----------//
