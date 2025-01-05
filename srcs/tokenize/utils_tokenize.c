@@ -80,26 +80,92 @@ void free_tokens(t_token *head)
 //msgs are incoorect for testing purposes but need to be updated to match bash!!
 //
 
-int	validate_input(t_token *tokens)
+// int	validate_input(t_token *tokens, t_parse *data)
+// {
+// 	t_token *current = tokens;
+// 	int token_count = 0;
+
+// 	// Check for empty input
+// 	if (!current)
+// 		return (1); // Empty input is valid (no tokens)
+// 	// Check if the input starts with a |
+// 	if (current->value[0] == '|')
+// 	{
+// 		printf("minishell: syntax error near unexpected token '%s'\n", current->value);
+// 		return (0);
+// 	}
+
+// 	while (current)
+// 	{
+// 		token_count++;
+
+// 		// Check for invalid sequences of operators
+// 		if ((current->value[0] == '<' || current->value[0] == '>' || current->value[0] == '|'))
+// 		{
+// 			if (current->next && (current->next->value[0] == '<' || current->next->value[0] == '>' || current->next->value[0] == '|'))
+// 			{
+// 				if (!(current->value[0] == '>' && current->next->value[0] == '>') &&
+// 					!(current->value[0] == '<' && current->next->value[0] == '<'))
+// 				{
+// 					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+// 					return (0);
+// 				}
+// 			}
+// 		}
+// 		// Check for missing arguments after redirection operators
+// 		if (current->value[0] == '<' || current->value[0] == '>')
+// 		{
+// 			if (!current->next || current->next->value[0] == '|' || current->next->value[0] == '<' || current->next->value[0] == '>')
+// 			{
+// 				printf("minishell: syntax error near unexpected token '%s'\n", current->next ? current->next->value : "newline");
+// 				return (0);
+// 			}
+// 		}
+// 		// Check for heredoc (`<<`) without a delimiter
+// 		if (current->type == TOKEN_HEREDOC)
+// 		{
+// 			if (!current->next || current->next->type != TOKEN_WORD)
+// 			{
+// 				printf("minishell: syntax error near unexpected token '%s'\n", current->next ? current->next->value : "newline");
+// 				return (0);
+// 			}
+// 		}
+// 		current = current->next;
+// 	}
+// 	// Check if the input ends with an operator
+// 	if (tokens)
+// 	{
+// 		t_token *last = tokens;
+// 		while (last && last->next)
+// 			last = last->next;
+// 		if (last->value[0] == '|' || last->value[0] == '<' || last->value[0] == '>')
+// 		{
+// 			printf("minishell: syntax error near unexpected token 'newline'\n");
+// 			return (0);
+// 		}
+// 	}
+// 	return (1); // Input passed validation
+// }
+
+int	validate_input(t_token *tokens, t_parse *data)
 {
 	t_token *current = tokens;
 	int token_count = 0;
 
-	// Check for empty input
 	if (!current)
 		return (1); // Empty input is valid (no tokens)
+
 	// Check if the input starts with a |
 	if (current->value[0] == '|')
 	{
-		printf("syntax error near unexpected token '%s'\n", current->value);
+		printf("minishell: syntax error near unexpected token '%s'\n", current->value);
+		data->exit = 2; // Set exit status for syntax error
 		return (0);
 	}
 
 	while (current)
 	{
 		token_count++;
-
-		// Check for invalid sequences of operators
 		if ((current->value[0] == '<' || current->value[0] == '>' || current->value[0] == '|'))
 		{
 			if (current->next && (current->next->value[0] == '<' || current->next->value[0] == '>' || current->next->value[0] == '|'))
@@ -107,31 +173,39 @@ int	validate_input(t_token *tokens)
 				if (!(current->value[0] == '>' && current->next->value[0] == '>') &&
 					!(current->value[0] == '<' && current->next->value[0] == '<'))
 				{
-					printf("syntax error near unexpected token '%s'\n", current->next->value);
+					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+					data->exit = 2;
 					return (0);
 				}
 			}
 		}
-		// Check for missing arguments after redirection operators
 		if (current->value[0] == '<' || current->value[0] == '>')
 		{
 			if (!current->next || current->next->value[0] == '|' || current->next->value[0] == '<' || current->next->value[0] == '>')
 			{
-				printf("syntax error near unexpected token '%s'\n", current->next ? current->next->value : "newline");
+				if (current->next)
+					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+				else
+					printf("minishell: syntax error near unexpected token 'newline'\n");
+				data->exit = 2;
 				return (0);
 			}
 		}
-		// Check for heredoc (`<<`) without a delimiter
 		if (current->type == TOKEN_HEREDOC)
 		{
 			if (!current->next || current->next->type != TOKEN_WORD)
 			{
-				printf("syntax error near unexpected token '%s'\n", current->next ? current->next->value : "newline");
+				if (current->next)
+					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+				else
+					printf("minishell: syntax error near unexpected token 'newline'\n");
+				data->exit = 2;
 				return (0);
 			}
 		}
 		current = current->next;
 	}
+
 	// Check if the input ends with an operator
 	if (tokens)
 	{
@@ -140,9 +214,12 @@ int	validate_input(t_token *tokens)
 			last = last->next;
 		if (last->value[0] == '|' || last->value[0] == '<' || last->value[0] == '>')
 		{
-			printf("syntax error near unexpected token 'newline'\n");
+			printf("minishell: syntax error near unexpected token 'newline'\n");
+			data->exit = 2;
 			return (0);
 		}
 	}
-	return (1); // Input passed validation
+
+	data->exit = 0; // No syntax error
+	return (1);
 }

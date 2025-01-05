@@ -33,7 +33,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 			pid_last = run_single_cmd(shell, pipex, pids);
 		clean_pipes(pipex, pipex->cmd);
 		waitpids(pids, pipex->n_cmds, shell, pid_last);
-		ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
+		//ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
 	}
 }
 //organizing execution process for a single command
@@ -96,22 +96,38 @@ int	main(int argc, char **argv, char **envp)
 	t_env_init(&shell, envp);
 	//signal(SIGINT, handle_sigint);
 	shell.exit = 0;
+	// while (shell.exit == 0)
+	// {
+	// 	if	(tokenize(&parse, &shell))
+	// 	{
+	// 		parse_tokens(&parse);
+	// 		pipex.cmd = parse.cmd;
+	// 		//print_command_stack(pipex.cmd); //DEBUG
+	// 	//if(parse.head)
+	// 		exec_mini(&shell, &pipex);
+	// 	}
+	// 	free_tokens(parse.head);
+	// 	parse.head = NULL; // Reset tokens to NULL
+	// 	//printf("exit status: %i\n", shell.last_exit);
+	// }
 	while (shell.exit == 0)
-	{
-		tokenize(&parse, &shell);
-		parse_tokens(&parse);
-		pipex.cmd = parse.cmd;
-		//print_command_stack(pipex.cmd); //DEBUG
-		if(parse.head)
-			exec_mini(&shell, &pipex);
-		free_tokens(parse.head);
-		parse.head = NULL; // Reset tokens to NULL
-	}
+    {
+        tokenize(&parse, &shell);
+        if (parse.valid_input)
+        {
+            parse_tokens(&parse);
+            pipex.cmd = parse.cmd;
+            exec_mini(&shell, &pipex);
+        }
+        free_tokens(parse.head);
+        parse.head = NULL;
+		//printf("exit status: %i\n", shell.last_exit);
+    }
 	free_tokens(parse.head);
 	free_command_stack(parse.cmd);
 	clear_history();//make sure to use the better one (this vs the one below)
 	rl_clear_history();//make sure to use the better one
 	free_envlst(shell.env_lst);
-	printf("last exit, on exit: %i\n", shell.last_exit);
+	//printf("last exit, on exit: %i\n", shell.last_exit);
 	return (shell.last_exit);
 }
