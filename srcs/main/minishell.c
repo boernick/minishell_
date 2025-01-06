@@ -19,7 +19,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	pid_t		pid_last;
 
 	exec_init(shell, pipex, pipex->cmd);
-	// run_heredoc(pipex);
+	// shell->last_exit = run_heredoc(pipex);
 	if (pipex->n_pipes > 0)
 		create_pipes(pipex);
 	pids = malloc(pipex->n_cmds * sizeof(pid_t));

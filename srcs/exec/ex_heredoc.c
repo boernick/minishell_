@@ -6,13 +6,13 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 19:32:55 by nick              #+#    #+#             */
-/*   Updated: 2025/01/06 23:07:34 by nick             ###   ########.fr       */
+/*   Updated: 2025/01/06 23:23:32 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int run_heredoc(t_execution *pipex, t_shell *shell)
+int run_heredoc(t_execution *pipex)
 {
 	t_cmd *cmd;
 
@@ -22,33 +22,35 @@ int run_heredoc(t_execution *pipex, t_shell *shell)
 	while (cmd)
 	{
 		if (cmd->redir && cmd->redir->type == TOKEN_HEREDOC)
-			fork_heredoc(shell, cmd);
+			return (fork_heredoc(cmd));
 		cmd = cmd->next;
 	}
-	return 0;
+	return (EXIT_SUCCESS);
 }
 
-int	fork_heredoc(t_shell *shell, t_cmd *cmd)
+int	fork_heredoc(t_cmd *cmd)
 {
 	pid_t pid;
 	int status;
+	int ret;
 	
 	pid = fork();
 	if (pid < 0)
 		str_error("failed to create heredoc");
 	else if (pid == 0)
-		return (read_heredoc(cmd->redir->file));
+		return (read_heredoc(cmd));
 	else
 	{
 		//handle signals
 		if (waitpid(pid, &status, 0) == -1)
 			str_error("Error waiting for for heredoc");
 		if (WIFEXITED(status))
-			shell->last_exit = WEXITSTATUS(status);
+			ret = WEXITSTATUS(status);
 		else
-			shell->last_exit = WTERMSIG(status) + 128;
+			ret = WTERMSIG(status) + 128;
 		//handle signals.
 	}
+	return (ret);
 }
 
 int	read_heredoc(t_cmd *cmd)
