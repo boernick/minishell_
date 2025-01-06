@@ -56,6 +56,7 @@ typedef struct	s_token
 typedef struct s_redirect
 {
 	char				*file;
+	char				*delimiter;
 	e_token_type		type;
 	struct s_redirect	*next;
 }	t_redirect;
