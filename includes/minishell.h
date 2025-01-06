@@ -191,7 +191,10 @@ int		setup_redirections(t_cmd *cmd);
 void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 void	run_heredoc(t_execution *pipex, t_shell *shell);
-void	handle_heredoc(t_cmd *cmd);
+int		fork_heredoc(t_shell *shell, t_cmd *cmd);
+int		read_heredoc(t_cmd *cmd);
+void	cleanup_heredoc(t_cmd *cmd_p);
+int		read_line_heredoc(char *file, int fd);
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);

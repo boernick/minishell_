@@ -6,7 +6,7 @@
 /*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 19:32:55 by nick              #+#    #+#             */
-/*   Updated: 2025/01/06 22:54:17 by nick             ###   ########.fr       */
+/*   Updated: 2025/01/06 23:07:34 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,10 @@ int	read_heredoc(t_cmd *cmd)
 	
 }
 
+int	read_line_heredoc(char *file, int fd)
+{
+	return (EXIT_SUCCESS);
+}
 
 void	cleanup_heredoc(t_cmd *cmd_p)
 {
