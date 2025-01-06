@@ -190,7 +190,7 @@ void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last);
 int		setup_redirections(t_cmd *cmd);
 void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
-void	run_heredoc(t_execution *pipex);
+void	run_heredoc(t_execution *pipex, t_shell *shell);
 void	handle_heredoc(t_cmd *cmd);
 
 //---------builtins-----------//
