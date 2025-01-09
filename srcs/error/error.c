@@ -12,6 +12,15 @@
 
 #include "../../includes/minishell.h"
 
+int syntax_error(char *token)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd("syntax error near unexpected token '", STDERR_FILENO);
+	ft_putstr_fd(token, STDERR_FILENO);
+	ft_putendl_fd("'", STDERR_FILENO);
+	return (EXIT_FAILURE);
+}
+
 int	str_error(char *error)
 {
 	write(STDERR_FILENO, error, ft_strlen(error));

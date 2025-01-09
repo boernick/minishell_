@@ -158,7 +158,8 @@ int	validate_input(t_token *tokens, t_parse *data)
 	// Check if the input starts with a |
 	if (current->value[0] == '|')
 	{
-		printf("minishell: syntax error near unexpected token '%s'\n", current->value);
+		syntax_error(current->value);
+		//printf("minishell: syntax error near unexpected token '%s'\n", current->value);
 		data->valid_input = 0;
 		data->exit = 2; // Set exit status for syntax error
 		return (0);
@@ -175,7 +176,8 @@ int	validate_input(t_token *tokens, t_parse *data)
 					!(current->value[0] == '<' && current->next->value[0] == '<'))
 				{
 					data->valid_input = 0;
-					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+					syntax_error(current->value);
+					//printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
 					data->exit = 2;
 					return (0);
 				}
@@ -188,12 +190,14 @@ int	validate_input(t_token *tokens, t_parse *data)
 				if (current->next)
 				{
 					data->valid_input = 0;
-					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+					syntax_error(current->value);
+					//printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
 				}
 				else
 				{
 					data->valid_input = 0;
-					printf("minishell: syntax error near unexpected token 'newline'\n");
+					syntax_error(current->value);
+					//printf("minishell: syntax error near unexpected token 'newline'\n");
 				}
 				data->exit = 2;
 				return (0);
@@ -206,12 +210,14 @@ int	validate_input(t_token *tokens, t_parse *data)
 				if (current->next)
 				{
 					data->valid_input = 0;
-					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+					syntax_error(current->value);
+					//printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
 				}
 				else
 				{
 					data->valid_input = 0;
-					printf("minishell: syntax error near unexpected token 'newline'\n");
+					syntax_error(current->value);
+					//printf("minishell: syntax error near unexpected token 'newline'\n");
 				}
 				data->exit = 2;
 				return (0);

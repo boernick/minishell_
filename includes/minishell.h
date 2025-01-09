@@ -222,6 +222,8 @@ int		invalid_option(char *builtin, char *arg);
 int		invalid_identifier(char *builtin, char *arg);
 int		invalid_filedir(char *file);
 int		invalid_filedir_builtin(char *builtin, char *file);
+int		syntax_error(char *token);
+
 
 //---------utils-----------//
 void	free_array(char **array);
