@@ -94,7 +94,7 @@ int	main(int argc, char **argv, char **envp)
 		printf("\"./minishell\" must be the only argument\n");
 		return (0);
 	}
-	struct_init(&parse);
+	struct_init(&parse, &shell);
 	t_env_init(&shell, envp);
 	shell.exit = 0;
 	while (shell.exit == 0)
