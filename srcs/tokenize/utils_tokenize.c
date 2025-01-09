@@ -159,6 +159,7 @@ int	validate_input(t_token *tokens, t_parse *data)
 	if (current->value[0] == '|')
 	{
 		printf("minishell: syntax error near unexpected token '%s'\n", current->value);
+		data->valid_input = 0;
 		data->exit = 2; // Set exit status for syntax error
 		return (0);
 	}
@@ -173,6 +174,7 @@ int	validate_input(t_token *tokens, t_parse *data)
 				if (!(current->value[0] == '>' && current->next->value[0] == '>') &&
 					!(current->value[0] == '<' && current->next->value[0] == '<'))
 				{
+					data->valid_input = 0;
 					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
 					data->exit = 2;
 					return (0);
@@ -184,9 +186,15 @@ int	validate_input(t_token *tokens, t_parse *data)
 			if (!current->next || current->next->value[0] == '|' || current->next->value[0] == '<' || current->next->value[0] == '>')
 			{
 				if (current->next)
+				{
+					data->valid_input = 0;
 					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+				}
 				else
+				{
+					data->valid_input = 0;
 					printf("minishell: syntax error near unexpected token 'newline'\n");
+				}
 				data->exit = 2;
 				return (0);
 			}
@@ -196,9 +204,15 @@ int	validate_input(t_token *tokens, t_parse *data)
 			if (!current->next || current->next->type != TOKEN_WORD)
 			{
 				if (current->next)
+				{
+					data->valid_input = 0;
 					printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+				}
 				else
+				{
+					data->valid_input = 0;
 					printf("minishell: syntax error near unexpected token 'newline'\n");
+				}
 				data->exit = 2;
 				return (0);
 			}
@@ -214,12 +228,11 @@ int	validate_input(t_token *tokens, t_parse *data)
 			last = last->next;
 		if (last->value[0] == '|' || last->value[0] == '<' || last->value[0] == '>')
 		{
+			data->valid_input = 0;
 			printf("minishell: syntax error near unexpected token 'newline'\n");
 			data->exit = 2;
 			return (0);
 		}
 	}
-
-	data->exit = 0; // No syntax error
 	return (1);
 }
