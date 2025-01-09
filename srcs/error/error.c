@@ -64,3 +64,10 @@ int	invalid_filedir_builtin(char *builtin, char *file)
 	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
 	return (EXIT_FAILURE);
 }
+int permission_denied(char *arg)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(arg, STDERR_FILENO);
+	ft_putendl_fd(": Permission denied", STDERR_FILENO);
+	return (126);
+}
