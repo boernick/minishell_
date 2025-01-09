@@ -25,7 +25,9 @@ void process_tokens(char *input, t_parse *data, t_shell *shell)
 	{
 		data->valid_input = 1;
 		classify_token_types(data);
+		//print_tokens(data->head);
 		replace_env_variables_in_tokens(data->head, data);
+		//print_tokens(data->head);
 		free(input);
 	}
 	else

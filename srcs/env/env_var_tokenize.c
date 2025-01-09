@@ -74,16 +74,17 @@ char *replace_variables_in_string(char *input, t_parse *data)
 
 void trim_quotes(char *str)
 {
-    char *src = str;
-    char *dest = str;
+    int len = 0;
+    while (str[len]) // Find the length of the string
+        len++;
 
-    while (*src)
+    if (len > 1 && ((str[0] == '\'' || str[0] == '\"') && (str[len - 1] == '\'' || str[len - 1] == '\"')))
     {
-        if (*src != '\'' && *src != '\"')
-            *dest++ = *src;
-        src++;
+        // Shift the string one character to the left and null-terminate
+        for (int i = 0; i < len - 1; i++)
+            str[i] = str[i + 1];
+        str[len - 2] = '\0'; // Null-terminate the string
     }
-    *dest = '\0'; // Null-terminate the trimmed string
 }
 
 //itterate through the list of tokens looking for WORD tokens. Call replace_variables_in_string
