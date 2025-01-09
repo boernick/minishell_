@@ -33,8 +33,8 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 			pid_last = run_single_cmd(shell, pipex, pids);
 		clean_pipes(pipex, pipex->cmd);
 		waitpids(pids, pipex->n_cmds, shell, pid_last);
-		//ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
 	}
+	ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
 }
 //organizes execution process for a single command
 pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
@@ -108,7 +108,7 @@ int	main(int argc, char **argv, char **envp)
         }
         free_tokens(parse.head);
         parse.head = NULL;
-		//printf("exit status: %i\n", shell.last_exit);
+		// printf("exit status: %i\n", shell.last_exit);
     }
 	free_tokens(parse.head);
 	free_command_stack(parse.cmd);

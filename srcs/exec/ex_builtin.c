@@ -15,7 +15,7 @@
 // runs a given builtin function and returns last exit code
 void	run_builtin(char **argv, t_shell *shell)
 {
-	if (!(ft_strncmp(argv[0], "echo", 4)))
+	if (!ft_strncmp(argv[0], "echo", 4))
 		shell->last_exit = builtin_echo(argv);
 	else if (!ft_strncmp(argv[0], "cd", 2))
 		shell->last_exit = builtin_cd(argv, shell);

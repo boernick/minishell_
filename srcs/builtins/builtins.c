@@ -190,12 +190,12 @@ int	builtin_export(char **argv, t_shell *shell)
 		ret = invalid_identifier("export", argv[1]);
 	else
 	{
+		env = argv[1];
 		if (!export_is_valid(env))
 		{
 			ret = invalid_identifier("export", argv[1]);
 			return (ret);
 		}
-		env = argv[1];
 		ret = export_check(env);
 		pos = ft_strchr(env, '=');
 		export_deldup(shell, env);
@@ -216,12 +216,14 @@ int	export_is_valid(const char *str)
 
 	if (!str || !*str)
 		return (0);
-	if (!ft_isalpha(str[0]) && str[0] != '_')
+	if (!ft_isalpha(str[0]) && str[0] != '_') // Must start with a letter or '_'
 		return (0);
 	i = 1;
-	while (str[i] && str[i] != '=')
+	while (str[i]) // Check every character
 	{
-		if (!ft_isalnum(str[i]) && str[i] != '_')
+		if (str[i] == '=') // '=' marks the end of the identifier
+			break;
+		if (!ft_isalnum(str[i]) && str[i] != '_') // Only letters, numbers, and '_'
 			return (0);
 		i++;
 	}
