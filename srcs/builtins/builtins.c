@@ -73,7 +73,7 @@ int	builtin_cd(char **argv, t_shell *shell)
 	t_env	*home;
 
 	if (argv[1] && argv[2])
-	{	
+	{
 		ft_putendl_fd("minishell: cd: too many arguments", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
@@ -203,7 +203,7 @@ int	builtin_export(char **argv, t_shell *shell)
 			env_addback(shell, ft_strjoin(env, "="));
 		if (pos)
 		{
-			env_addback(shell, env); 
+			env_addback(shell, env);
 			pos = NULL;
 		}
 	}
@@ -278,7 +278,7 @@ int	builtin_unset(char **argv, t_shell *shell)
 		return (ret);
 	if (argv[1][0] == '=' && !argv[1][1])
 		return (ret);
-	else 
+	else
 	{
 		while (argv[i])
 		{
@@ -305,7 +305,7 @@ int	builtin_exit(char **argv, t_shell *shell)
 		ft_putendl_fd(": numeric argument required", STDERR_FILENO);
 		return (2);
 	}
-	else 
+	else
 	{
 		shell->last_exit = EXIT_SUCCESS;
 		if (argv[1] && exit_is_valid(argv[1]))
@@ -361,8 +361,8 @@ void	export_lst(t_env *env_lst)
 		cheapest = NULL;
 		while (lst)
 		{
-			if ((!cheapest && !lst->export) || 
-				(!lst->export && ft_strncmp(lst->content, 
+			if ((!cheapest && !lst->export) ||
+				(!lst->export && ft_strncmp(lst->content,
 					cheapest->content, strlen(lst->content)) < 0))
 				cheapest = lst;
 			lst = lst->next;
