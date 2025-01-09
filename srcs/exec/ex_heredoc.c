@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ex_heredoc.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 19:32:55 by nick              #+#    #+#             */
-/*   Updated: 2025/01/06 23:23:32 by nick             ###   ########.fr       */
+/*   Updated: 2025/01/09 10:31:17 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ int	read_heredoc(t_cmd *cmd)
 
 int	read_line_heredoc(char *file, int fd)
 {
+	(void) file;
+	(void) fd;
 	return (EXIT_SUCCESS);
 }
 

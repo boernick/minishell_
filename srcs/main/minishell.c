@@ -36,7 +36,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 		//ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
 	}
 }
-//organizing execution process for a single command
+//organizes execution process for a single command
 pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 {
 	int	i;
@@ -55,6 +55,7 @@ pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 	return (pids[i]);
 }
 
+// child process runs builtin or executable
 void	run_child_exec(t_execution *pipex, t_shell *shell)
 {
 	get_fd(pipex, pipex->cmd); //DUP2 TO STDIN
@@ -66,6 +67,7 @@ void	run_child_exec(t_execution *pipex, t_shell *shell)
 	exit(shell->last_exit); //added to stop infinite loop when command not found
 }
 
+// organizes parent process for a single builtin without pipes
 void	run_single_builtin(t_execution *pipex, t_shell *shell)
 {
 	if (setup_redirections(pipex->cmd) == 1)
