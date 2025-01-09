@@ -190,21 +190,12 @@ int	builtin_export(char **argv, t_shell *shell)
 		ret = invalid_identifier("export", argv[1]);
 	else
 	{
-<<<<<<< HEAD
 		env = argv[1];
 		if (!export_is_valid(env))
 		{
 			ret = invalid_identifier("export", argv[1]);
 			return (ret);
 		}
-=======
-		// if (!export_is_valid(env))
-		// {
-		// 	ret = invalid_identifier("export", argv[1]);
-		// 	return (ret);
-		// }
-		env = argv[1];
->>>>>>> 26e0c4d6c2f738cdfe7a463b3494ccb0b17f915c
 		ret = export_check(env);
 		pos = ft_strchr(env, '=');
 		export_deldup(shell, env);
