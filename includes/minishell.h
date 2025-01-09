@@ -223,7 +223,7 @@ int		invalid_identifier(char *builtin, char *arg);
 int		invalid_filedir(char *file);
 int		invalid_filedir_builtin(char *builtin, char *file);
 int		syntax_error(char *token);
-
+int 	permission_denied(char *arg);
 
 //---------utils-----------//
 void	free_array(char **array);
