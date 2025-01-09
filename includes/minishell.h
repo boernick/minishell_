@@ -235,6 +235,7 @@ void	export_lst_one(t_env *lst);
 void	export_reset(t_env *lst);
 int		export_check(char *str);
 int		export_deldup(t_shell *shell, char *name);
+int		export_is_valid(const char *str);
 void	print_lst(t_env *lst);
 char	*cd_update_path(t_shell *shell, char *str);
 int		cd_check_error(int err_status, char *dir);

@@ -190,6 +190,11 @@ int	builtin_export(char **argv, t_shell *shell)
 		ret = invalid_identifier("export", argv[1]);
 	else
 	{
+		if (!export_is_valid(env))
+		{
+			ret = invalid_identifier("export", argv[1]);
+			return (ret);
+		}
 		env = argv[1];
 		ret = export_check(env);
 		pos = ft_strchr(env, '=');
@@ -204,6 +209,25 @@ int	builtin_export(char **argv, t_shell *shell)
 	}
 	return (ret);
 }
+
+int	export_is_valid(const char *str)
+{
+	int	i;
+
+	if (!str || !*str)
+		return (0);
+	if (!ft_isalpha(str[0]) && str[0] != '_')
+		return (0);
+	i = 1;
+	while (str[i] && str[i] != '=')
+	{
+		if (!ft_isalnum(str[i]) && str[i] != '_')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 
 // remove duplicates in the env list to be exported
 int	export_deldup(t_shell *shell, char *name)
