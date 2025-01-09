@@ -274,6 +274,8 @@ int	builtin_unset(char **argv, t_shell *shell)
 
 	ret = EXIT_SUCCESS;
 	i = 1;
+	if (argv[0] && !argv[1])
+		return (ret);
 	if (argv[1][0] == '=' && !argv[1][1])
 		return (ret);
 	else 
