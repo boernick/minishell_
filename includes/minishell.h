@@ -186,7 +186,6 @@ pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids);
 void	run_single_builtin(t_execution *pipex, t_shell *shell);
 int		run_path(t_cmd *cmd, char **path_env);
 void	run_child_exec(t_execution *pipex, t_shell *shell);
-int 	check_single_path(char *path, t_cmd *cmd, char **path_env);
 void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last);
 int		setup_redirections(t_cmd *cmd);
 void	reset_fds(t_execution *pipex);

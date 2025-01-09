@@ -48,23 +48,24 @@ int	run_ex(t_cmd *cmd, char **path_env)
 {
 	int		i;
 	char	**path_split;
-	int		result;
+	char	*check_path;
 
 	if (ft_strchr(cmd->argv[0], '/'))
 		return (run_path(cmd, path_env));
 	path_split = ft_split(get_path_env(path_env), ':');
 	if (!path_split)
 		str_error("path split failure");
+	if (!cmd->argv || !cmd->argv[0])
+		str_error("no cmd->argv in struct");
 	i = 0;
 	while (path_split[i])
 	{
-		result = check_single_path(path_split[i], cmd, path_env);
-		if (result != 127)
-		{
-			free_array(path_split);
-			return (result);
-		}
+		check_path = path_join(path_split[i], cmd->argv[0]);
+		if (!(access(check_path, X_OK)))
+			if (execve(check_path, cmd->argv, path_env) == -1)
+				str_error("exec error\n");
 		i++;
+		free(check_path);
 	}
 	free_array(path_split);
 	ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
@@ -72,32 +73,7 @@ int	run_ex(t_cmd *cmd, char **path_env)
 	return (127);
 }
 
-int check_single_path(char *path, t_cmd *cmd, char **path_env)
-{
-	char	*check_path;
-
-	check_path = path_join(path, cmd->argv[0]);
-	if (access(check_path, F_OK) == 0)
-	{
-		if (access(check_path, X_OK) == 0)
-		{
-			execve(check_path, cmd->argv, path_env);
-			free(check_path);
-			if (errno == EACCES)
-				return (126);
-			str_error("exec error\n");
-		}
-		else
-		{
-			free(check_path);
-			return (126);
-		}
-	}
-	free(check_path);
-	return (127);
-}
-
-
+//runs given path directly from prompt and prints errors
 //runs given path directly from prompt and prints errors
 int	run_path(t_cmd *cmd, char **path_env)
 {
@@ -124,5 +100,4 @@ int	run_path(t_cmd *cmd, char **path_env)
 	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
 	return (127);
 }
-
 
