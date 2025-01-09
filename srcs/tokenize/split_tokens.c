@@ -138,4 +138,5 @@ void	split_tokens(char *input, t_parse *data)
 		data->head = data->tail = NULL; // Reset head and tail
 		return;
 	}
+	data->valid_input = 1;
 }
