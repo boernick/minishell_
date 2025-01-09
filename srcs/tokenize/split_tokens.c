@@ -44,99 +44,254 @@ void handle_buffer(t_parse *data, e_token_type token_type)
 //into tokens. Tokens can consist of words (later split up into args and commands)
 //pipes, and redirect. It also pays attention to quote state to ensure words within
 //quotes are grouped in one token.
-void	split_tokens(char *input, t_parse *data)
+// void	split_tokens(char *input, t_parse *data)
+// {
+// 	int i;
+
+// 	i = 0;
+// 	while (input[i] != '\0') {
+// 		if (data->buf_index >= BUFFER_SIZE - 1)
+// 		{
+// 			printf("Buffer overflow detected\n");
+// 			data->valid_input = 0;
+// 			exit(EXIT_FAILURE);
+// 		}
+
+// 		// Handle single quotes
+// 	if (input[i] == '\'' && !data->in_double_quote) {
+// 			data->buffer[data->buf_index++] = input[i];  // Add quote to buffer
+// 			data->in_single_quote = !data->in_single_quote;
+// 			i++;
+// 			continue;
+//         }
+
+// 		// Handle double quotes
+//         if (input[i] == '\"' && !data->in_single_quote) {
+// 			data->buffer[data->buf_index++] = input[i];  // Add quote to buffer
+// 			data->in_double_quote = !data->in_double_quote;
+// 			i++;
+// 			continue;
+// 		}
+
+// 		// Handle whitespace outside of quotes
+// 		if (isspace(input[i]) && !data->in_single_quote && !data->in_double_quote) {
+// 			handle_buffer(data, TOKEN_WORD);
+// 			i++;
+// 			continue;
+// 		}
+
+// 		// Handle pipe
+// 		if (input[i] == '|')
+// 		{
+// 			handle_buffer(data, TOKEN_WORD);
+// 			add_token_to_list(data, new_token(TOKEN_PIPE, "|"));
+// 			i++;
+// 			continue;
+// 		}
+
+// 		// Handle redirection: output
+// 		if (input[i] == '>')
+// 		{
+// 			handle_buffer(data, TOKEN_WORD);
+// 			if (input[i + 1] == '>')
+// 			{
+// 				add_token_to_list(data, new_token(TOKEN_REDIR_APPEND, ">>"));
+// 				i += 2;
+// 			}
+// 			else
+// 			{
+// 				add_token_to_list(data, new_token(TOKEN_REDIR_OUT, ">"));
+// 				i++;
+// 			}
+// 			continue;
+// 		}
+
+// 		// Handle redirection: input
+// 		if (input[i] == '<')
+// 		{
+// 			handle_buffer(data, TOKEN_WORD);
+// 			if (input[i + 1] == '<')
+// 			{
+// 				add_token_to_list(data, new_token(TOKEN_HEREDOC, "<<"));
+// 				i += 2;
+// 			}
+// 			else
+// 			{
+// 				add_token_to_list(data, new_token(TOKEN_REDIR_IN, "<"));
+// 				i++;
+// 			}
+// 			continue;
+// 		}
+// 		// Add regular characters to buffer
+// 		data->buffer[data->buf_index++] = input[i++];
+// 	}
+// 	// Finalize last token if available
+// 	handle_buffer(data, TOKEN_WORD);
+
+// 	if (data->in_single_quote || data->in_double_quote)
+// 	{
+// 		data->valid_input = 0;
+// 		fprintf(stderr, "minishell: syntax error unclosed quote detected\n");
+// 		if (data->head) {  // Only free tokens if they exist
+// 			free_tokens(data->head);
+// 		}
+// 		data->head = data->tail = NULL; // Reset head and tail
+// 		return;
+// 	}
+// 	data->valid_input = 1;
+// }
+
+
+int validate_input(t_token *tokens, t_parse *data)
 {
-	int i;
+    t_token *current = tokens;
 
-	i = 0;
-	while (input[i] != '\0') {
-		if (data->buf_index >= BUFFER_SIZE - 1)
-		{
-			printf("Buffer overflow detected\n");
-			data->valid_input = 0;
-			exit(EXIT_FAILURE);
-		}
+    if (!current)
+        return (1); // Empty input is valid (no tokens)
 
-		// Handle single quotes
-	if (input[i] == '\'' && !data->in_double_quote) {
-			data->buffer[data->buf_index++] = input[i];  // Add quote to buffer
-			data->in_single_quote = !data->in_single_quote;
-			i++;
-			continue;
+    // Check if the input starts with a pipe
+    if (current->value[0] == '|')
+    {
+        syntax_error("|");
+        data->valid_input = 0;
+        data->exit = 2; // Syntax error exit status
+        return (0);
+    }
+
+    while (current)
+    {
+        t_token *next = current->next;
+
+        // Check for invalid operator sequences
+        if (current->type == TOKEN_PIPE || current->type == TOKEN_REDIR_IN || current->type == TOKEN_REDIR_OUT || current->type == TOKEN_REDIR_APPEND)
+        {
+            // Handle cases like `>` at the end or `| |`
+            if (!next || next->type == TOKEN_PIPE || next->type == TOKEN_REDIR_IN || next->type == TOKEN_REDIR_OUT || next->type == TOKEN_REDIR_APPEND)
+            {
+                syntax_error(next ? next->value : "newline");
+                data->valid_input = 0;
+                data->exit = 2;
+                return (0);
+            }
         }
 
-		// Handle double quotes
-        if (input[i] == '\"' && !data->in_single_quote) {
-			data->buffer[data->buf_index++] = input[i];  // Add quote to buffer
-			data->in_double_quote = !data->in_double_quote;
-			i++;
-			continue;
-		}
+        // Handle heredoc (`<<`) without a delimiter
+        if (current->type == TOKEN_HEREDOC && (!next || next->type != TOKEN_WORD))
+        {
+            syntax_error(next ? next->value : "newline");
+            data->valid_input = 0;
+            data->exit = 2;
+            return (0);
+        }
 
-		// Handle whitespace outside of quotes
-		if (isspace(input[i]) && !data->in_single_quote && !data->in_double_quote) {
-			handle_buffer(data, TOKEN_WORD);
-			i++;
-			continue;
-		}
+        current = next;
+    }
 
-		// Handle pipe
-		if (input[i] == '|')
-		{
-			handle_buffer(data, TOKEN_WORD);
-			add_token_to_list(data, new_token(TOKEN_PIPE, "|"));
-			i++;
-			continue;
-		}
+    // Check if the last token is an operator
+    t_token *last = tokens;
+    while (last && last->next)
+        last = last->next;
 
-		// Handle redirection: output
-		if (input[i] == '>')
-		{
-			handle_buffer(data, TOKEN_WORD);
-			if (input[i + 1] == '>')
-			{
-				add_token_to_list(data, new_token(TOKEN_REDIR_APPEND, ">>"));
-				i += 2;
-			}
-			else
-			{
-				add_token_to_list(data, new_token(TOKEN_REDIR_OUT, ">"));
-				i++;
-			}
-			continue;
-		}
+    if (last->type == TOKEN_PIPE || last->type == TOKEN_REDIR_IN || last->type == TOKEN_REDIR_OUT || last->type == TOKEN_REDIR_APPEND)
+    {
+        syntax_error("newline");
+        data->valid_input = 0;
+        data->exit = 2;
+        return (0);
+    }
 
-		// Handle redirection: input
-		if (input[i] == '<')
-		{
-			handle_buffer(data, TOKEN_WORD);
-			if (input[i + 1] == '<')
-			{
-				add_token_to_list(data, new_token(TOKEN_HEREDOC, "<<"));
-				i += 2;
-			}
-			else
-			{
-				add_token_to_list(data, new_token(TOKEN_REDIR_IN, "<"));
-				i++;
-			}
-			continue;
-		}
-		// Add regular characters to buffer
-		data->buffer[data->buf_index++] = input[i++];
-	}
-	// Finalize last token if available
-	handle_buffer(data, TOKEN_WORD);
+    return (1); // Input is valid
+}
 
-	if (data->in_single_quote || data->in_double_quote)
-	{
-		data->valid_input = 0;
-		fprintf(stderr, "minishell: syntax error unclosed quote detected\n");
-		if (data->head) {  // Only free tokens if they exist
-			free_tokens(data->head);
-		}
-		data->head = data->tail = NULL; // Reset head and tail
-		return;
-	}
-	data->valid_input = 1;
+void split_tokens(char *input, t_parse *data)
+{
+    int i = 0;
+
+    while (input[i] != '\0')
+    {
+        if (data->buf_index >= BUFFER_SIZE - 1)
+        {
+            printf("Buffer overflow detected\n");
+            data->valid_input = 0;
+            exit(EXIT_FAILURE);
+        }
+
+        if (input[i] == '\'' && !data->in_double_quote)
+        {
+            data->buffer[data->buf_index++] = input[i];
+            data->in_single_quote = !data->in_single_quote;
+            i++;
+            continue;
+        }
+
+        if (input[i] == '\"' && !data->in_single_quote)
+        {
+            data->buffer[data->buf_index++] = input[i];
+            data->in_double_quote = !data->in_double_quote;
+            i++;
+            continue;
+        }
+
+        if (isspace(input[i]) && !data->in_single_quote && !data->in_double_quote)
+        {
+            handle_buffer(data, TOKEN_WORD);
+            i++;
+            continue;
+        }
+
+        if (input[i] == '|' && !data->in_single_quote && !data->in_double_quote)
+        {
+            handle_buffer(data, TOKEN_WORD);
+            add_token_to_list(data, new_token(TOKEN_PIPE, "|"));
+            i++;
+            continue;
+        }
+
+        if (input[i] == '>' && !data->in_single_quote && !data->in_double_quote)
+        {
+            handle_buffer(data, TOKEN_WORD);
+            if (input[i + 1] == '>')
+            {
+                add_token_to_list(data, new_token(TOKEN_REDIR_APPEND, ">>"));
+                i += 2;
+            }
+            else
+            {
+                add_token_to_list(data, new_token(TOKEN_REDIR_OUT, ">"));
+                i++;
+            }
+            continue;
+        }
+
+        if (input[i] == '<' && !data->in_single_quote && !data->in_double_quote)
+        {
+            handle_buffer(data, TOKEN_WORD);
+            if (input[i + 1] == '<')
+            {
+                add_token_to_list(data, new_token(TOKEN_HEREDOC, "<<"));
+                i += 2;
+            }
+            else
+            {
+                add_token_to_list(data, new_token(TOKEN_REDIR_IN, "<"));
+                i++;
+            }
+            continue;
+        }
+
+        data->buffer[data->buf_index++] = input[i++];
+    }
+
+    handle_buffer(data, TOKEN_WORD);
+
+    if (data->in_single_quote || data->in_double_quote)
+    {
+        data->valid_input = 0;
+        fprintf(stderr, "minishell: syntax error: unclosed quote detected\n");
+        free_tokens(data->head);
+        data->head = data->tail = NULL;
+        return;
+    }
+	//print_tokens(data->head);
+    data->valid_input = 1;
 }

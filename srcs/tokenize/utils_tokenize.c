@@ -147,102 +147,102 @@ void free_tokens(t_token *head)
 // 	return (1); // Input passed validation
 // }
 
-int	validate_input(t_token *tokens, t_parse *data)
-{
-	t_token *current = tokens;
-	int token_count = 0;
+// int	validate_input(t_token *tokens, t_parse *data)
+// {
+// 	t_token *current = tokens;
+// 	int token_count = 0;
 
-	if (!current)
-		return (1); // Empty input is valid (no tokens)
+// 	if (!current)
+// 		return (1); // Empty input is valid (no tokens)
 
-	// Check if the input starts with a |
-	if (current->value[0] == '|')
-	{
-		syntax_error(current->value);
-		//printf("minishell: syntax error near unexpected token '%s'\n", current->value);
-		data->valid_input = 0;
-		data->exit = 2; // Set exit status for syntax error
-		return (0);
-	}
+// 	// Check if the input starts with a |
+// 	if (current->value[0] == '|')
+// 	{
+// 		syntax_error(current->value);
+// 		//printf("minishell: syntax error near unexpected token '%s'\n", current->value);
+// 		data->valid_input = 0;
+// 		data->exit = 2; // Set exit status for syntax error
+// 		return (0);
+// 	}
 
-	while (current)
-	{
-		token_count++;
-		if ((current->value[0] == '<' || current->value[0] == '>' || current->value[0] == '|'))
-		{
-			if (current->next && (current->next->value[0] == '<' || current->next->value[0] == '>' || current->next->value[0] == '|'))
-			{
-				if (!(current->value[0] == '>' && current->next->value[0] == '>') &&
-					!(current->value[0] == '<' && current->next->value[0] == '<'))
-				{
-					data->valid_input = 0;
-					syntax_error(current->value);
-					//printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
-					data->exit = 2;
-					return (0);
-				}
-			}
-		}
-		if (current->value[0] == '<' || current->value[0] == '>')
-		{
-			if (!current->next || current->next->value[0] == '|' || current->next->value[0] == '<' || current->next->value[0] == '>')
-			{
-				if (current->next)
-				{
-					data->valid_input = 0;
-					syntax_error(current->value);
-					//printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
-				}
-				else
-				{
-					data->valid_input = 0;
-					syntax_error(current->value);
-					//printf("minishell: syntax error near unexpected token 'newline'\n");
-				}
-				data->exit = 2;
-				return (0);
-			}
-		}
-		if (current->type == TOKEN_HEREDOC)
-		{
-			if (!current->next || current->next->type != TOKEN_WORD)
-			{
-				if (current->next)
-				{
-					data->valid_input = 0;
-					syntax_error(current->value);
-					//printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
-				}
-				else
-				{
-					data->valid_input = 0;
-					syntax_error(current->value);
-					//printf("minishell: syntax error near unexpected token 'newline'\n");
-				}
-				data->exit = 2;
-				return (0);
-			}
-		}
-		current = current->next;
-	}
+// 	while (current)
+// 	{
+// 		token_count++;
+// 		if ((current->value[0] == '<' || current->value[0] == '>' || current->value[0] == '|'))
+// 		{
+// 			if (current->next && (current->next->value[0] == '<' || current->next->value[0] == '>' || current->next->value[0] == '|'))
+// 			{
+// 				if (!(current->value[0] == '>' && current->next->value[0] == '>') &&
+// 					!(current->value[0] == '<' && current->next->value[0] == '<'))
+// 				{
+// 					data->valid_input = 0;
+// 					syntax_error(current->value);
+// 					//printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+// 					data->exit = 2;
+// 					return (0);
+// 				}
+// 			}
+// 		}
+// 		if (current->value[0] == '<' || current->value[0] == '>')
+// 		{
+// 			if (!current->next || current->next->value[0] == '|' || current->next->value[0] == '<' || current->next->value[0] == '>')
+// 			{
+// 				if (current->next)
+// 				{
+// 					data->valid_input = 0;
+// 					syntax_error(current->value);
+// 					//printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+// 				}
+// 				else
+// 				{
+// 					data->valid_input = 0;
+// 					syntax_error(current->value);
+// 					//printf("minishell: syntax error near unexpected token 'newline'\n");
+// 				}
+// 				data->exit = 2;
+// 				return (0);
+// 			}
+// 		}
+// 		if (current->type == TOKEN_HEREDOC)
+// 		{
+// 			if (!current->next || current->next->type != TOKEN_WORD)
+// 			{
+// 				if (current->next)
+// 				{
+// 					data->valid_input = 0;
+// 					syntax_error(current->value);
+// 					//printf("minishell: syntax error near unexpected token '%s'\n", current->next->value);
+// 				}
+// 				else
+// 				{
+// 					data->valid_input = 0;
+// 					syntax_error(current->value);
+// 					//printf("minishell: syntax error near unexpected token 'newline'\n");
+// 				}
+// 				data->exit = 2;
+// 				return (0);
+// 			}
+// 		}
+// 		current = current->next;
+// 	}
 
-	// Check if the input ends with an operator
-	if (tokens)
-	{
-		t_token *last = tokens;
-		while (last && last->next)
-			last = last->next;
-		if (last->value[0] == '|' || last->value[0] == '<' || last->value[0] == '>')
-		{
-			data->valid_input = 0;
-			//printf("minishell: syntax error near unexpected token 'newline'\n");
-			syntax_error(current->value);
-			data->exit = 2;
-			return (0);
-		}
-	}
-	return (1);
-}
+// 	// Check if the input ends with an operator
+// 	if (tokens)
+// 	{
+// 		t_token *last = tokens;
+// 		while (last && last->next)
+// 			last = last->next;
+// 		if (last->value[0] == '|' || last->value[0] == '<' || last->value[0] == '>')
+// 		{
+// 			data->valid_input = 0;
+// 			//printf("minishell: syntax error near unexpected token 'newline'\n");
+// 			syntax_error(current->value);
+// 			data->exit = 2;
+// 			return (0);
+// 		}
+// 	}
+// 	return (1);
+// }
 
 
 // int validate_input(t_token *tokens, t_parse *data)
@@ -454,6 +454,7 @@ int	validate_input(t_token *tokens, t_parse *data)
 //                 }
 //                 else if (current->type == TOKEN_REDIR_OUT && next->type == TOKEN_REDIR_OUT)
 //                 {
+// 					print_tokens(tokens);
 //                     // Special case for `>>`, must not be followed by another `>>`
 //                     if (next->next && next->next->value[0] == '>' && next->next->next && next->next->next->value[0] != '>')
 //                         syntax_error(">");
@@ -497,7 +498,7 @@ int	validate_input(t_token *tokens, t_parse *data)
 //         current = current->next;
 //     }
 
-    // Check if the last token is an operator
+//     Check if the last token is an operator
 //     t_token *last = tokens;
 //     while (last && last->next)
 //         last = last->next;
@@ -587,3 +588,95 @@ int	validate_input(t_token *tokens, t_parse *data)
 
 //     return (1); // Input is valid
 // }
+
+	// int validate_input(t_token *tokens, t_parse *data)
+	// {
+	// 	t_token *current = tokens;
+
+	// 	if (!current)
+	// 		return (1); // Empty input is valid (no tokens)
+
+	// 	// Check if the input starts with a pipe
+	// 	if (current->value[0] == '|')
+	// 	{
+	// 		syntax_error("|");
+	// 		data->valid_input = 0;
+	// 		data->exit = 2; // Syntax error exit status
+	// 		return (0);
+	// 	}
+
+	// 	while (current)
+	// 	{
+	// 		// Check for invalid sequences of operators
+	// 		if (current->value[0] == '<' || current->value[0] == '>' || current->value[0] == '|')
+	// 		{
+	// 			t_token *next = current->next;
+
+	// 			// Check for missing arguments or invalid sequences
+	// 			if (!next || (next->value[0] == '<' || next->value[0] == '>' || next->value[0] == '|'))
+	// 			{
+	// 				if (!next) // Handle cases like `<` or `>` at the end
+	// 				{
+	// 					syntax_error("newline");
+	// 				}
+	// 				else if (current->value[0] == '>' && next->value[0] == '>')
+	// 				{
+	// 					if (current->type == TOKEN_REDIR_APPEND && next->type == TOKEN_REDIR_OUT)
+	// 						syntax_error(">");
+	// 					else
+	// 						syntax_error(">>");
+	// 				}
+	// 				else if (current->value[0] == '<' && next->value[0] == '<')
+	// 				{
+	// 					if (current->type == TOKEN_HEREDOC && next->type == TOKEN_REDIR_IN)
+	// 						syntax_error("<");
+	// 					else
+	// 						syntax_error("<<");
+	// 				}
+	// 				else if (current->value[0] == '<' && next->value[0] == '<')
+	// 				{
+	// 				print_tokens(tokens);
+	// 				}
+	// 				else
+	// 				{
+	// 					// For other cases like `|` or single `>`/`<`
+	// 					syntax_error(next->value);
+	// 				}
+
+	// 				data->valid_input = 0;
+	// 				data->exit = 2;
+	// 				return (0);
+	// 			}
+	// 		}
+
+	// 		// Handle heredoc (`<<`) without a delimiter
+	// 		if (current->type == TOKEN_HEREDOC)
+	// 		{
+	// 			t_token *next = current->next;
+	// 			if (!next || next->type != TOKEN_WORD)
+	// 			{
+	// 				syntax_error(next ? next->value : "newline");
+	// 				data->valid_input = 0;
+	// 				data->exit = 2;
+	// 				return (0);
+	// 			}
+	// 		}
+
+	// 		current = current->next;
+	// 	}
+
+	// 	// Check if the last token is an operator
+	// 	t_token *last = tokens;
+	// 	while (last && last->next)
+	// 		last = last->next;
+
+	// 	if (last->value[0] == '<' || last->value[0] == '>' || last->value[0] == '|')
+	// 	{
+	// 		syntax_error("newline");
+	// 		data->valid_input = 0;
+	// 		data->exit = 2;
+	// 		return (0);
+	// 	}
+
+	// 	return (1); // Input is valid
+	// }
