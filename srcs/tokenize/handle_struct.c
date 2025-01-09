@@ -1,10 +1,10 @@
 #include "../../includes/minishell.h"
 
 // Initializes the fields of the t_data struct for starting a new shell instance.
-void	struct_init(t_parse *data)
+void	struct_init(t_parse *data, t_shell *shell)
 {
+	shell->last_exit = 0;
 	data->cmd = NULL;
-	//shell->arg = "cat";
 	data->exit = 0;
 	data->head = NULL;
 	data->tail = NULL;

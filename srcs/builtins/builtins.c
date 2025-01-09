@@ -130,8 +130,8 @@ int	cd_check_error(int err_status, char *dir)
 		ft_putendl_fd(": No such file or directory", STDERR_FILENO);
 	}
 	else
-		return (EXIT_FAILURE);
-	return (EXIT_SUCCESS);
+		return (EXIT_SUCCESS);
+	return (EXIT_FAILURE);
 }
 
 char	*cd_update_path(t_shell *shell, char *str)
@@ -190,12 +190,12 @@ int	builtin_export(char **argv, t_shell *shell)
 		ret = invalid_identifier("export", argv[1]);
 	else
 	{
-		// if (!export_is_valid(env))
-		// {
-		// 	ret = invalid_identifier("export", argv[1]);
-		// 	return (ret);
-		// }
 		env = argv[1];
+		if (!export_is_valid(env))
+		{
+			ret = invalid_identifier("export", argv[1]);
+			return (ret);
+		}
 		ret = export_check(env);
 		pos = ft_strchr(env, '=');
 		export_deldup(shell, env);
@@ -216,12 +216,14 @@ int	export_is_valid(const char *str)
 
 	if (!str || !*str)
 		return (0);
-	if (!ft_isalpha(str[0]) && str[0] != '_')
+	if (!ft_isalpha(str[0]) && str[0] != '_') // Must start with a letter or '_'
 		return (0);
 	i = 1;
-	while (str[i] && str[i] != '=')
+	while (str[i]) // Check every character
 	{
-		if (!ft_isalnum(str[i]) && str[i] != '_')
+		if (str[i] == '=') // '=' marks the end of the identifier
+			break;
+		if (!ft_isalnum(str[i]) && str[i] != '_') // Only letters, numbers, and '_'
 			return (0);
 		i++;
 	}
@@ -272,6 +274,8 @@ int	builtin_unset(char **argv, t_shell *shell)
 
 	ret = EXIT_SUCCESS;
 	i = 1;
+	if (argv[0] && !argv[1])
+		return (ret);
 	if (argv[1][0] == '=' && !argv[1][1])
 		return (ret);
 	else
@@ -279,7 +283,7 @@ int	builtin_unset(char **argv, t_shell *shell)
 		while (argv[i])
 		{
 			if (env_del(shell, argv[i]) == -1)
-				ret = EXIT_FAILURE;
+				ret = EXIT_SUCCESS;
 			i++;
 		}
 	}
@@ -307,7 +311,7 @@ int	builtin_exit(char **argv, t_shell *shell)
 		if (argv[1] && exit_is_valid(argv[1]))
 			shell->last_exit = (ft_atoi(argv[1]) % 256 + 256) % 256;
 		shell->exit = 1;
-		ft_putendl_fd("exit", STDERR_FILENO);
+		ft_putendl_fd("exit", STDOUT_FILENO);
 		return (shell->last_exit);
 	}
 }

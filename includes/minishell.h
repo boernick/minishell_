@@ -160,7 +160,7 @@ void	handle_sigint(int sig);
 void	tokenize(t_parse *parse, t_shell *shell);
 
 //------handle_struct-------//
-void	struct_init(t_parse *shell);
+void	struct_init(t_parse *data, t_shell *shell);
 void	reset_parse(t_parse *data);
 
 //---------env_var---------//
