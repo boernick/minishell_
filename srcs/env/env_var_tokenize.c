@@ -5,10 +5,16 @@ char *get_env_variable(char *var_name, t_parse *data)
 	char *env_value;
 	char *exit_status_str;
 
-    if (strcmp(var_name, "?") == 0) // Replace with your custom strcmp
+    if (ft_strncmp(var_name, "?", 1) == 0)
     {
         exit_status_str = ft_itoa(data->exit);
-        return (exit_status_str); // Return the exit status string
+
+        // Concatenate the exit status with the rest of `var_name`, if any
+        char *remaining = var_name + 1; // Skip `?`
+        char *result = ft_strjoin(exit_status_str, remaining);
+
+        free(exit_status_str); // Free the temporary exit status string
+        return result;
     }
     env_value = getenv(var_name);
     if (!env_value)
@@ -42,8 +48,8 @@ char *replace_variables_in_string(char *input, t_parse *data)
         }
         else if (input[i] == '$' && quote_char != '\'') // Expand only outside single quotes
         {
-            i++; // Skip the `$`
-			if (input[i] == '\0' || input[i] == ' ') // Handle single `$` or `$ $`
+			i++; // Skip the `$`
+			if (input[i] == '\"' || input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
 			{
 				result[res_index++] = '$';
 				continue;
@@ -52,7 +58,7 @@ char *replace_variables_in_string(char *input, t_parse *data)
             int var_index = 0;
 
             while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
-                var_name[var_index++] = input[i++];
+				var_name[var_index++] = input[i++];
             var_name[var_index] = '\0';
 
             char *var_value = get_env_variable(var_name, data);
