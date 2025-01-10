@@ -101,7 +101,9 @@ void replace_env_variables_in_tokens(t_token *tokens, t_parse *data)
 
     while (tokens)
     {
-        if (tokens->type == TOKEN_ARG)
+		if (tokens->type == TOKEN_FILE_ARG)
+			trim_quotes(tokens->value);
+        else if (tokens->type == TOKEN_ARG)
         {
             new_value = replace_variables_in_string(tokens->value, data);
             if (new_value != tokens->value) // Only free if they are different
