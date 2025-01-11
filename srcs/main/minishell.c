@@ -102,8 +102,8 @@ int	main(int argc, char **argv, char **envp)
 	t_env_init(&shell, envp);
 	shell.exit = 0;
 	while (shell.exit == 0)
-    {
-        tokenize(&parse, &shell);
+	{
+		tokenize(&parse, &shell);
 		if (!parse.head)
 		{
 			shell.last_exit = 0;

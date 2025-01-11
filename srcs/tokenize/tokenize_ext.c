@@ -49,7 +49,7 @@ void classify_token_types(t_parse *data)
 		// Handle other arguments and flags
 		else if (current_token->type == TOKEN_WORD)
 		{
-			if (current_token->value[0] == '-')
+			if (current_token->value[0] == '-' && current_token->value[1] == 'n')
 				current_token->type = TOKEN_FLAG_ARG;
 			else
 				current_token->type = TOKEN_ARG;
