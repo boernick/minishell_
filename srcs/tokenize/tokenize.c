@@ -21,12 +21,16 @@ void process_tokens(char *input, t_parse *data, t_shell *shell)
 	reset_parse(data);
 	split_tokens(input, data);
 	data->exit = shell->last_exit;
+	//write(1, "testing1\n", 9);
 	if (validate_input(data->head, data) && data->valid_input)
 	{
+		//write(2, "testing2\n", 9);
 		data->valid_input = 1;
 		classify_token_types(data);
+		//write(3, "testing3\n", 9);
 		//print_tokens(data->head);
 		replace_env_variables_in_tokens(data->head, data);
+		//write(4, "testing4\n", 9);
 		//print_tokens(data->head);
 		free(input);
 	}

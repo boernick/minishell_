@@ -49,7 +49,7 @@ pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 		shell->last_exit = 1;
 	pids[i] = fork_child();
 	if (pids[i++] == 0)
-	{	
+	{
 		if (redir_status == 1)
 			exit(1);
 		run_child_exec(pipex, shell);
@@ -104,6 +104,11 @@ int	main(int argc, char **argv, char **envp)
 	while (shell.exit == 0)
     {
         tokenize(&parse, &shell);
+		if (!parse.head)
+		{
+			shell.last_exit = 0;
+			continue;
+		}
         if (parse.valid_input)
         {
             parse_tokens(&parse);
