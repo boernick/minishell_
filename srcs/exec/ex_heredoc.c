@@ -64,15 +64,15 @@ int	read_heredoc(t_cmd *cmd)
 	if (fd == -1)
 		return (EXIT_FAILURE);
 	while (read_heredoc)
-		read_heredoc = read_line_heredoc(cmd->redir->file, fd);
+		read_heredoc = read_line_heredoc(cmd->redir->file, cmd->redir->delimiter, fd);
 	close(fd);
-	exit (0);
-	
+	exit (EXIT_SUCCESS);
 }
 
-int	read_line_heredoc(char *file, int fd)
+int	read_line_heredoc(char *file, char* delimiter, int fd)
 {
 	(void) file;
+	(void) delimiter;
 	(void) fd;
 	return (EXIT_SUCCESS);
 }
