@@ -230,7 +230,6 @@ int	export_is_valid(const char *str)
 	return (1);
 }
 
-
 // remove duplicates in the env list to be exported
 int	export_deldup(t_shell *shell, char *name)
 {

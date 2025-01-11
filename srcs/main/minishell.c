@@ -48,8 +48,12 @@ pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 	if (redir_status == 1)
 		shell->last_exit = 1;
 	pids[i] = fork_child();
-	if (pids[i++] == 0 && redir_status != 1)
+	if (pids[i++] == 0)
+	{	
+		if (redir_status == 1)
+			exit(1);
 		run_child_exec(pipex, shell);
+	}
 	else
 		update_exec(pipex);
 	return (pids[i]);
