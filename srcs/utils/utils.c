@@ -17,17 +17,20 @@ int	handle_file(char *filename, int type)
 {
 	int	fd;
 	char *last_dash;
+	char *folder_path;
 
 	fd = 0;
 	if (type == TOKEN_REDIR_IN)
 		fd = open(filename, O_RDONLY);
 	else if (type == TOKEN_REDIR_OUT)
 	{
-		
 		last_dash = (ft_strrchr(filename, '/'));
 		if (last_dash)
-			if (access(filename, F_OK) == -1)
+		{
+			folder_path = ft_strndup(filename, last_dash - filename);
+			if (access(folder_path, F_OK) == -1)
 				return (invalid_filedir(filename));
+		}
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	}
 	else if (type == TOKEN_REDIR_APPEND)
