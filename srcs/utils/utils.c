@@ -16,29 +16,42 @@
 int	handle_file(char *filename, int type)
 {
 	int	fd;
-	char *last_dash;
-	char *folder_path;
 
 	fd = 0;
 	if (type == TOKEN_REDIR_IN)
 		fd = open(filename, O_RDONLY);
 	else if (type == TOKEN_REDIR_OUT)
 	{
-		last_dash = (ft_strrchr(filename, '/'));
-		if (last_dash)
-		{
-			folder_path = ft_strndup(filename, last_dash - filename);
-			if (access(folder_path, F_OK) == -1)
-				return (invalid_filedir(filename));
-		}
+		if (check_folder(filename) != EXIT_SUCCESS)
+			return (invalid_filedir(filename));
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	}
 	else if (type == TOKEN_REDIR_APPEND)
-		fd = open(filename, O_WRONLY | O_CREAT |O_APPEND, 0644);
+		fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 		if (errno == EACCES)
 			ft_putendl_fd("minishell: Permission denied", STDERR_FILENO);
 	return (fd);
+}
+
+// check if directory of the file name exists
+int	check_folder(char *filename)
+{
+	char *last_dash;
+	char *folder_path;
+
+	last_dash = (ft_strrchr(filename, '/'));
+	if (last_dash)
+	{
+		folder_path = ft_strndup(filename, last_dash - filename);
+		if (access(folder_path, F_OK) == -1)
+		{
+			free(folder_path);
+			return (invalid_filedir(filename));
+		}
+		free(folder_path);
+	}
+	return (EXIT_SUCCESS);
 }
 
 //loops through t_env struct and frees all allocated memory

@@ -244,6 +244,7 @@ int		cd_check_error(int err_status, char *dir);
 int 	cd_to_path(t_shell *shell, char *arg);
 int		check_dir(char *path);
 bool	exit_is_valid(char *pnum);
+int		check_folder(char *filename);
 
 //---------minishell-----------//
 void	calibrate_exec(t_execution *pipex);
