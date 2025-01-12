@@ -194,7 +194,7 @@ int		run_heredoc(t_execution *pipex);
 int		fork_heredoc(t_cmd *cmd);
 int		read_heredoc(t_cmd *cmd);
 void	cleanup_heredoc(t_cmd *cmd_p);
-int		read_line_heredoc(char *file, int fd);
+int		read_line_heredoc(char *file, char* delimiter, int fd);
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);

@@ -62,13 +62,13 @@ pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 // child process runs builtin or executable
 void	run_child_exec(t_execution *pipex, t_shell *shell)
 {
-	get_fd(pipex, pipex->cmd); //DUP2 TO STDIN
-	clean_pipes(pipex, pipex->cmd); //CLOSING FDS
+	get_fd(pipex, pipex->cmd);
+	clean_pipes(pipex, pipex->cmd);
 	if (pipex->cmd->is_builtin)
-		run_builtin(pipex->cmd->argv, shell); // exit code?
+		run_builtin(pipex->cmd->argv, shell);
 	else
 		shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
-	exit(shell->last_exit); //added to stop infinite loop when command not found
+	exit(shell->last_exit);
 }
 
 // organizes parent process for a single builtin without pipes

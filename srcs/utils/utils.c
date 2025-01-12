@@ -19,27 +19,22 @@ int	handle_file(char *filename, int type)
 	char *last_dash;
 
 	fd = 0;
-	if (type == TOKEN_REDIR_IN || type == TOKEN_HEREDOC) // || HEREDOC
+	if (type == TOKEN_REDIR_IN)
 		fd = open(filename, O_RDONLY);
 	else if (type == TOKEN_REDIR_OUT)
 	{
+		
 		last_dash = (ft_strrchr(filename, '/'));
 		if (last_dash)
-		{
 			if (access(filename, F_OK) == -1)
-			{
-				ft_putstr_fd("minishell: ", STDERR_FILENO);
-				ft_putstr_fd(filename, STDERR_FILENO);
-				ft_putendl_fd(": No such file or directory", STDERR_FILENO);
-				return (EXIT_FAILURE);
-			}
-		}
+				return (invalid_filedir(filename));
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	}
 	else if (type == TOKEN_REDIR_APPEND)
 		fd = open(filename, O_WRONLY | O_CREAT |O_APPEND, 0644);
-	else
-		str_error("wrong type argument to handle file\n");
+	if (fd == -1)
+		if (errno == EACCES)
+			ft_putendl_fd("minishell: Permission denied", STDERR_FILENO);
 	return (fd);
 }
 

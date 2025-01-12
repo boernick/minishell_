@@ -81,7 +81,7 @@ int	run_path(t_cmd *cmd, char **path_env)
 	{
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
-		ft_putendl_fd(": is a directory", STDERR_FILENO);
+		ft_putendl_fd(": Is a directory", STDERR_FILENO);
 		return (126);
 	}
 	if (access(cmd->argv[0], X_OK) == 0)
