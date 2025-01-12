@@ -33,24 +33,24 @@
 
 typedef enum
 {
-	TOKEN_WORD,				//all cmds and args before being split up
+	TOKEN_WORD,
 	TOKEN_ARG,
 	TOKEN_CMD,
 	TOKEN_FLAG_ARG,
 	TOKEN_FILE_ARG,
 	TOKEN_PIPE,
-	TOKEN_REDIR_IN,			//	<
-	TOKEN_REDIR_OUT,		// >
-	TOKEN_REDIR_APPEND,		// >>
-	TOKEN_HEREDOC			// <<
+	TOKEN_REDIR_IN,
+	TOKEN_REDIR_OUT,
+	TOKEN_REDIR_APPEND,
+	TOKEN_HEREDOC
 }	e_token_type;
 
 
 typedef struct	s_token
 {
-	e_token_type	type; //type of token
-	char			*value; //pointer to string containing token value
-	struct s_token	*next; //pointer to next token in linked list
+	e_token_type	type;
+	char			*value;
+	struct s_token	*next;
 }					t_token;
 
 typedef struct s_redirect
@@ -93,18 +93,18 @@ typedef struct s_cmd
 
 typedef struct	s_parse
 {
-	t_token	*head; //start of token linked list
-	t_token	*tail; //end of token linked list
-	char	buffer[BUFFER_SIZE]; //buffer to store string while tokenizing
-	int		buf_index; //index for buffer while tokenizing
-	int		in_single_quote; //var to keep track between in and out of single quote
-	int		in_double_quote; //var to keep track between in and out of double quote
-	int		last_exit_status; //needs to be implemented!
+	t_token	*head;
+	t_token	*tail;
+	char	buffer[BUFFER_SIZE];
+	int		buf_index;
+	int		in_single_quote;
+	int		in_double_quote;
+	int		last_exit_status;
 	int		exit;
 	int		valid_input;
 	int		n_pipes;
 	int		n_cmds;
-	t_cmd	*cmd; //list of cmds to pass to Nick's execution function
+	t_cmd	*cmd;
 }			t_parse;
 
 typedef struct	s_execution
