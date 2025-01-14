@@ -12,6 +12,8 @@
 
 #include "../../includes/minishell.h"
 
+void	switch_signal_handlers(t_sigact *sa_int, t_sigact *sa_quit, bool pr);
+
 // organizes execution process for minishell
 void	exec_mini(t_shell *shell, t_execution *pipex)
 {
@@ -91,6 +93,8 @@ int	main(int argc, char **argv, char **envp)
 	t_execution	pipex;
 	t_shell		shell;
 	t_parse		parse;
+	t_sigaction	sa_int;
+	t_sigaction	sa_quit;
 
 	(void)	argv;
 	if (argc != 1)
@@ -100,23 +104,25 @@ int	main(int argc, char **argv, char **envp)
 	}
 	struct_init(&parse, &shell);
 	t_env_init(&shell, envp);
+	init_signal_handlers(&sa_int, &sa_quit);
 	shell.exit = 0;
 	while (shell.exit == 0)
 	{
-		tokenize(&parse, &shell);
+		tokenize(&parse, &shell, &sa_int, &sa_quit);
 		if (!parse.head)
 		{
 			shell.last_exit = 0;
 			continue;
 		}
-        if (parse.valid_input)
-        {
-            parse_tokens(&parse);
-            pipex.cmd = parse.cmd;
-            exec_mini(&shell, &pipex);
-        }
-        free_tokens(parse.head);
-        parse.head = NULL;
+		if (parse.valid_input)
+		{
+			parse_tokens(&parse);
+			pipex.cmd = parse.cmd;
+			exec_mini(&shell, &pipex);
+			outside_process_signals(&sa_int, &sa_quit);
+		}
+		free_tokens(parse.head);
+		parse.head = NULL;
 		// printf("exit status: %i\n", shell.last_exit);
     }
 	free_tokens(parse.head);

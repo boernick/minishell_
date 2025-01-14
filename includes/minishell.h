@@ -123,6 +123,18 @@ typedef struct	s_execution
 	t_cmd	*cmd;
 } t_execution;
 
+typedef struct sigaction	t_sigaction;
+typedef t_sigaction			t_sigact;
+
+void						default_sigint_handler(int signum);
+void						process_running_sigint_handler(int signum);
+void						sigquit_handler(int signum);
+void						process_running_sigquit_handler(int signum);
+void						init_signal_handlers(t_sigaction *sa_int,
+								t_sigaction *sa_quit);
+void						switch_signal_handlers(t_sigact *sa_int,
+								t_sigact *sa_quit, bool pr);
+
 //---------tokenize----------//
 void	split_tokens(char *input, t_parse *data);
 t_token	*new_token(e_token_type type, char *value);
@@ -152,12 +164,14 @@ char	*get_next_line(int fd);
 
 //-----------signals----------//
 void	handle_eof(void);
-void	setup_signal_handlers(void);
+void	setup_signal_handlers(int signum);
 void	handle_sigquit(int sig);
 void	handle_sigint(int sig);
+void	inside_process_signals(t_sigact *sa_int, t_sigact *sa_quit);
+void	outside_process_signals(t_sigact *sa_int, t_sigact *sa_quit);
 
 //------tokenize_and_parse-------//
-void	tokenize(t_parse *parse, t_shell *shell);
+void	tokenize(t_parse *parse, t_shell *shell, t_sigaction *sa_int, t_sigaction *sa_quit);
 
 //------handle_struct-------//
 void	struct_init(t_parse *data, t_shell *shell);

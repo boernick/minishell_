@@ -45,17 +45,18 @@ void process_tokens(char *input, t_parse *data, t_shell *shell)
 
 // Repeatedly prompts for user input, tokenizes, validates, and processes commands.
 // Exits the loop if "exit" or EOF is detected, handling cleanup and history appropriately.
-void	tokenize(t_parse *data, t_shell *shell)
+void	tokenize(t_parse *data, t_shell *shell, t_sigaction *sa_int, t_sigaction *sa_quit)
 {
 	char	*input;
 
-	setup_signal_handlers();
+	//setup_signal_handlers();
 	if (data->cmd)
 	{
 		free_command_stack(data->cmd);
 		data->cmd = NULL;
 	}
 	input = readline("MINISHELL>>> "); //readline caues mem leaks
+	inside_process_signals(sa_int, sa_quit);
 	process_tokens(input, data, shell);
 }
 
