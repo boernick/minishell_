@@ -51,7 +51,7 @@ void	init_signal_handlers(t_sigaction *sa_int, t_sigaction *sa_quit)
 
 void	outside_process_signals(t_sigact *sa_int, t_sigact *sa_quit)
 {
-		//printf("switch_signal_handlers: signal standard running\n");
+		//printf("[DEBUG] switch_signal_handlers: outisde process running\n");
 		sa_int->sa_handler = setup_signal_handlers;
 		sigaction(SIGINT, sa_int, NULL);
 		sa_quit->sa_handler = SIG_IGN;
@@ -60,7 +60,7 @@ void	outside_process_signals(t_sigact *sa_int, t_sigact *sa_quit)
 
 void	inside_process_signals(t_sigact *sa_int, t_sigact *sa_quit)
 {
-		//printf("switch_signal_handlers: signal standard running\n");
+		//printf("[DEBUG] switch_signal_handlers: inside process running\n");
 		sa_int->sa_handler = process_running_sigint_handler;
 		sigaction(SIGINT, sa_int, NULL);
 		sa_quit->sa_handler = handle_sigquit;

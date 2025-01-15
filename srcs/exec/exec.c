@@ -31,12 +31,36 @@ void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd)
 int setup_redirections(t_cmd *cmd)
 {
 	t_redirect *rdir;
-	
+
 	rdir = cmd->redir;
 	cmd->fdin = -2;
 	cmd->fdout = -2;
 	while (rdir)
 	{
+		////!!!!!!!!!!!!!!
+		if (rdir->type == TOKEN_HEREDOC) // Handle heredoc
+        {
+            if (cmd->fdin != -2)
+                close(cmd->fdin); // Close previous fdin
+            cmd->fdin = open(rdir->file, O_RDONLY); // Open the heredoc file
+            if (cmd->fdin == -1)
+            {
+                perror("Error opening heredoc file");
+                return (EXIT_FAILURE);
+            }
+        }
+		// if (rdir->type == TOKEN_HEREDOC)
+		// {
+		// 	char *heredoc_file = create_heredoc(cmd->redir->delimiter);
+		// 	if (!heredoc_file)
+		// 	{
+		// 		  // Set exit status to 130
+		// 		return 130;  // Stop execution and return to shell prompt
+		// 	}
+		// 	free(cmd->redir->file);
+		// 	cmd->redir->file = heredoc_file;
+		// }
+		////!!!!!!!!!!!!!!
 		if (rdir->type == TOKEN_REDIR_IN) // HEREDOC?
 		{
 			if (cmd->fdin != -2)
@@ -127,7 +151,6 @@ void	get_fd(t_execution *pipex, t_cmd *cmd)
 	}
 	else
 		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
-
 	if (cmd->fdout != -2)
 		dup2(cmd->fdout, STDOUT_FILENO);
 	else if (pipex->index_cmd == pipex->n_cmds - 1)
@@ -156,6 +179,9 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 		i++;
 	}
 	close_fd_in_out(cmd);
+	//!!!!
+	//cleanup_heredoc(cmd); //causes lots of errors in minishell tester
+	//!!!!
 }
 
 // waits for a series of given child processes
@@ -191,7 +217,7 @@ void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last)
 
 //close open input and output filedescriptors for a single command
 void	close_fd_in_out(t_cmd *cmd)
-{	
+{
 	if (cmd)
 	{
 		if (cmd->fdin >= 0)

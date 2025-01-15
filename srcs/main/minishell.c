@@ -12,8 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-void	switch_signal_handlers(t_sigact *sa_int, t_sigact *sa_quit, bool pr);
-
 // organizes execution process for minishell
 void	exec_mini(t_shell *shell, t_execution *pipex)
 {
@@ -117,14 +115,18 @@ int	main(int argc, char **argv, char **envp)
 		if (parse.valid_input)
 		{
 			parse_tokens(&parse);
+			if (parse.exit == 130)
+				shell.last_exit = parse.exit;
 			pipex.cmd = parse.cmd;
-			exec_mini(&shell, &pipex);
+			if (parse.valid_input)
+				exec_mini(&shell, &pipex);
 			outside_process_signals(&sa_int, &sa_quit);
 		}
+		//switch_signal_handlers(&sa_int, &sa_quit, false);
 		free_tokens(parse.head);
 		parse.head = NULL;
 		// printf("exit status: %i\n", shell.last_exit);
-    }
+	}
 	free_tokens(parse.head);
 	free_command_stack(parse.cmd);
 	clear_history();//make sure to use the better one (this vs the one below)

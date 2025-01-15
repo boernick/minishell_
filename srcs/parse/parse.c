@@ -434,7 +434,11 @@ void parse_tokens(t_parse *data) {
             redir->file = create_heredoc(current_token->next->value);
             redir->type = TOKEN_HEREDOC;
             redir->next = NULL;
-
+			if (!redir->file)
+			{
+				data->valid_input = 0;
+				data->exit = 130;
+			}
             add_redirection_to_cmd(current_cmd, redir);
             current_token = current_token->next; // Skip delimiter
         } else if (current_token->type == TOKEN_PIPE) {
