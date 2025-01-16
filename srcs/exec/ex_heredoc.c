@@ -28,7 +28,7 @@ static void	switch_signal_handler(int signal, __sighandler_t handler)
 	// 	write(1, "[DEBUG] Signal handler for SIGQUIT switched\n", 44);
 }
 
-int run_heredoc(t_parse *data, t_cmd *cmd)
+int run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 {
 	//t_cmd *cmd;
 
@@ -38,13 +38,13 @@ int run_heredoc(t_parse *data, t_cmd *cmd)
 	//while (cmd)
 	//{
 		if (cmd->redir && cmd->redir->type == TOKEN_HEREDOC)
-			return (fork_heredoc(data, cmd));
+			return (fork_heredoc(data, cmd, delimeter));
 		cmd = cmd->next;
 	//}
 	return (EXIT_SUCCESS);
 }
 
-int	fork_heredoc(t_parse *data, t_cmd *cmd)
+int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 {
 	pid_t pid;
 	int status;
@@ -54,7 +54,7 @@ int	fork_heredoc(t_parse *data, t_cmd *cmd)
 	if (pid < 0)
 		str_error("failed to create heredoc");
 	else if (pid == 0)
-		return (read_heredoc(data, cmd));
+		return (read_heredoc(data, cmd, delimeter));
 	else
 	{
 		//handle signals
@@ -71,7 +71,7 @@ int	fork_heredoc(t_parse *data, t_cmd *cmd)
 	return (ret);
 }
 
-int	read_heredoc(t_parse *data, t_cmd *cmd)
+int	read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 {
 	int	fd;
 	int	read_heredoc;
@@ -82,14 +82,14 @@ int	read_heredoc(t_parse *data, t_cmd *cmd)
 	if (fd == -1)
 		return (EXIT_FAILURE);
 	while (read_heredoc == 1)
-		read_heredoc = read_line_heredoc(data, fd);
+		read_heredoc = read_line_heredoc(data, fd, delimeter);
 	close(fd);
 	exit (EXIT_SUCCESS);
 }
 
 char *replace_variables_in_heredoc(char *input, t_parse *data);
 
-int read_line_heredoc(t_parse *data, int fd)
+int read_line_heredoc(t_parse *data, int fd, char *delimeter)
 {
 
 	switch_signal_handler(SIGINT, SIG_DFL);
@@ -101,14 +101,15 @@ int read_line_heredoc(t_parse *data, int fd)
 		if (!line)
 		{
 			write(STDOUT_FILENO, "\n", 1);
-			fprintf(stderr, "bash: warning: here-document at line %d delimited by end-of-file (wanted '%s')\n", __LINE__, data->cmd->redir->delimiter);
+			fprintf(stderr, "bash: warning: here-document at line %d delimited by end-of-file (wanted '%s')\n", __LINE__, delimeter);
+
 			return 130; // Return NULL to signal failure
 		}
 	        // Remove trailing newline for comparison
 	        size_t len = ft_strlen(line);
 	        if (len > 0 && line[len - 1] == '\n')
 	            line[len - 1] = '\0';
-	        if (strcmp(line, data->cmd->redir->delimiter) == 0)
+	        if (strcmp(line, delimeter) == 0)
 	        {
 	            free(line);
 	            //printf("Debug: Delimiter `%s` found, ending heredoc\n", data->cmd->redir->delimiter);
@@ -135,7 +136,5 @@ void	cleanup_heredoc(t_cmd *cmd_p)
 		if (cmd->redir->type == TOKEN_HEREDOC)
 			if (cmd->redir->file != NULL)
 				unlink(cmd->redir->file);
-		if (cmd->redir->delimiter != NULL)
-			cmd = cmd->next;
 	}
 }

@@ -34,10 +34,11 @@ void free_command_stack(t_cmd *cmd_stack)
         if (cmd_stack->redir) {
             t_redirect *redir = cmd_stack->redir, *temp_redir;
             while (redir) {
+				if (redir->type == TOKEN_HEREDOC)
+					if (redir->file != NULL)
+						unlink(redir->file);
                 if (redir->file)
                     free(redir->file);
-				if (redir->delimiter)
-					free(cmd_stack->redir->delimiter);
                 temp_redir = redir;
                 redir = redir->next;
                 free(temp_redir);
@@ -433,10 +434,10 @@ void parse_tokens(t_parse *data) {
             if (!redir)
                 exit_perror("Failed to allocate memory for heredoc redirection");
 
-            redir->file = create_heredoc(current_token->next->value);
+            redir->file = create_heredoc();
             redir->type = TOKEN_HEREDOC;
             redir->next = NULL;
-			redir->delimiter = ft_strdup(current_token->next->value);
+			char *delimeter = ft_strdup(current_token->next->value);
 			// if (!redir->file)
 			// {
 			//	data->valid_input = 0;
@@ -445,17 +446,18 @@ void parse_tokens(t_parse *data) {
             add_redirection_to_cmd(current_cmd, redir);
             current_token = current_token->next; // Skip delimiter
 			//redir->delimiter = ft_strdup(current_token->next->value);
-			run_heredoc(data, current_cmd);
+			data->exit = run_heredoc(data, current_cmd, delimeter);
+			free(delimeter);
+			if (access(redir->file, F_OK) == 0 && data->exit == 130)
+				unlink(redir->file);
 			//data->exit = run_heredoc(data, current_cmd);
-			if (current_cmd->redir->delimiter)
-				free(current_cmd->redir->delimiter);
         } else if (current_token->type == TOKEN_PIPE) {
             data->n_pipes++;
             current_cmd = NULL; // Reset command pointer after pipe
         }
         current_token = current_token->next;
     }
-		ft_printf("last exit at the end of parse: %i\n", data->exit);
+		//ft_printf("last exit at the end of parse: %i\n", data->exit);
 	//cleanup_heredoc(current_cmd);
 }
 

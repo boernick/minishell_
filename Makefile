@@ -1,8 +1,8 @@
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g # -g flag for debugger info
+CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address -g flag for debugger info
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 LDFLAGS = -lreadline
 
 SRCS = ./srcs/builtins/builtins.c \

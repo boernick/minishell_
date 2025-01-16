@@ -57,13 +57,32 @@ void setup_heredoc_signals(struct sigaction *prev_sigint, struct sigaction *prev
     sigaction(SIGQUIT, &sa, NULL);
 }
 
+// int	get_tempfile_name(char *tempfile)
+// {
+// 	int	i;
+
+// 	ft_memcpy(tempfile, ".tmphered000", 13);
+// 	i = 1;
+// 	while (i < 1000)
+// 	{
+// 		tempfile[11] = '0' + (i % 10);
+// 		tempfile[10] = '0' + ((i / 10) % 10);
+// 		tempfile[9] = '0' + (i / 100);
+// 		if (access(tempfile, F_OK) != 0)
+// 			return (0);
+// 		i++;
+// 	}
+// 	return (-1);
+// }
+
 char *generate_temp_filename(void) {
     static int counter = 0; // Static counter to ensure uniqueness
     char *filename = malloc(64); // Allocate space for the filename
-    if (!filename)
+	if (!filename)
         return NULL;
-
     sprintf(filename, "/tmp/heredoc_temp_%d.txt", counter++);
+	// if (access(filename, F_OK) != 0)
+	// 		return (NULL);
     return filename;
 }
 
@@ -259,8 +278,8 @@ char *expand_env_variables_heredoc(const char *input);
 //     return temp_file;
 // }
 
-char *create_heredoc(char *delimiter) {
-	(void)delimiter;
+char *create_heredoc(void) {
+
     char *temp_file = generate_temp_filename();
     if (!temp_file) {
         perror("Failed to allocate memory for temp file name");

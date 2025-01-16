@@ -56,7 +56,6 @@ typedef struct	s_token
 typedef struct s_redirect
 {
 	char				*file;
-	char				*delimiter;
 	e_token_type		type;
 	struct s_redirect	*next;
 }	t_redirect;
@@ -143,7 +142,7 @@ t_token	*new_token(e_token_type type, char *value);
 void 	handle_buffer(t_parse *data, e_token_type token_type);
 void	add_token_to_list(t_parse *data, t_token *new_token);
 void	classify_token_types(t_parse *data);
-char	*create_heredoc(char *delimiter);
+char	*create_heredoc(void);
 
 //--------utils_token--------//
 void	print_tokens(t_token *token_list);
@@ -208,11 +207,11 @@ void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 
 //int		run_heredoc(t_execution *pipex);
-int		run_heredoc(t_parse *data, t_cmd *cmd);
-int		fork_heredoc(t_parse *data, t_cmd *cmd);
-int		read_heredoc(t_parse *data, t_cmd *cmd);
+int		run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter);
+int		fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter);
+int		read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter);
 void	cleanup_heredoc(t_cmd *cmd_p);
-int		read_line_heredoc(t_parse *data, int fd);
+int		read_line_heredoc(t_parse *data, int fd, char *delimeter);
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);
