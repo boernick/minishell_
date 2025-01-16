@@ -134,6 +134,8 @@ void						init_signal_handlers(t_sigaction *sa_int,
 								t_sigaction *sa_quit);
 void						switch_signal_handlers(t_sigact *sa_int,
 								t_sigact *sa_quit, bool pr);
+//---------env_var_tokenize----------//
+char	*get_env_variable(char *var_name, t_parse *data);
 
 //---------tokenize----------//
 void	split_tokens(char *input, t_parse *data);
@@ -204,11 +206,13 @@ void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last);
 int		setup_redirections(t_cmd *cmd);
 void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
-int		run_heredoc(t_execution *pipex);
-int		fork_heredoc(t_cmd *cmd);
-int		read_heredoc(t_cmd *cmd);
+
+//int		run_heredoc(t_execution *pipex);
+int		run_heredoc(t_parse *data, t_cmd *cmd);
+int		fork_heredoc(t_parse *data, t_cmd *cmd);
+int		read_heredoc(t_parse *data, t_cmd *cmd);
 void	cleanup_heredoc(t_cmd *cmd_p);
-int		read_line_heredoc(char *file, char* delimiter, int fd);
+int		read_line_heredoc(t_parse *data, int fd);
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);

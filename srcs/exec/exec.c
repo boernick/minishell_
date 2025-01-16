@@ -37,30 +37,6 @@ int setup_redirections(t_cmd *cmd)
 	cmd->fdout = -2;
 	while (rdir)
 	{
-		////!!!!!!!!!!!!!!
-		if (rdir->type == TOKEN_HEREDOC) // Handle heredoc
-        {
-            if (cmd->fdin != -2)
-                close(cmd->fdin); // Close previous fdin
-            cmd->fdin = open(rdir->file, O_RDONLY); // Open the heredoc file
-            if (cmd->fdin == -1)
-            {
-                perror("Error opening heredoc file");
-                return (EXIT_FAILURE);
-            }
-        }
-		// if (rdir->type == TOKEN_HEREDOC)
-		// {
-		// 	char *heredoc_file = create_heredoc(cmd->redir->delimiter);
-		// 	if (!heredoc_file)
-		// 	{
-		// 		  // Set exit status to 130
-		// 		return 130;  // Stop execution and return to shell prompt
-		// 	}
-		// 	free(cmd->redir->file);
-		// 	cmd->redir->file = heredoc_file;
-		// }
-		////!!!!!!!!!!!!!!
 		if (rdir->type == TOKEN_REDIR_IN) // HEREDOC?
 		{
 			if (cmd->fdin != -2)

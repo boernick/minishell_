@@ -36,6 +36,8 @@ void free_command_stack(t_cmd *cmd_stack)
             while (redir) {
                 if (redir->file)
                     free(redir->file);
+				if (redir->delimiter)
+					free(cmd_stack->redir->delimiter);
                 temp_redir = redir;
                 redir = redir->next;
                 free(temp_redir);
@@ -434,20 +436,27 @@ void parse_tokens(t_parse *data) {
             redir->file = create_heredoc(current_token->next->value);
             redir->type = TOKEN_HEREDOC;
             redir->next = NULL;
-			if (!redir->file)
-			{
-				data->valid_input = 0;
-				data->exit = 130;
-			}
+			redir->delimiter = ft_strdup(current_token->next->value);
+			// if (!redir->file)
+			// {
+			//	data->valid_input = 0;
+			// 	data->exit = 130;
+			// }
             add_redirection_to_cmd(current_cmd, redir);
             current_token = current_token->next; // Skip delimiter
+			//redir->delimiter = ft_strdup(current_token->next->value);
+			run_heredoc(data, current_cmd);
+			//data->exit = run_heredoc(data, current_cmd);
+			if (current_cmd->redir->delimiter)
+				free(current_cmd->redir->delimiter);
         } else if (current_token->type == TOKEN_PIPE) {
             data->n_pipes++;
             current_cmd = NULL; // Reset command pointer after pipe
         }
-
         current_token = current_token->next;
     }
+		ft_printf("last exit at the end of parse: %i\n", data->exit);
+	//cleanup_heredoc(current_cmd);
 }
 
 // void parse_tokens(t_parse *data)
