@@ -1,11 +1,18 @@
  #include "../../includes/minishell.h"
 
-void handle_eof(void)
+void	free_t_env(t_shell *shell);
+
+void handle_eof(t_shell *shell, t_parse *parse)
 {
+	(void)shell;
 	printf("exit\n");
-	//add function to free all memory
+	free_tokens(parse->head);
+	free_command_stack(parse->cmd);
+	//free_t_env(shell);
+	clear_history();//make sure to use the better one (this vs the one below)
 	exit(0);
 }
+
 
 void	setup_signal_handlers(int signum)
 {

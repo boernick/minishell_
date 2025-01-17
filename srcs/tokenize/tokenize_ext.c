@@ -28,6 +28,8 @@ void classify_token_types(t_parse *data)
 		if (current_token->type == TOKEN_PIPE)
 			i = 0;
 		// Identify command at the start of each sequence or after a pipe
+		// else if (current_token->value[0] == '$')
+		// 	current_token->type = TOKEN_ARG;
 		else if (current_token->type == TOKEN_WORD && i == 0)
 		{
 			current_token->type = TOKEN_CMD;

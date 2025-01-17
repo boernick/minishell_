@@ -164,7 +164,7 @@ int		ft_isalnum(char c);
 char	*get_next_line(int fd);
 
 //-----------signals----------//
-void	handle_eof(void);
+void	handle_eof(t_shell *shell, t_parse *parse);
 void	setup_signal_handlers(int signum);
 void	handle_sigquit(int sig);
 void	handle_sigint(int sig);

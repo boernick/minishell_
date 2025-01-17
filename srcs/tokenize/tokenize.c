@@ -55,7 +55,7 @@ void	tokenize(t_parse *data, t_shell *shell, t_sigaction *sa_int, t_sigaction *s
 	}
 	input = readline("MINISHELL>>> "); //readline caues mem leaks
 	if (!input) // Ctrl+D sends EOF, readline returns NULL.
-		handle_eof();
+		handle_eof(shell, data);
 	if (ft_strlen(input) == 0) // Empty input handling
 	{
 		free(input);

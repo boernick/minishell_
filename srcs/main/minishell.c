@@ -124,12 +124,11 @@ int	main(int argc, char **argv, char **envp)
 		//switch_signal_handlers(&sa_int, &sa_quit, false);
 		free_tokens(parse.head);
 		parse.head = NULL;
-		// printf("exit status: %i\n", shell.last_exit);
+		//printf("last exit status: %i\n", shell.last_exit);
 	}
 	free_tokens(parse.head);
 	free_command_stack(parse.cmd);
-	clear_history();//make sure to use the better one (this vs the one below)
-	rl_clear_history();//make sure to use the better one
+	clear_history();
 	free_envlst(shell.env_lst);
 	//printf("last exit, on exit: %i\n", shell.last_exit);
 	return (shell.last_exit);
