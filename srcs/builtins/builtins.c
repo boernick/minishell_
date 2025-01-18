@@ -184,7 +184,7 @@ int	builtin_export(char **argv, t_shell *shell)
 	int		ret;
 
 	ret = 0;
-	if (argv[0] && !argv[1])
+	if ((argv[0] && !argv[1]) || (argv[0] && !ft_strncmp(argv[1], "", 2)))
 		export_lst(shell->env_lst);
 	else if (!ft_strncmp(argv[1], "", 2))
 		ret = invalid_identifier("export", argv[1]);

@@ -47,7 +47,7 @@ int	check_folder(char *filename)
 		if (access(folder_path, F_OK) == -1)
 		{
 			free(folder_path);
-			return (invalid_filedir(filename));
+			return (EXIT_FAILURE);
 		}
 		free(folder_path);
 	}
