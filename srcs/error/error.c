@@ -18,7 +18,7 @@ int syntax_error(char *token)
 	ft_putstr_fd("syntax error near unexpected token `", STDERR_FILENO);
 	ft_putstr_fd(token, STDERR_FILENO);
 	ft_putendl_fd("'", STDERR_FILENO);
-	return (EXIT_FAILURE);
+	return (2);
 }
 
 int	str_error(char *error)

@@ -101,7 +101,7 @@ int read_line_heredoc(t_parse *data, int fd, char *delimeter)
 		if (!line)
 		{
 			write(STDOUT_FILENO, "\n", 1);
-			fprintf(stderr, "bash: warning: here-document at line %d delimited by end-of-file (wanted '%s')\n", __LINE__, delimeter);
+			fprintf(stderr, "minishell: warning: here-document at line %d delimited by end-of-file (wanted '%s')\n", __LINE__, delimeter);
 
 			return 130; // Return NULL to signal failure
 		}
