@@ -18,6 +18,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	pid_t		*pids;
 	pid_t		pid_last;
 
+	pid_last = -1;
 	exec_init(shell, pipex, pipex->cmd);
 	// shell->last_exit = run_heredoc(pipex);
 	if (pipex->n_pipes > 0)
@@ -34,6 +35,8 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 		clean_pipes(pipex, pipex->cmd);
 		waitpids(pids, pipex->n_cmds, shell, pid_last);
 	}
+	if (pids != NULL)
+		free(pids);
 	//ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
 }
 //organizes execution process for a single command
@@ -116,7 +119,7 @@ int	main(int argc, char **argv, char **envp)
 		{
 			parse_tokens(&parse);
 			pipex.cmd = parse.cmd;
-			//print_command_stack(pipex.cmd);
+			// print_command_stack(pipex.cmd);
 			if (parse.valid_input)
 				exec_mini(&shell, &pipex);
 			outside_process_signals(&sa_int, &sa_quit);
@@ -124,7 +127,7 @@ int	main(int argc, char **argv, char **envp)
 		//switch_signal_handlers(&sa_int, &sa_quit, false);
 		free_tokens(parse.head);
 		parse.head = NULL;
-		//printf("last exit status: %i\n", shell.last_exit);
+		// printf("last exit status: %i\n", shell.last_exit);
 	}
 	free_tokens(parse.head);
 	free_command_stack(parse.cmd);

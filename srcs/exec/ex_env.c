@@ -48,7 +48,7 @@ int	run_ex(t_cmd *cmd, char **path_env)
 {
 	int		i;
 	char	**path_split;
-	char	*check_path;
+	char	*checkp;
 
 	if (ft_strchr(cmd->argv[0], '/'))
 		return (run_path(cmd, path_env));
@@ -60,17 +60,17 @@ int	run_ex(t_cmd *cmd, char **path_env)
 	i = 0;
 	while (path_split[i])
 	{
-		check_path = path_join(path_split[i], cmd->argv[0]);
-		if (!(access(check_path, X_OK)))
-			if (execve(check_path, cmd->argv, path_env) == -1)
-				str_error("exec error\n");
-		i++;
-		free(check_path);
+		checkp = path_join(path_split[i++], cmd->argv[0]);
+		if (!access(checkp, X_OK) && execve(checkp, cmd->argv, path_env) == -1)
+		{
+			free(checkp);
+			break;
+		}
+		free(checkp);
 	}
+	free_array(path_env);
 	free_array(path_split);
-	ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
-	ft_putendl_fd(": command not found", 2);
-	return (127);
+	return (cmd_not_found(cmd->argv[0]));
 }
 
 //runs given path directly from prompt and prints errors

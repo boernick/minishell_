@@ -174,7 +174,7 @@ void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last)
 		if (pids[i] != -1)
 		{
 			if (waitpid(pids[i], &tmp, 0) == -1)
-				status = 0; //this was -1
+				status = 1; //this was -1
 			else if (WIFEXITED(tmp))
 				status = WEXITSTATUS(tmp);
 			else if (WTERMSIG(tmp) == SIGQUIT)
@@ -182,7 +182,7 @@ void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last)
 			else if (WTERMSIG(tmp) == SIGINT)
 				status = 130;
 			else
-				status = 1;
+				status = 0; // this was 1
 			// printf("Child %i exit status: %d\n", pids[i], WEXITSTATUS(tmp));
 		}
 		i++;
