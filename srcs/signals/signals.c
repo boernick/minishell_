@@ -1,14 +1,12 @@
  #include "../../includes/minishell.h"
 
-void	free_t_env(t_shell *shell);
-
 void handle_eof(t_shell *shell, t_parse *parse)
 {
 	(void)shell;
 	printf("exit\n");
 	free_tokens(parse->head);
 	free_command_stack(parse->cmd);
-	//free_t_env(shell);
+	free_envlst(shell->env_lst);
 	clear_history();//make sure to use the better one (this vs the one below)
 	exit(0);
 }

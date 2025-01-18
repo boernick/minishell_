@@ -311,7 +311,7 @@ char *replace_variables_in_heredoc(char *input, t_parse *data)
 				var_name[var_index++] = input[i++];
             var_name[var_index] = '\0';
 
-            char *var_value = get_env_variable(var_name, data);
+            char *var_value = replace_variables_in_heredoc(var_name, data);
             if (!var_value)
                 var_value = "";
 

@@ -110,11 +110,6 @@ int	main(int argc, char **argv, char **envp)
 	while (shell.exit == 0)
 	{
 		tokenize(&parse, &shell, &sa_int, &sa_quit);
-		if (!parse.head)
-		{
-			shell.last_exit = 0;
-			continue;
-		}
 		if (parse.valid_input)
 		{
 			parse_tokens(&parse);
@@ -122,8 +117,8 @@ int	main(int argc, char **argv, char **envp)
 			// print_command_stack(pipex.cmd);
 			if (parse.valid_input)
 				exec_mini(&shell, &pipex);
-			outside_process_signals(&sa_int, &sa_quit);
 		}
+		outside_process_signals(&sa_int, &sa_quit);
 		//switch_signal_handlers(&sa_int, &sa_quit, false);
 		free_tokens(parse.head);
 		parse.head = NULL;

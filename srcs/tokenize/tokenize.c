@@ -27,7 +27,7 @@ void process_tokens(char *input, t_parse *data, t_shell *shell)
 		classify_token_types(data);
 		//write(3, "testing3\n", 9);
 		//print_tokens(data->head);
-		replace_env_variables_in_tokens(data->head, data);
+		replace_env_variables_in_tokens(data->head, data, shell);
 		//write(4, "testing4\n", 9);
 		//print_tokens(data->head);
 		free(input);

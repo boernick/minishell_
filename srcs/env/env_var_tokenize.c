@@ -1,9 +1,11 @@
 #include "../../includes/minishell.h"
 
-char *get_env_variable(char *var_name, t_parse *data)
+char *get_env_variable(char *var_name, t_parse *data, t_shell *shell)
 {
-	char *env_value;
-	char *exit_status_str;
+	char	*env_value;
+	char	*exit_status_str;
+	t_env	*env_node;
+	char	*equals_sign;
 
     if (ft_strncmp(var_name, "?", 1) == 0)
     {
@@ -16,16 +18,23 @@ char *get_env_variable(char *var_name, t_parse *data)
         free(exit_status_str); // Free the temporary exit status string
         return result;
     }
-    env_value = getenv(var_name);
-    if (!env_value)
-        return ft_strdup(""); // Return an empty string if variable doesn't exist
-    return ft_strdup(env_value); // Duplicate the value for safe usage
+	env_node = get_env_lst(shell, var_name);
+	if (env_node)
+	{
+		equals_sign = ft_strchr(env_node->content, '=');
+		if (equals_sign)
+			return ft_strdup(equals_sign + 1); // Return the value part only
+	}
+	env_value = getenv(var_name);
+	if (env_value)
+		return ft_strdup(env_value); // Return an empty string if variable doesn't exist
+	return ft_strdup(""); // Duplicate the value for safe usage
 }
 
 //itterate throug and copy input string. If a $ sign is encountertered
 //it will be replaced by its appropiate enviornment variable while the
 //rest of the new string remains the same.
-char *replace_variables_in_string(char *input, t_parse *data)
+char *replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
 {
     char result[1024] = {0};  // Buffer to store the final result
     int res_index = 0;        // Index for writing to result buffer
@@ -61,7 +70,7 @@ char *replace_variables_in_string(char *input, t_parse *data)
 				var_name[var_index++] = input[i++];
             var_name[var_index] = '\0';
 
-            char *var_value = get_env_variable(var_name, data);
+            char *var_value = get_env_variable(var_name, data, shell);
             if (!var_value)
                 var_value = "";
 
@@ -121,31 +130,31 @@ void trim_file_quotes(char *str)
 
 //itterate through the list of tokens looking for WORD tokens. Call replace_variables_in_string
 //on those tokens.
-void replace_env_variables_in_tokens(t_token *tokens, t_parse *data)
+void replace_env_variables_in_tokens(t_token *tokens, t_parse *data, t_shell *shell)
 {
     char *new_value;
 
-	if (tokens)
-    {
-        new_value = replace_variables_in_string(tokens->value, data);
-        if (new_value != tokens->value) // Only free if they are different
-        {
-            free(tokens->value);
-            tokens->value = new_value;
-        }
-        else
-            free(new_value); // Free the new_value since it wasn't needed
+	// if (tokens)
+    // {
+    //     new_value = replace_variables_in_string(tokens->value, data);
+    //     if (new_value != tokens->value) // Only free if they are different
+    //     {
+    //         free(tokens->value);
+    //         tokens->value = new_value;
+    //     }
+    //     else
+    //         free(new_value); // Free the new_value since it wasn't needed
 
-        // Trim quotes from the first token value
-        trim_quotes(tokens->value);
-    }
+    //     // Trim quotes from the first token value
+    //     trim_quotes(tokens->value);
+    // }
     while (tokens)
     {
 		if (tokens->type == TOKEN_FILE_ARG)
 			trim_file_quotes(tokens->value);
         else if (tokens->type == TOKEN_ARG)
         {
-            new_value = replace_variables_in_string(tokens->value, data);
+            new_value = replace_variables_in_string(tokens->value, data, shell);
             if (new_value != tokens->value) // Only free if they are different
             {
                 free(tokens->value);
@@ -277,58 +286,58 @@ void replace_env_variables_in_tokens(t_token *tokens, t_parse *data)
 // }
 
 
-// void expand_env_variables_heredoc(char *line) {
-//     char buffer[4096]; // Temporary buffer to build the expanded string
-//     size_t buf_idx = 0;
-//     size_t len = strlen(line);
+void expand_env_variables_heredoc(char *line) {
+    char buffer[4096]; // Temporary buffer to build the expanded string
+    size_t buf_idx = 0;
+    size_t len = strlen(line);
 
-//     for (size_t i = 0; i < len; i++) {
-//         if (line[i] == '$' && i + 1 < len) {
-//             // Handle $$ (PID)
-//             if (line[i + 1] == '$') {
-//                 buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%d", getpid());
-//                 i++;
-//             }
-//             // Handle environment variables
-//             else if ((line[i + 1] >= 'a' && line[i + 1] <= 'z') ||
-//                      (line[i + 1] >= 'A' && line[i + 1] <= 'Z') ||
-//                      line[i + 1] == '_') {
-//                 const char *start = line + i + 1;
-//                 const char *end = start;
+    for (size_t i = 0; i < len; i++) {
+        if (line[i] == '$' && i + 1 < len) {
+            // Handle $$ (PID)
+            if (line[i + 1] == '$') {
+                buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%d", getpid());
+                i++;
+            }
+            // Handle environment variables
+            else if ((line[i + 1] >= 'a' && line[i + 1] <= 'z') ||
+                     (line[i + 1] >= 'A' && line[i + 1] <= 'Z') ||
+                     line[i + 1] == '_') {
+                const char *start = line + i + 1;
+                const char *end = start;
 
-//                 // Find the end of the variable name
-//                 while ((*end >= 'a' && *end <= 'z') ||
-//                        (*end >= 'A' && *end <= 'Z') ||
-//                        (*end >= '0' && *end <= '9') ||
-//                        *end == '_') {
-//                     end++;
-//                 }
+                // Find the end of the variable name
+                while ((*end >= 'a' && *end <= 'z') ||
+                       (*end >= 'A' && *end <= 'Z') ||
+                       (*end >= '0' && *end <= '9') ||
+                       *end == '_') {
+                    end++;
+                }
 
-//                 char var_name[256];
-//                 size_t var_len = end - start;
-//                 strncpy(var_name, start, var_len);
-//                 var_name[var_len] = '\0';
+                char var_name[256];
+                size_t var_len = end - start;
+                strncpy(var_name, start, var_len);
+                var_name[var_len] = '\0';
 
-//                 char *var_value = getenv(var_name);
-//                 if (var_value) {
-//                     buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%s", var_value);
-//                 }
+                char *var_value = getenv(var_name);
+                if (var_value) {
+                    buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%s", var_value);
+                }
 
-//                 i += var_len; // Skip past the variable name
-//                 i--;          // Offset increment in the for loop
-//             } else {
-//                 buffer[buf_idx++] = line[i]; // Copy literal `$`
-//             }
-//         } else {
-//             buffer[buf_idx++] = line[i]; // Copy literal character
-//         }
+                i += var_len; // Skip past the variable name
+                i--;          // Offset increment in the for loop
+            } else {
+                buffer[buf_idx++] = line[i]; // Copy literal `$`
+            }
+        } else {
+            buffer[buf_idx++] = line[i]; // Copy literal character
+        }
 
-//         if (buf_idx >= sizeof(buffer) - 1) {
-//             fprintf(stderr, "Error: Expanded line is too long.\n");
-//             return;
-//         }
-//     }
-//     buffer[buf_idx] = '\0';
-//     strcpy(line, buffer); // Copy the expanded result back to the original string
-// }
+        if (buf_idx >= sizeof(buffer) - 1) {
+            fprintf(stderr, "Error: Expanded line is too long.\n");
+            return;
+        }
+    }
+    buffer[buf_idx] = '\0';
+    strcpy(line, buffer); // Copy the expanded result back to the original string
+}
 

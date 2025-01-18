@@ -75,7 +75,17 @@ int validate_input(t_token *tokens, t_parse *data)
                 return (0);
             }
         }
-
+		if (current->type == TOKEN_REDIR_IN || current->type == TOKEN_REDIR_OUT || current->type == TOKEN_REDIR_APPEND)
+		{
+				if ((next && (next->type == TOKEN_REDIR_IN || next->type == TOKEN_REDIR_OUT ||
+				next->type == TOKEN_REDIR_APPEND)))
+				{
+					syntax_error(next->value);
+					data->valid_input = 0;
+					data->exit = 2;
+					return (0);
+				}
+		}
         // Handle heredoc (`<<`) without a delimiter
         if (current->type == TOKEN_HEREDOC && (!next || next->type != TOKEN_WORD))
         {

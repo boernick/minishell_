@@ -134,7 +134,7 @@ void						init_signal_handlers(t_sigaction *sa_int,
 void						switch_signal_handlers(t_sigact *sa_int,
 								t_sigact *sa_quit, bool pr);
 //---------env_var_tokenize----------//
-char	*get_env_variable(char *var_name, t_parse *data);
+char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell);
 
 //---------tokenize----------//
 void	split_tokens(char *input, t_parse *data);
@@ -179,8 +179,8 @@ void	struct_init(t_parse *data, t_shell *shell);
 void	reset_parse(t_parse *data);
 
 //---------env_var---------//
-void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data);
-char	*replace_variables_in_string(char *input, t_parse *data);
+void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data, t_shell *shell);
+char	*replace_variables_in_string(char *input, t_parse *data, t_shell *shell);
 
 //---------init-----------//
 int		t_env_init(t_shell *shell, char **envp);
