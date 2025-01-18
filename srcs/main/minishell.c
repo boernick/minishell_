@@ -82,7 +82,7 @@ void	run_single_builtin(t_execution *pipex, t_shell *shell)
 		shell->last_exit = 1;
 		return;
 	}
-	get_fd(pipex, pipex->cmd); //DUP2 to STDIN/OUT
+	get_fd(pipex, pipex->cmd);
 	close_fd_in_out(pipex->cmd);
 	run_builtin(pipex->cmd->argv, shell);
 	update_exec(pipex);
@@ -119,7 +119,7 @@ int	main(int argc, char **argv, char **envp)
 		{
 			parse_tokens(&parse);
 			pipex.cmd = parse.cmd;
-			print_command_stack(pipex.cmd);
+			// print_command_stack(pipex.cmd);
 			if (parse.valid_input)
 				exec_mini(&shell, &pipex);
 			outside_process_signals(&sa_int, &sa_quit);
