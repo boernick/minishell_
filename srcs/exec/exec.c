@@ -187,7 +187,7 @@ void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last)
 		}
 		i++;
 	}
-	if (i == n_pids - 1 && pids[i] == pid_last)
+	if (pids[i] == pid_last)
 		shell->last_exit = status;
 }
 
