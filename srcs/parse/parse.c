@@ -426,7 +426,7 @@ void parse_tokens(t_parse *data) {
             }
 
             if (!current_token->next) {
-                fprintf(stderr, "Error: Missing delimiter for heredoc.\n");
+                exit_perror("Error: Missing delimiter for heredoc.\n");
                 break;
             }
 
@@ -438,18 +438,15 @@ void parse_tokens(t_parse *data) {
             redir->type = TOKEN_HEREDOC;
             redir->next = NULL;
 			char *delimeter = ft_strdup(current_token->next->value);
-			// if (!redir->file)
-			// {
-			//	data->valid_input = 0;
-			// 	data->exit = 130;
-			// }
             add_redirection_to_cmd(current_cmd, redir);
             current_token = current_token->next; // Skip delimiter
 			//redir->delimiter = ft_strdup(current_token->next->value);
 			data->exit = run_heredoc(data, current_cmd, delimeter);
 			free(delimeter);
-			if (access(redir->file, F_OK) == 0 && data->exit == 130)
-				unlink(redir->file);
+			// if (access(redir->file, F_OK) == 0 && data->exit == 130)
+			// 	unlink(redir->file);
+			if (data->exit == 130)
+				break;
 			//data->exit = run_heredoc(data, current_cmd);
         } else if (current_token->type == TOKEN_PIPE) {
             data->n_pipes++;

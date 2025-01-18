@@ -79,11 +79,9 @@ char *generate_temp_filename(void) {
     static int counter = 0; // Static counter to ensure uniqueness
     char *filename = malloc(64); // Allocate space for the filename
 	if (!filename)
-        return NULL;
-    sprintf(filename, "/tmp/heredoc_temp_%d.txt", counter++);
-	// if (access(filename, F_OK) != 0)
-	// 		return (NULL);
-    return filename;
+		return NULL;
+	sprintf(filename, "/tmp/heredoc_temp_%d.txt", counter++);
+	return filename;
 }
 
 // void cleanup_heredoc(t_cmd *cmd)
@@ -287,6 +285,37 @@ char *create_heredoc(void) {
     }
     // Store the file path and delimiter in t_redirect for later use.
     return temp_file;
+}
+
+char *get_env_variable_hereoc(char *var_name, t_parse *data, t_shell *shell)
+{
+	char	*env_value;
+	char	*exit_status_str;
+	t_env	*env_node;
+	char	*equals_sign;
+
+    if (ft_strncmp(var_name, "?", 1) == 0)
+    {
+        exit_status_str = ft_itoa(data->exit);
+
+        // Concatenate the exit status with the rest of `var_name`, if any
+        char *remaining = var_name + 1; // Skip `?`
+        char *result = ft_strjoin(exit_status_str, remaining);
+
+        free(exit_status_str); // Free the temporary exit status string
+        return result;
+    }
+	env_node = get_env_lst(shell, var_name);
+	if (env_node)
+	{
+		equals_sign = ft_strchr(env_node->content, '=');
+		if (equals_sign)
+			return ft_strdup(equals_sign + 1); // Return the value part only
+	}
+	env_value = getenv(var_name);
+	if (env_value)
+		return ft_strdup(env_value); // Return an empty string if variable doesn't exist
+	return ft_strdup(""); // Duplicate the value for safe usage
 }
 
 char *replace_variables_in_heredoc(char *input, t_parse *data)

@@ -57,7 +57,6 @@ int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 		return (read_heredoc(data, cmd, delimeter));
 	else
 	{
-		//handle signals
 		switch_signal_handler(SIGQUIT, SIG_IGN);
 		if (waitpid(pid, &status, 0) == -1)
 			str_error("Error waiting for for heredoc");
@@ -65,7 +64,6 @@ int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 			ret = WEXITSTATUS(status);
 		else
 			ret = WTERMSIG(status) + 128;
-		//handle signals.
 		switch_signal_handler(SIGQUIT, handle_sigquit);
 	}
 	return (ret);
@@ -76,8 +74,9 @@ int	read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 	int	fd;
 	int	read_heredoc;
 
+	switch_signal_handler(SIGINT, SIG_DFL);
+	switch_signal_handler(SIGQUIT, SIG_IGN);
 	read_heredoc = 1;
-	//signal handling
 	fd = open(cmd->redir->file, O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd == -1)
 		return (EXIT_FAILURE);
@@ -92,9 +91,6 @@ char *replace_variables_in_heredoc(char *input, t_parse *data);
 int read_line_heredoc(t_parse *data, int fd, char *delimeter)
 {
 
-	switch_signal_handler(SIGINT, SIG_DFL);
-	switch_signal_handler(SIGQUIT, SIG_IGN);
-
 	//printf("delimiter: %s\n", data->cmd->redir->delimiter);
 	char *line;
 			line = readline("heredoc> ");
@@ -102,27 +98,26 @@ int read_line_heredoc(t_parse *data, int fd, char *delimeter)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			fprintf(stderr, "minishell: warning: here-document at line %d delimited by end-of-file (wanted '%s')\n", __LINE__, delimeter);
-
 			return 130; // Return NULL to signal failure
 		}
-	        // Remove trailing newline for comparison
-	        size_t len = ft_strlen(line);
-	        if (len > 0 && line[len - 1] == '\n')
-	            line[len - 1] = '\0';
-	        if (strcmp(line, delimeter) == 0)
-	        {
-	            free(line);
-	            //printf("Debug: Delimiter `%s` found, ending heredoc\n", data->cmd->redir->delimiter);
-	            return 0; // Exit heredoc loop
-	        }
-	        // Write line to file
-	        //printf("Debug: Writing line to `%s`: %s\n", file, line);
-			line = replace_variables_in_heredoc(line, data);
-			//printf("line after: %s\n", line);
-	        write(fd, line, ft_strlen(line));
-	        write(fd, "\n", 1); // Add newline
-	        free(line);
-    return 1; // Continue the heredoc loop
+		// Remove trailing newline for comparison
+		size_t len = ft_strlen(line);
+		if (len > 0 && line[len - 1] == '\n')
+			line[len - 1] = '\0';
+		if (strcmp(line, delimeter) == 0)
+		{
+			free(line);
+			//printf("Debug: Delimiter `%s` found, ending heredoc\n", data->cmd->redir->delimiter);
+			return 0; // Exit heredoc loop
+		}
+		// Write line to file
+		//printf("Debug: Writing line to `%s`: %s\n", file, line);
+		line = replace_variables_in_heredoc(line, data);
+		//printf("line after: %s\n", line);
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1); // Add newline
+		free(line);
+			return 1; // Continue the heredoc loop
 }
 
 void	cleanup_heredoc(t_cmd *cmd_p)

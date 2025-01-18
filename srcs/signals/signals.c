@@ -35,8 +35,8 @@ void	process_running_sigint_handler(int signum)
 
 void	handle_sigquit(int signum)
 {
-	ft_putendl_fd("Quit", STDOUT_FILENO);
 	(void)signum;
+	ft_putendl_fd("Quit", STDOUT_FILENO);
 }
 
 void	init_signal_handlers(t_sigaction *sa_int, t_sigaction *sa_quit)
