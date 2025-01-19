@@ -182,20 +182,20 @@ void replace_env_variables_in_tokens(t_token *tokens, t_parse *data, t_shell *sh
 {
     char *new_value;
 
-	// if (tokens)
-    // {
-    //     new_value = replace_variables_in_string(tokens->value, data);
-    //     if (new_value != tokens->value) // Only free if they are different
-    //     {
-    //         free(tokens->value);
-    //         tokens->value = new_value;
-    //     }
-    //     else
-    //         free(new_value); // Free the new_value since it wasn't needed
+	if (tokens)
+    {
+        new_value = replace_variables_in_string(tokens->value, data, shell);
+        if (new_value != tokens->value) // Only free if they are different
+        {
+            free(tokens->value);
+            tokens->value = new_value;
+        }
+        else
+            free(new_value); // Free the new_value since it wasn't needed
 
-    //     // Trim quotes from the first token value
-    //     trim_quotes(tokens->value);
-    // }
+        // Trim quotes from the first token value
+        trim_quotes(tokens->value);
+    }
     while (tokens)
     {
 		if (tokens->type == TOKEN_FILE_ARG)

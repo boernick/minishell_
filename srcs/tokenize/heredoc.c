@@ -334,6 +334,24 @@ char *replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
 				result[res_index++] = '$';
 				continue;
 			}
+			if (input[i] == '$') // Handle `$$` (expand to PID)
+			{
+				// Expand `$$` into PID
+				char *pid_str = get_pid_as_string();
+				if (pid_str)
+				{
+					int j = 0;
+					// Copy the PID into the result buffer
+					while (pid_str[j] != '\0')
+					{
+						result[res_index] = pid_str[j];
+						res_index++;
+						j++;
+					}
+					free(pid_str);
+				}
+				i++; // Skip the second `$` after handling `$$`
+			}
             char var_name[256] = {0};
             int var_index = 0;
 
