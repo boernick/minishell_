@@ -120,9 +120,9 @@ int	main(int argc, char **argv, char **envp)
 		free_tokens(parse.head);
 		parse.head = NULL;
 	}
-	free_tokens(parse.head);
-	free_command_stack(parse.cmd);
-	clear_history();
-	free_envlst(shell.env_lst);
-	return (shell.last_exit);
+	free_tokens(parse.head); // put this in one function cleanup
+	free_command_stack(parse.cmd); // ^^^^^^^^^^^^^^^
+	clear_history();				// ^^^^^^^^^^^^^^^
+	free_envlst(shell.env_lst);		// ^^^^^^^^^^^^^^^
+	return (shell.last_exit);		
 }
