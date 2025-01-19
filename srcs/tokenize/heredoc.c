@@ -84,6 +84,15 @@ char *generate_temp_filename(void) {
 	return filename;
 }
 
+// char *generate_temp_filename(void) {
+//     static int counter = 0; // Static counter for uniqueness
+//     char *filename = malloc(64); // Allocate space for filename
+//     if (!filename)
+//         return NULL;
+//     sprintf(filename, "/tmp/heredoc_temp_%d_%d.txt", getpid(), counter++); // Include PID
+//     return filename;
+// }
+
 // void cleanup_heredoc(t_cmd *cmd)
 // {
 //     t_redirect *rdir = cmd->redir;
@@ -276,13 +285,77 @@ char *expand_env_variables_heredoc(const char *input);
 //     return temp_file;
 // }
 
+
+//for testing
+void print_temp_files(t_redirect *redir)
+{
+            printf("Checking contents of file: %s\n", redir->file);
+
+
+            // Open the file for reading
+            int fd = open(redir->file, O_RDONLY);
+            if (fd == -1)
+            {
+                perror("Failed to open heredoc file");
+				return;
+            }
+
+            // Read and print the file contents
+            char buffer[1024];
+            ssize_t bytes_read;
+            while ((bytes_read = read(fd, buffer, sizeof(buffer) - 1)) > 0)
+            {
+                buffer[bytes_read] = '\0'; // Null-terminate the buffer
+                printf("%s", buffer);
+            }
+            if (bytes_read == -1)
+                perror("Error reading heredoc file");
+
+            close(fd);
+}
+//for testing
+void check_temp_files(t_cmd *cmd)
+{
+    t_redirect *redir = cmd->redir;
+    while (redir)
+	{
+
+		if (redir->type == TOKEN_HEREDOC && redir->file){
+            printf("Checking contents of file: %s\n", cmd->redir->file);
+
+            // Open the file for reading
+            int fd = open(cmd->redir->file, O_RDONLY);
+            if (fd == -1)
+            {
+                perror("Failed to open heredoc file");
+                cmd = cmd->next;
+                continue;
+            }
+
+            // Read and print the file contents
+            char buffer[1024];
+            ssize_t bytes_read;
+            while ((bytes_read = read(fd, buffer, sizeof(buffer) - 1)) > 0)
+            {
+                buffer[bytes_read] = '\0'; // Null-terminate the buffer
+                printf("%s", buffer);
+            }
+            if (bytes_read == -1)
+                perror("Error reading heredoc file");
+
+            close(fd);
+        }
+        redir = redir->next;
+    }
+}
+
 char *create_heredoc(void) {
 
-    char *temp_file = generate_temp_filename();
-    if (!temp_file) {
+	char *temp_file = generate_temp_filename();
+	if (!temp_file) {
 		ft_putstr_fd("Failed to allocate memory for temp file name", STDERR_FILENO);
-        return NULL;
-    }
+		return NULL;
+	}
 	int fd = open(temp_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd == -1)
 	{

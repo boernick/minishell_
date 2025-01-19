@@ -114,6 +114,7 @@ int	main(int argc, char **argv, char **envp)
 			parse_tokens(&parse, &shell);
 			pipex.cmd = parse.cmd;
 			//print_command_stack(pipex.cmd);
+			check_temp_files(parse.cmd);
 			if (parse.valid_input)
 				exec_mini(&shell, &pipex);
 		}

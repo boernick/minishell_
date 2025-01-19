@@ -58,6 +58,7 @@ typedef struct s_redirect
 	char				*file;
 	e_token_type		type;
 	struct s_redirect	*next;
+	int 				processed;
 }	t_redirect;
 
 typedef struct s_env
@@ -125,6 +126,8 @@ typedef struct	s_execution
 typedef struct sigaction	t_sigaction;
 typedef t_sigaction			t_sigact;
 
+void			check_temp_files(t_cmd *cmd); //for testing
+void		print_temp_files(t_redirect *redir);// for testing
 void						default_sigint_handler(int signum);
 void						process_running_sigint_handler(int signum);
 void						sigquit_handler(int signum);
@@ -208,9 +211,9 @@ void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 
 //int		run_heredoc(t_execution *pipex);
-int		run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell);
-int		fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell);
-int		read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell);
+int		run_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
+int		fork_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
+int		read_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
 void	cleanup_heredoc(t_cmd *cmd_p);
 int		read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell);
 

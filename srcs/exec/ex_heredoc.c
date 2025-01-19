@@ -28,17 +28,26 @@ static void	switch_signal_handler(int signal, __sighandler_t handler)
 	// 	write(1, "[DEBUG] Signal handler for SIGQUIT switched\n", 44);
 }
 
-int run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
+// int run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
+// {
+// 	if (!cmd)
+// 		return (EXIT_FAILURE);
+// 	if (cmd->redir && cmd->redir->type == TOKEN_HEREDOC)
+// 		return (fork_heredoc(data, cmd, delimeter, shell));
+// 	cmd = cmd->next;
+// 	return (EXIT_SUCCESS);
+// }
+
+int run_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell)
 {
-	if (!cmd)
+	if (!redir)
 		return (EXIT_FAILURE);
-	if (cmd->redir && cmd->redir->type == TOKEN_HEREDOC)
-		return (fork_heredoc(data, cmd, delimeter, shell));
-	cmd = cmd->next;
+	if (redir && redir->type == TOKEN_HEREDOC)
+		return (fork_heredoc(data, redir, delimeter, shell));
 	return (EXIT_SUCCESS);
 }
 
-int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
+int	fork_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell)
 {
 	pid_t pid;
 	int status;
@@ -48,7 +57,7 @@ int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
 	if (pid < 0)
 		str_error("failed to create heredoc");
 	else if (pid == 0)
-		return (read_heredoc(data, cmd, delimeter, shell));
+		return (read_heredoc(data, redir, delimeter, shell));
 	else
 	{
 		switch_signal_handler(SIGQUIT, SIG_IGN);
@@ -63,7 +72,7 @@ int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
 	return (ret);
 }
 
-int	read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
+int	read_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell)
 {
 	int	fd;
 	int	read_heredoc;
@@ -71,7 +80,7 @@ int	read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
 	switch_signal_handler(SIGINT, SIG_DFL);
 	switch_signal_handler(SIGQUIT, SIG_IGN);
 	read_heredoc = 1;
-	fd = open(cmd->redir->file, O_CREAT | O_RDWR | O_TRUNC, 0644);
+	fd = open(redir->file, O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd == -1)
 		return (EXIT_FAILURE);
 	while (read_heredoc == 1)
@@ -87,7 +96,8 @@ int read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 
 	//printf("delimiter: %s\n", data->cmd->redir->delimiter);
 	char *line;
-			line = readline("heredoc> ");
+
+		line = readline("heredoc> ");
 		if (!line)
 		{
 			write(STDOUT_FILENO, "\n", 1);
@@ -104,14 +114,17 @@ int read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 			//printf("Debug: Delimiter `%s` found, ending heredoc\n", data->cmd->redir->delimiter);
 			return 0; // Exit heredoc loop
 		}
-		// Write line to file
+		//Write line to file
 		//printf("line before: %s\n", line);
-		line = replace_variables_in_heredoc(line, data, shell);
-		//printf("line after: %s\n", line);
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1); // Add newline
+		char *expanded_line = replace_variables_in_heredoc(line, data, shell);
 		free(line);
-			return 1; // Continue the heredoc loop
+		if (expanded_line)
+		{
+			write(fd, expanded_line, ft_strlen(expanded_line));
+			write(fd, "\n", 1); // Add newline to file
+			free(expanded_line); // Free the replaced line
+		}
+		return (1);
 }
 
 void	cleanup_heredoc(t_cmd *cmd_p)
