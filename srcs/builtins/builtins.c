@@ -179,9 +179,9 @@ int	builtin_pwd(char **argv, t_shell *shell)
 // export a new env variable to the list
 int	builtin_export(char **argv, t_shell *shell)
 {
-	char	*pos;
 	char	*env;
 	int		ret;
+	int		i;
 
 	ret = 0;
 	if ((argv[0] && !argv[1]) || (argv[0] && !ft_strncmp(argv[1], "", 2)))
@@ -190,40 +190,52 @@ int	builtin_export(char **argv, t_shell *shell)
 		ret = invalid_identifier("export", argv[1]);
 	else
 	{
-		env = argv[1];
-		if (!export_is_valid(env))
+		i = 1;
+		while (argv[i])
 		{
-			ret = invalid_identifier("export", argv[1]);
-			return (ret);
-		}
-		ret = export_check(env);
-		pos = ft_strchr(env, '=');
-		export_deldup(shell, env);
-		if (!pos)
-			env_addback(shell, ft_strjoin(env, "="));
-		if (pos)
-		{
-			env_addback(shell, env);
-			pos = NULL;
+			env = argv[i];
+			if (!export_is_valid_str(env))
+				ret = invalid_identifier("export", argv[i]);
+			if (!ret)
+				ret = export_check(env);
+			if (!ret)
+				export_env_var(env, shell);
+			i++;
 		}
 	}
 	return (ret);
 }
 
-int	export_is_valid(const char *str)
+void	export_env_var(char *env, t_shell *shell)
+{
+	char *pos;
+
+	pos = ft_strchr(env, '=');
+	export_deldup(shell, env);
+	if (!pos)
+		env_addback(shell, ft_strjoin(env, "="));
+	if (pos)
+	{
+		env_addback(shell, env);
+		pos = NULL;
+	}
+}
+
+
+int	export_is_valid_str(const char *str)
 {
 	int	i;
 
 	if (!str || !*str)
 		return (0);
-	if (!ft_isalpha(str[0]) && str[0] != '_') // Must start with a letter or '_'
+	if (!ft_isalpha(str[0]) && str[0] != '_')
 		return (0);
 	i = 1;
-	while (str[i]) // Check every character
+	while (str[i])
 	{
-		if (str[i] == '=') // '=' marks the end of the identifier
+		if (str[i] == '=')
 			break;
-		if (!ft_isalnum(str[i]) && str[i] != '_') // Only letters, numbers, and '_'
+		if (!ft_isalnum(str[i]) && str[i] != '_')
 			return (0);
 		i++;
 	}
