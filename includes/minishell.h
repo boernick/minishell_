@@ -153,7 +153,7 @@ int		validate_input(t_token *tokens, t_parse *data);
 char	*ft_itoa(int n);
 
 //-----------Parse-----------//
-void	parse_tokens(t_parse *data);
+void	parse_tokens(t_parse *data, t_shell *shell);
 void	print_command_stack(t_cmd *cmd_stack); //for testing
 void	free_command_stack(t_cmd *cmd_stack);
 
@@ -207,11 +207,11 @@ void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 
 //int		run_heredoc(t_execution *pipex);
-int		run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter);
-int		fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter);
-int		read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter);
+int		run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell);
+int		fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell);
+int		read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell);
 void	cleanup_heredoc(t_cmd *cmd_p);
-int		read_line_heredoc(t_parse *data, int fd, char *delimeter);
+int		read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell);
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);
@@ -231,7 +231,6 @@ int		lst_len(t_env *lst);
 char	*get_path_env(char **path_env);
 char	*path_join(char *path_split, char *cmd_arg);
 t_env	*get_env_lst(t_shell *shell, char *name);
-void	free_t_env(t_shell *shell);
 
 //---------error-----------//
 int		str_error(char *error);

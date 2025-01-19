@@ -328,7 +328,7 @@ void add_redirection_to_cmd(t_cmd *cmd, t_redirect *new_redir)
 //     }
 // }
 
-void parse_tokens(t_parse *data) {
+void parse_tokens(t_parse *data, t_shell *shell) {
     t_token *current_token = data->head;
     t_cmd *current_cmd = NULL;
     t_redirect *redir = NULL;
@@ -441,7 +441,7 @@ void parse_tokens(t_parse *data) {
             add_redirection_to_cmd(current_cmd, redir);
             current_token = current_token->next; // Skip delimiter
 			//redir->delimiter = ft_strdup(current_token->next->value);
-			data->exit = run_heredoc(data, current_cmd, delimeter);
+			data->exit = run_heredoc(data, current_cmd, delimeter, shell);
 			free(delimeter);
 			// if (access(redir->file, F_OK) == 0 && data->exit == 130)
 			// 	unlink(redir->file);

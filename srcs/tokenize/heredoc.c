@@ -287,48 +287,49 @@ char *create_heredoc(void) {
     return temp_file;
 }
 
-char *get_env_variable_hereoc(char *var_name, t_parse *data, t_shell *shell)
-{
-	char	*env_value;
-	char	*exit_status_str;
-	t_env	*env_node;
-	char	*equals_sign;
+// char *get_env_variable_heredoc(char *var_name, t_parse *data, t_shell *shell)
+// {
+// 	char	*env_value;
+// 	char	*exit_status_str;
+// 	t_env	*env_node;
+// 	char	*equals_sign;
 
-    if (ft_strncmp(var_name, "?", 1) == 0)
-    {
-        exit_status_str = ft_itoa(data->exit);
+//     if (ft_strncmp(var_name, "?", 1) == 0)
+//     {
+//         exit_status_str = ft_itoa(data->exit);
 
-        // Concatenate the exit status with the rest of `var_name`, if any
-        char *remaining = var_name + 1; // Skip `?`
-        char *result = ft_strjoin(exit_status_str, remaining);
+//         // Concatenate the exit status with the rest of `var_name`, if any
+//         char *remaining = var_name + 1; // Skip `?`
+//         char *result = ft_strjoin(exit_status_str, remaining);
 
-        free(exit_status_str); // Free the temporary exit status string
-        return result;
-    }
-	env_node = get_env_lst(shell, var_name);
-	if (env_node)
-	{
-		equals_sign = ft_strchr(env_node->content, '=');
-		if (equals_sign)
-			return ft_strdup(equals_sign + 1); // Return the value part only
-	}
-	env_value = getenv(var_name);
-	if (env_value)
-		return ft_strdup(env_value); // Return an empty string if variable doesn't exist
-	return ft_strdup(""); // Duplicate the value for safe usage
-}
+//         free(exit_status_str); // Free the temporary exit status string
+//         return result;
+//     }
+// 	env_node = get_env_lst(shell, var_name);
+// 	if (env_node)
+// 	{
+// 		equals_sign = ft_strchr(env_node->content, '=');
+// 		if (equals_sign)
+// 			return ft_strdup(equals_sign + 1); // Return the value part only
+// 	}
+// 	env_value = getenv(var_name);
+// 	if (env_value)
+// 		return ft_strdup(env_value); // Return an empty string if variable doesn't exist
+// 	return ft_strdup(""); // Duplicate the value for safe usage
+// }
 
-char *replace_variables_in_heredoc(char *input, t_parse *data)
+
+char *replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
 {
     char result[1024] = {0};  // Buffer to store the final result
     int res_index = 0;        // Index for writing to result buffer
-    int i = 0;
-	while (input[i] != '\0')
+    int i = 0;                // Index for reading input
+    while (input[i] != '\0')
     {
         if (input[i] == '$') // Expand only outside single quotes
         {
 			i++; // Skip the `$`
-			if (!input[i]) // Handle single `$` or `$ $`
+			if (input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
 			{
 				result[res_index++] = '$';
 				continue;
@@ -340,7 +341,7 @@ char *replace_variables_in_heredoc(char *input, t_parse *data)
 				var_name[var_index++] = input[i++];
             var_name[var_index] = '\0';
 
-            char *var_value = replace_variables_in_heredoc(var_name, data);
+            char *var_value = get_env_variable(var_name, data, shell);
             if (!var_value)
                 var_value = "";
 

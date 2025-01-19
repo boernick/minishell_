@@ -28,7 +28,7 @@ static void	switch_signal_handler(int signal, __sighandler_t handler)
 	// 	write(1, "[DEBUG] Signal handler for SIGQUIT switched\n", 44);
 }
 
-int run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
+int run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
 {
 	//t_cmd *cmd;
 
@@ -38,13 +38,13 @@ int run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 	//while (cmd)
 	//{
 		if (cmd->redir && cmd->redir->type == TOKEN_HEREDOC)
-			return (fork_heredoc(data, cmd, delimeter));
+			return (fork_heredoc(data, cmd, delimeter, shell));
 		cmd = cmd->next;
 	//}
 	return (EXIT_SUCCESS);
 }
 
-int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
+int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
 {
 	pid_t pid;
 	int status;
@@ -54,7 +54,7 @@ int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 	if (pid < 0)
 		str_error("failed to create heredoc");
 	else if (pid == 0)
-		return (read_heredoc(data, cmd, delimeter));
+		return (read_heredoc(data, cmd, delimeter, shell));
 	else
 	{
 		switch_signal_handler(SIGQUIT, SIG_IGN);
@@ -69,7 +69,7 @@ int	fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 	return (ret);
 }
 
-int	read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
+int	read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
 {
 	int	fd;
 	int	read_heredoc;
@@ -81,14 +81,14 @@ int	read_heredoc(t_parse *data, t_cmd *cmd, char *delimeter)
 	if (fd == -1)
 		return (EXIT_FAILURE);
 	while (read_heredoc == 1)
-		read_heredoc = read_line_heredoc(data, fd, delimeter);
+		read_heredoc = read_line_heredoc(data, fd, delimeter, shell);
 	close(fd);
 	exit (EXIT_SUCCESS);
 }
 
-char *replace_variables_in_heredoc(char *input, t_parse *data);
+char *replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell);
 
-int read_line_heredoc(t_parse *data, int fd, char *delimeter)
+int read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 {
 
 	//printf("delimiter: %s\n", data->cmd->redir->delimiter);
@@ -111,9 +111,9 @@ int read_line_heredoc(t_parse *data, int fd, char *delimeter)
 			return 0; // Exit heredoc loop
 		}
 		// Write line to file
-		//printf("Debug: Writing line to `%s`: %s\n", file, line);
-		line = replace_variables_in_heredoc(line, data);
-		//printf("line after: %s\n", line);
+		printf("line before: %s\n", line);
+		line = replace_variables_in_heredoc(line, data, shell);
+		printf("line after: %s\n", line);
 		write(fd, line, ft_strlen(line));
 		write(fd, "\n", 1); // Add newline
 		free(line);

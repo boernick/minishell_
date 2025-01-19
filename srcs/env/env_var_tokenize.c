@@ -18,17 +18,47 @@ char *get_env_variable(char *var_name, t_parse *data, t_shell *shell)
         free(exit_status_str); // Free the temporary exit status string
         return result;
     }
-	env_node = get_env_lst(shell, var_name);
+	env_value = getenv(var_name);
+	if (env_value)
+		return ft_strdup(env_value);
+	if (shell->env_lst && shell)
+		env_node = get_env_lst(shell, var_name);
 	if (env_node)
 	{
 		equals_sign = ft_strchr(env_node->content, '=');
 		if (equals_sign)
 			return ft_strdup(equals_sign + 1); // Return the value part only
 	}
-	env_value = getenv(var_name);
-	if (env_value)
-		return ft_strdup(env_value); // Return an empty string if variable doesn't exist
 	return ft_strdup(""); // Duplicate the value for safe usage
+}
+
+char *get_pid_as_string(void)
+{
+    pid_t pid = getpid();
+    char buffer[16]; // Temporary buffer to store PID digits
+    int index = 0;
+
+    // Convert PID to string (without for or do-while loops)
+    while (pid > 0)
+    {
+        buffer[index] = (pid % 10) + '0'; // Get the last digit
+        index++;
+        pid /= 10;
+    }
+
+    // Allocate memory for the result and reverse the string
+    char *pid_str = malloc(index + 1);
+    if (!pid_str)
+        return NULL;
+
+    int reverse_index = 0;
+    while (reverse_index < index)
+    {
+        pid_str[reverse_index] = buffer[index - 1 - reverse_index];
+        reverse_index++;
+    }
+    pid_str[index] = '\0'; // Null-terminate the string
+    return pid_str;
 }
 
 //itterate throug and copy input string. If a $ sign is encountertered
@@ -57,16 +87,34 @@ char *replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
         }
         else if (input[i] == '$' && quote_char != '\'') // Expand only outside single quotes
         {
-			i++; // Skip the `$`
+			i++; // Skip the first `$`
 			if (input[i] == '\"' || input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
 			{
 				result[res_index++] = '$';
 				continue;
 			}
+			if (input[i] == '$') // Handle `$$` (expand to PID)
+			{
+				// Expand `$$` into PID
+				char *pid_str = get_pid_as_string();
+				if (pid_str)
+				{
+					int j = 0;
+					// Copy the PID into the result buffer
+					while (pid_str[j] != '\0')
+					{
+						result[res_index] = pid_str[j];
+						res_index++;
+						j++;
+					}
+					free(pid_str);
+				}
+				i++; // Skip the second `$` after handling `$$`
+			}
             char var_name[256] = {0};
             int var_index = 0;
 
-            while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
+            while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?') )
 				var_name[var_index++] = input[i++];
             var_name[var_index] = '\0';
 
