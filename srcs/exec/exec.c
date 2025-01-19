@@ -37,7 +37,7 @@ int setup_redirections(t_cmd *cmd)
 	cmd->fdout = -2;
 	while (rdir)
 	{
-		if (rdir->type == TOKEN_REDIR_IN) // HEREDOC?
+		if (rdir->type == TOKEN_REDIR_IN || rdir->type == TOKEN_HEREDOC)
 		{
 			if (cmd->fdin != -2)
 				close(cmd->fdin);
@@ -48,7 +48,7 @@ int setup_redirections(t_cmd *cmd)
 		if (rdir->type == TOKEN_REDIR_OUT || rdir->type == TOKEN_REDIR_APPEND)
 			cmd->fdout = handle_file(rdir->file, rdir->type);
 		if (cmd->fdin == -1)
-			return (invalid_filedir(rdir->file)); // GOES WRONG HERE
+			return (invalid_filedir(rdir->file));
 		if (cmd->fdout == -1)
 			return EXIT_FAILURE;
 		rdir = rdir->next;
@@ -79,7 +79,6 @@ void	create_pipes(t_execution *pipex)
 {
 	int		i;
 
-	//ft_putstr_fd("creating pipes..\n", 2); //DEBUG
 	pipex->pipe_arr = malloc(sizeof(int *) * (pipex->n_pipes + 1));
 	if (!(pipex->pipe_arr))
 		str_error("Malloc failure while creating array of pointers");

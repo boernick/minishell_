@@ -18,7 +18,7 @@ int	handle_file(char *filename, int type)
 	int	fd;
 
 	fd = 0;
-	if (type == TOKEN_REDIR_IN)
+	if (type == TOKEN_REDIR_IN || type == TOKEN_HEREDOC)
 		fd = open(filename, O_RDONLY);
 	else if (type == TOKEN_REDIR_OUT)
 	{
