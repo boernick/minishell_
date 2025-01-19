@@ -147,12 +147,12 @@ void split_tokens(char *input, t_parse *data)
             continue;
         }
 
-		if (strncmp(&input[i], "$EMPTY", 6) == 0)
-        {
-            // Skip over "$EMPTY" and move to the next character
-            i += 6;
-            continue;
-        }
+		// if (strncmp(&input[i], "$EMPTY", 6) == 0)
+        // {
+        //     // Skip over "$EMPTY" and move to the next character
+        //     i += 6;
+        //     continue;
+        // }
 
         if (isspace(input[i]) && !data->in_single_quote && !data->in_double_quote)
         {

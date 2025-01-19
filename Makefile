@@ -5,6 +5,13 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 LDFLAGS = -lreadline
 
+# Debug flag (set to 1 to enable AddressSanitizer) ./minishell DEBUG=1
+DEBUG ?= 0
+
+ifeq ($(DEBUG), 1)
+    CFLAGS += -fsanitize=address
+endif
+
 SRCS = ./srcs/builtins/builtins.c \
 ./srcs/env/env.c \
 ./srcs/env/env_var_tokenize.c \

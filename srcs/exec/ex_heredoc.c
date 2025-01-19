@@ -98,7 +98,7 @@ int read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			fprintf(stderr, "minishell: warning: here-document at line %d delimited by end-of-file (wanted '%s')\n", __LINE__, delimeter);
-			return 130; // Return NULL to signal failure
+			return 0; // Return NULL to signal failure
 		}
 		// Remove trailing newline for comparison
 		size_t len = ft_strlen(line);
@@ -111,9 +111,9 @@ int read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 			return 0; // Exit heredoc loop
 		}
 		// Write line to file
-		printf("line before: %s\n", line);
+		//printf("line before: %s\n", line);
 		line = replace_variables_in_heredoc(line, data, shell);
-		printf("line after: %s\n", line);
+		//printf("line after: %s\n", line);
 		write(fd, line, ft_strlen(line));
 		write(fd, "\n", 1); // Add newline
 		free(line);

@@ -446,7 +446,11 @@ void parse_tokens(t_parse *data, t_shell *shell) {
 			// if (access(redir->file, F_OK) == 0 && data->exit == 130)
 			// 	unlink(redir->file);
 			if (data->exit == 130)
+			{
+				data->valid_input = 0;
+				shell->last_exit = 130;
 				break;
+			}
 			//data->exit = run_heredoc(data, current_cmd);
         } else if (current_token->type == TOKEN_PIPE) {
             data->n_pipes++;

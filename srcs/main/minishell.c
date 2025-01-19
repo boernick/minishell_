@@ -112,7 +112,7 @@ int	main(int argc, char **argv, char **envp)
 		tokenize(&parse, &shell, &sa_int, &sa_quit);
 		if (parse.valid_input)
 		{
-			parse_tokens(&parse);
+			parse_tokens(&parse, &shell);
 			pipex.cmd = parse.cmd;
 			//print_command_stack(pipex.cmd);
 			if (parse.valid_input)
