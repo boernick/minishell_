@@ -79,3 +79,11 @@ int cmd_not_found(char *arg)
 	ft_putendl_fd(": command not found", 2);
 	return (127);
 }
+
+int is_a_directory(char *arg)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(arg, STDERR_FILENO);
+	ft_putendl_fd(": Is a directory", STDERR_FILENO);
+	return (126);
+}

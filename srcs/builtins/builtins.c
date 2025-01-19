@@ -29,7 +29,8 @@ int	builtin_env(char **argv, t_shell *shell)
 	lst = shell->env_lst;
 	while (lst)
 	{
-		ft_printf("%s\n", lst->content);
+		if (strchr(lst->content, '='))
+			ft_printf("%s\n", lst->content);
 		lst = lst->next;
 	}
 	return (EXIT_SUCCESS);

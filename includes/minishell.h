@@ -241,6 +241,8 @@ int		invalid_filedir_builtin(char *builtin, char *file);
 int		syntax_error(char *token);
 int 	permission_denied(char *arg);
 int 	cmd_not_found(char *arg);
+int		is_a_directory(char *arg);
+
 
 //---------utils-----------//
 void	free_array(char **array);

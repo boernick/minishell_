@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 15:05:24 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/19 15:14:37 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/19 18:14:02 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	export_env_var(char *env, t_shell *shell)
 	pos = ft_strchr(env, '=');
 	export_deldup(shell, env);
 	if (!pos)
-		env_addback(shell, ft_strjoin(env, "="));
+		env_addback(shell, env);
 	if (pos)
 	{
 		env_addback(shell, env);

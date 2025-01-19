@@ -79,10 +79,7 @@ int	run_path(t_cmd *cmd, char **path_env)
 	if (!(check_dir(cmd->argv[0])))
 	{
 		free_array(path_env);
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(cmd->argv[0], STDERR_FILENO);
-		ft_putendl_fd(": Is a directory", STDERR_FILENO);
-		return (126);
+		return (is_a_directory(cmd->argv[0]));
 	}
 	if (access(cmd->argv[0], X_OK) == 0)
 	{
@@ -95,7 +92,10 @@ int	run_path(t_cmd *cmd, char **path_env)
 		}
 	}
 	else if (errno == EACCES)
+	{
+		free_array(path_env);
 		return (permission_denied(cmd->argv[0]));
+	}
 	free_array(path_env);
 	invalid_filedir(cmd->argv[0]);
 	return (127);
