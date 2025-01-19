@@ -15,7 +15,7 @@
 //WORKING
 //Go trough the list of tokens and correcltly split up WORD_TOKENS
 //to be arguments or commands
-void classify_token_types(t_parse *data)
+void classify_token_types(t_parse *data, t_shell *shell)
 {
 	t_token	*current_token;
 	int		i;
@@ -24,6 +24,17 @@ void classify_token_types(t_parse *data)
 	current_token = data->head;
 	while (current_token)
 	{
+		if (current_token->value[0] == '$')
+		{
+			char *expanded_var = replace_variables_in_heredoc(current_token->value, data, shell);
+			if (!expanded_var || expanded_var[0] == '\0')
+			{
+				current_token->type = TOKEN_SKIP;
+				current_token = current_token->next;
+				continue;
+			}
+			free(expanded_var);
+		}
 		// Reset i to 0 if we're starting a new command sequence after a pipe
 		if (current_token->type == TOKEN_PIPE)
 			i = 0;

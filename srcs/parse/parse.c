@@ -328,6 +328,22 @@ void add_redirection_to_cmd(t_cmd *cmd, t_redirect *new_redir)
 //     }
 // }
 
+//for testing
+char *get_token_type_name(e_token_type type) {
+    switch (type) {
+        case TOKEN_CMD:         return "TOKEN_CMD";
+        case TOKEN_ARG:         return "TOKEN_ARG";
+        case TOKEN_PIPE:        return "TOKEN_PIPE";
+        case TOKEN_REDIR_IN:    return "TOKEN_REDIR_IN";
+        case TOKEN_REDIR_OUT:   return "TOKEN_REDIR_OUT";
+        case TOKEN_REDIR_APPEND:return "TOKEN_REDIR_APPEND";
+        case TOKEN_HEREDOC:     return "TOKEN_HEREDOC";
+        case TOKEN_WORD:        return "TOKEN_WORD";
+		case TOKEN_SKIP:        return "TOKEN_SKIP";
+        default:                return "UNKNOWN_TYPE";
+    }
+}
+
 void parse_tokens(t_parse *data, t_shell *shell) {
 	t_token *current_token = data->head;
 	t_cmd *current_cmd = NULL;
@@ -337,6 +353,36 @@ void parse_tokens(t_parse *data, t_shell *shell) {
 	data->n_pipes = 0;
 
 	while (current_token) {
+		// if (!current_token->value || current_token->value[0] == '\0')
+		// {
+		// 	if (current_token->next )
+		// 	{
+		// 		current_token = current_token->next;
+		// 		printf("current_token->value: %s\n", current_token->value);
+		// 		continue;
+		// 	}
+		// 	else
+		// 	{
+		// 		data->valid_input = 0;
+		// 		break;
+		// 	}
+		// }
+		//printf("current token type: %d\n", current_token->type);
+		// printf("current_token->value: %s\n", current_token->value);
+		// printf("current_token->type: %s\n", get_token_type_name(current_token->type));
+		if (current_token->type == TOKEN_SKIP)
+		{
+			if (current_token->next)
+			{
+				current_token = current_token->next;
+				continue;
+			}
+			else
+			{
+				data->valid_input = 0;
+				break;
+			}
+		}
 		if (current_token->type == TOKEN_CMD) {
 			if (!current_cmd) {
 				// Create a new command node if none exists

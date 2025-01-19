@@ -12,6 +12,29 @@
 
 #include "../../includes/minishell.h"
 
+
+//for testing
+char *get_token_type_name(e_token_type type);
+
+void	classify_empty_tokens(t_parse *data)
+{
+	t_token	*current_token;
+
+	current_token = data->head;
+	while (current_token)
+	{
+		if (!current_token->value || current_token->value[0] == '\0')
+		{
+			current_token->type = TOKEN_SKIP;
+			if (!current_token->next)
+				break;
+		}
+		// printf("current_token->value: %s\n", current_token->value);
+		// printf("current_token->type: %s\n", get_token_type_name(current_token->type));
+		current_token = current_token->next;
+	}
+}
+
 void process_tokens(char *input, t_parse *data, t_shell *shell)
 {
 	if (input && *input)
@@ -24,10 +47,11 @@ void process_tokens(char *input, t_parse *data, t_shell *shell)
 	{
 		//write(2, "testing2\n", 9);
 		data->valid_input = 1;
-		classify_token_types(data);
+		classify_token_types(data, shell);
+		replace_env_variables_in_tokens(data->head, data, shell);
 		//write(3, "testing3\n", 9);
 		//print_tokens(data->head);
-		replace_env_variables_in_tokens(data->head, data, shell);
+		//classify_empty_tokens(data);
 		//write(4, "testing4\n", 9);
 		//print_tokens(data->head);
 		free(input);

@@ -42,7 +42,8 @@ typedef enum
 	TOKEN_REDIR_IN,
 	TOKEN_REDIR_OUT,
 	TOKEN_REDIR_APPEND,
-	TOKEN_HEREDOC
+	TOKEN_HEREDOC,
+	TOKEN_SKIP
 }	e_token_type;
 
 
@@ -145,7 +146,7 @@ void	split_tokens(char *input, t_parse *data);
 t_token	*new_token(e_token_type type, char *value);
 void 	handle_buffer(t_parse *data, e_token_type token_type);
 void	add_token_to_list(t_parse *data, t_token *new_token);
-void	classify_token_types(t_parse *data);
+void	classify_token_types(t_parse *data, t_shell *shell);
 char	*create_heredoc(void);
 
 //--------utils_token--------//
@@ -185,6 +186,7 @@ void	reset_parse(t_parse *data);
 //---------env_var---------//
 void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data, t_shell *shell);
 char	*replace_variables_in_string(char *input, t_parse *data, t_shell *shell);
+char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell);
 
 //---------exec-----------//
 char	*path_join(char *path_split, char *cmd_arg);
