@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 15:05:24 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/19 18:14:02 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/19 18:19:36 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,8 @@
 //exports an environment variable to the env list
 void	export_env_var(char *env, t_shell *shell)
 {
-	char *pos;
-
-	pos = ft_strchr(env, '=');
 	export_deldup(shell, env);
-	if (!pos)
-		env_addback(shell, env);
-	if (pos)
-	{
-		env_addback(shell, env);
-		pos = NULL;
-	}
+	env_addback(shell, env);
 }
 
 // Extract the part that updates the path check directory, and change it.
