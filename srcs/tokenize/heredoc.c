@@ -280,11 +280,18 @@ char *create_heredoc(void) {
 
     char *temp_file = generate_temp_filename();
     if (!temp_file) {
-        perror("Failed to allocate memory for temp file name");
+		ft_putstr_fd("Failed to allocate memory for temp file name", STDERR_FILENO);
         return NULL;
     }
-    // Store the file path and delimiter in t_redirect for later use.
-    return temp_file;
+	int fd = open(temp_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd == -1)
+	{
+		ft_putstr_fd("Failed to create heredoc file", STDERR_FILENO);
+		free(temp_file);
+		return NULL;
+	}
+	// Store the file path and delimiter in t_redirect for later use.
+	return temp_file;
 }
 
 // char *get_env_variable_heredoc(char *var_name, t_parse *data, t_shell *shell)

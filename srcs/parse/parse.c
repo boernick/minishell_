@@ -419,9 +419,10 @@ void parse_tokens(t_parse *data, t_shell *shell) {
                 new_cmd->is_builtin = false;
                 new_cmd->redir = NULL;
                 new_cmd->next = NULL;
-
+				//printf("new_cmd->index: %S\n", new_cmd);
                 add_cmd_to_list(data, new_cmd);
                 current_cmd = new_cmd;
+				//printf("new_cmd->index: %S\n", new_cmd);
                 data->n_cmds++;
             }
 
@@ -449,6 +450,8 @@ void parse_tokens(t_parse *data, t_shell *shell) {
 			{
 				data->valid_input = 0;
 				shell->last_exit = 130;
+				if (access(redir->file, F_OK) == 0 && data->exit == 130)
+					unlink(redir->file);
 				break;
 			}
 			//data->exit = run_heredoc(data, current_cmd);
