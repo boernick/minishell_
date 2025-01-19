@@ -43,7 +43,7 @@ void process_tokens(char *input, t_parse *data, t_shell *shell)
 	split_tokens(input, data);
 	data->exit = shell->last_exit;
 	//write(1, "testing1\n", 9);
-	if (validate_input(data->head, data) && data->valid_input)
+	if (validate_input(data->head, data, shell) && data->valid_input)
 	{
 		//write(2, "testing2\n", 9);
 		data->valid_input = 1;

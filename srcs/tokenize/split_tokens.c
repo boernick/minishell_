@@ -41,9 +41,15 @@ void handle_buffer(t_parse *data, e_token_type token_type)
 }
 
 
+int ambiguous_redirect_error(char *token)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(token, STDERR_FILENO);
+	ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+	return (1); // Use the appropriate error code if needed
+}
 
-
-int validate_input(t_token *tokens, t_parse *data)
+int validate_input(t_token *tokens, t_parse *data, t_shell *shell)
 {
     t_token *current = tokens;
 
@@ -84,6 +90,18 @@ int validate_input(t_token *tokens, t_parse *data)
 					data->valid_input = 0;
 					data->exit = 2;
 					return (0);
+				}
+				if (current->next->value[0] == '$')
+				{
+					char *expanded_var = replace_variables_in_heredoc(current->next->value, data, shell);
+					if (!expanded_var || expanded_var[0] == '\0')
+					{
+						ambiguous_redirect_error(current->next->value);
+						free(expanded_var);
+						data->exit = 1;
+						return 0;
+					}
+					free(expanded_var);
 				}
 		}
         // Handle heredoc (`<<`) without a delimiter

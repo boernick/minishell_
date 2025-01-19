@@ -12,6 +12,7 @@
 
 #include "../../includes/minishell.h"
 
+
 int	syntax_error(char *token)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);

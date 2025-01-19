@@ -154,7 +154,7 @@ void	print_tokens(t_token *token_list);
 char	*trim_whitespace(char *str);
 void 	free_tokens(t_token *head);
 //int		validate_input(t_token *tokens);
-int		validate_input(t_token *tokens, t_parse *data);
+int		validate_input(t_token *tokens, t_parse *data, t_shell *shell);
 char	*ft_itoa(int n);
 
 //-----------Parse-----------//
