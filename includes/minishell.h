@@ -204,6 +204,7 @@ int		setup_redirections(t_cmd *cmd);
 void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 
+//---------heredoc-----------//
 //int		run_heredoc(t_execution *pipex);
 int		run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell);
 int		fork_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell);

@@ -144,15 +144,17 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 {
 	int	i;
 
+	if (pipex->n_pipes == 0)
+		return;
 	i = 0;
-	if (!pipex->pipe_arr)
-		return ;
 	while (i < pipex->n_pipes)
 	{
 		close(pipex->pipe_arr[i][0]);
 		close(pipex->pipe_arr[i][1]);
+		free(pipex->pipe_arr[i]);
 		i++;
 	}
+	free(pipex->pipe_arr);
 	close_fd_in_out(cmd);
 	//!!!!
 	//cleanup_heredoc(cmd); //causes lots of errors in minishell tester
@@ -184,10 +186,10 @@ void	waitpids(pid_t *pids, int n_pids, t_shell *shell, pid_t pid_last)
 				status = 0; // this was 1
 			// printf("Child %i exit status: %d\n", pids[i], WEXITSTATUS(tmp));
 		}
+		if (pids[i] == pid_last)
+			shell->last_exit = status;
 		i++;
 	}
-	if (pids[i] == pid_last)
-		shell->last_exit = status;
 }
 
 //close open input and output filedescriptors for a single command
