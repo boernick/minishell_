@@ -18,9 +18,12 @@ SRCS = ./srcs/builtins/builtins.c \
 ./srcs/builtins/builtins_utils2.c \
 ./srcs/builtins/builtins_utils3.c \
 ./srcs/env/env.c \
+./srcs/env/env2.c \
 ./srcs/env/env_var_tokenize.c \
 ./srcs/error/error.c \
+./srcs/error/error2.c \
 ./srcs/exec/exec.c \
+./srcs/exec/exec2.c \
 ./srcs/exec/ex_heredoc.c \
 ./srcs/exec/ex_builtin.c \
 ./srcs/exec/ex_env.c \
@@ -34,6 +37,7 @@ SRCS = ./srcs/builtins/builtins.c \
 ./srcs/tokenize/tokenize_ext.c \
 ./srcs/tokenize/utils_tokenize.c \
 ./srcs/utils/utils.c \
+./srcs/utils/utils2.c \
 ./srcs/utils/get_next_line.c \
 ./test.c \
 

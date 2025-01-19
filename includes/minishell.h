@@ -186,9 +186,6 @@ void	reset_parse(t_parse *data);
 void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data, t_shell *shell);
 char	*replace_variables_in_string(char *input, t_parse *data, t_shell *shell);
 
-//---------init-----------//
-int		t_env_init(t_shell *shell, char **envp);
-
 //---------exec-----------//
 char	*path_join(char *path_split, char *cmd_arg);
 int		run_ex(t_cmd *cmd, char **path_env);
@@ -210,6 +207,7 @@ int		setup_redirections(t_cmd *cmd);
 void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 
+//---------heredoc-----------//
 //int		run_heredoc(t_execution *pipex);
 int		run_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
 int		fork_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
@@ -227,6 +225,7 @@ int		builtin_unset(char **argv, t_shell *shell);
 int		builtin_export(char **argv, t_shell *shell);
 
 //---------env-----------//
+t_env 	*env_add_node(char *env_str);
 int		t_env_init(t_shell *shell, char **envp);
 int		env_addback(t_shell *shell, char *envp);
 int		env_del(t_shell *shell, char *env);
@@ -245,6 +244,8 @@ int		invalid_filedir_builtin(char *builtin, char *file);
 int		syntax_error(char *token);
 int 	permission_denied(char *arg);
 int 	cmd_not_found(char *arg);
+int		is_a_directory(char *arg);
+
 
 //---------utils-----------//
 void	free_array(char **array);

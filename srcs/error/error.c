@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-int syntax_error(char *token)
+int	syntax_error(char *token)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd("syntax error near unexpected token `", STDERR_FILENO);
@@ -53,29 +53,4 @@ int	invalid_filedir(char *file)
 	ft_putstr_fd(file, STDERR_FILENO);
 	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
 	return (EXIT_FAILURE);
-}
-
-int	invalid_filedir_builtin(char *builtin, char *file)
-{
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	ft_putstr_fd(builtin, STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
-	ft_putstr_fd(file, STDERR_FILENO);
-	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
-	return (EXIT_FAILURE);
-}
-int permission_denied(char *arg)
-{
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	ft_putstr_fd(arg, STDERR_FILENO);
-	ft_putendl_fd(": Permission denied", STDERR_FILENO);
-	return (126);
-}
-
-int cmd_not_found(char *arg)
-{
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(arg, STDERR_FILENO);
-	ft_putendl_fd(": command not found", 2);
-	return (127);
 }
