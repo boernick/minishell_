@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 18:25:17 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/19 18:25:31 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/19 18:52:56 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 pid_t	fork_child(void)
 {
 	pid_t	pid;
+
 	pid = fork();
 	if (pid < 0)
 		str_error("Error: false PID");
@@ -55,7 +56,7 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 	int	i;
 
 	if (pipex->n_pipes == 0)
-		return;
+		return ;
 	i = 0;
 	while (i < pipex->n_pipes)
 	{

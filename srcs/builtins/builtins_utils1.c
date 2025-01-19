@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 15:05:24 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/19 18:19:36 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/19 18:40:42 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	export_env_var(char *env, t_shell *shell)
 }
 
 // Extract the part that updates the path check directory, and change it.
-int cd_to_path(t_shell *shell, char *arg)
+int	cd_to_path(t_shell *shell, char *arg)
 {
 	char	*path;
 	int		ret;
@@ -57,6 +57,7 @@ int	cd_check_error(int err_status, char *dir)
 		return (EXIT_SUCCESS);
 	return (EXIT_FAILURE);
 }
+
 // format the directory path
 char	*cd_update_path(t_shell *shell, char *str)
 {

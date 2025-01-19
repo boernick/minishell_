@@ -28,9 +28,9 @@ void	exec_init(t_shell *shell, t_execution *pipex, t_cmd *cmd)
 }
 
 //process tokens for all redirections for a single command.
-int setup_redirections(t_cmd *cmd)
+int	setup_redirections(t_cmd *cmd)
 {
-	t_redirect *rdir;
+	t_redirect	*rdir;
 
 	rdir = cmd->redir;
 	cmd->fdin = -2;
@@ -50,7 +50,7 @@ int setup_redirections(t_cmd *cmd)
 		if (cmd->fdin == -1)
 			return (invalid_filedir(rdir->file));
 		if (cmd->fdout == -1)
-			return EXIT_FAILURE;
+			return (EXIT_FAILURE);
 		rdir = rdir->next;
 	}
 	return (EXIT_SUCCESS);
@@ -101,5 +101,3 @@ void	create_pipes(t_execution *pipex)
 	}
 	pipex->pipe_arr[i] = NULL;
 }
-
-

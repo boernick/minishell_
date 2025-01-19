@@ -16,9 +16,9 @@
 //saves a copy of the env_array in SHELL->t_env and returns 0 when SUCCEED.
 int	t_env_init(t_shell *shell, char **envp)
 {
-	t_env *current;
-	t_env *new_node;
-	int i;
+	t_env	*current;
+	t_env	*new_node;
+	int		i;
 
 	if (!envp || !envp[0])
 		return (-1);
@@ -41,10 +41,11 @@ int	t_env_init(t_shell *shell, char **envp)
 	}
 	return (0);
 }
+
 // Creates a single t_env node with the given environment variable string.
-t_env *env_add_node(char *env_str)
+t_env	*env_add_node(char *env_str)
 {
-	t_env *new_node;
+	t_env	*new_node;
 
 	new_node = (t_env *)malloc(sizeof(t_env));
 	if (!new_node)
@@ -65,9 +66,9 @@ int	env_addback(t_shell *shell, char *envp)
 {
 	t_env	*current;
 	t_env	*new;
-	
+
 	current = shell->env_lst;
-	while(current->next)
+	while (current->next)
 		current = current->next;
 	new = (t_env *) malloc(sizeof(t_env));
 	if (!(new))
@@ -103,7 +104,7 @@ int	env_del(t_shell *shell, char *env)
 			if (prev)
 				prev->next = lst->next;
 			else
-				shell->env_lst = lst->next;	
+				shell->env_lst = lst->next;
 			free(lst->content);
 			free(lst);
 			return (0);
@@ -113,5 +114,3 @@ int	env_del(t_shell *shell, char *env)
 	}
 	return (-1);
 }
-
-

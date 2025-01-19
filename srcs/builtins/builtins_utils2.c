@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 15:08:46 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/19 15:09:55 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/19 18:41:53 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	export_is_valid_str(const char *str)
 	while (str[i])
 	{
 		if (str[i] == '=')
-			break;
+			break ;
 		if (!ft_isalnum(str[i]) && str[i] != '_')
 			return (0);
 		i++;
@@ -83,9 +83,9 @@ void	export_lst(t_env *env_lst)
 		cheapest = NULL;
 		while (lst)
 		{
-			if ((!cheapest && !lst->export) ||
-				(!lst->export && ft_strncmp(lst->content,
-					cheapest->content, strlen(lst->content)) < 0))
+			if ((!cheapest && !lst->export) 
+				|| (!lst->export && ft_strncmp(lst->content,
+						cheapest->content, strlen(lst->content)) < 0))
 				cheapest = lst;
 			lst = lst->next;
 		}

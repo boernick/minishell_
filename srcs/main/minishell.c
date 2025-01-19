@@ -36,8 +36,8 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	}
 	if (pids != NULL)
 		free(pids);
-	//ft_printf("last exit at the end of exec: %i\n", shell->last_exit);
 }
+
 //organizes execution process for a single command
 pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 {
@@ -53,7 +53,6 @@ pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 		if (redir_status == 1)
 			exit(1);
 		run_child_exec(pipex, shell);
-
 	}
 	update_exec(pipex);
 	return (pids[pipex->index_cmd - 1]);
@@ -77,7 +76,7 @@ void	run_single_builtin(t_execution *pipex, t_shell *shell)
 	if (setup_redirections(pipex->cmd) == 1)
 	{
 		shell->last_exit = 1;
-		return;
+		return ;
 	}
 	get_fd(pipex, pipex->cmd);
 	close_fd_in_out(pipex->cmd);
@@ -94,7 +93,7 @@ int	main(int argc, char **argv, char **envp)
 	t_sigaction	sa_int;
 	t_sigaction	sa_quit;
 
-	(void)	argv;
+	(void) argv;
 	if (argc != 1)
 	{
 		printf("\"./minishell\" must be the only argument\n");

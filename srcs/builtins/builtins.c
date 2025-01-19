@@ -54,11 +54,11 @@ int	builtin_echo(char **argv)
 		if (!(ft_strncmp(argv[i], "-n", 3)))
 		{
 			i++;
-			continue;
+			continue ;
 		}
 		ft_printf("%s", argv[i]);
 		if (argv[i + 1])
-				ft_printf(" ");
+			ft_printf(" ");
 		i++;
 	}
 	if (!toggle)
@@ -95,7 +95,6 @@ int	builtin_cd(char **argv, t_shell *shell)
 		ret = EXIT_FAILURE;
 	return (ret);
 }
-
 
 // print the present working directory
 int	builtin_pwd(char **argv, t_shell *shell)

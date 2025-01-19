@@ -43,6 +43,7 @@ char	*get_path_env(char **path_env)
 	}
 	return (NULL);
 }
+
 // join path and run if result can be executed
 int	run_ex(t_cmd *cmd, char **path_env)
 {
@@ -64,7 +65,7 @@ int	run_ex(t_cmd *cmd, char **path_env)
 		if (!access(checkp, X_OK) && execve(checkp, cmd->argv, path_env) == -1)
 		{
 			free(checkp);
-			break;
+			break ;
 		}
 		free(checkp);
 	}
@@ -100,4 +101,3 @@ int	run_path(t_cmd *cmd, char **path_env)
 	invalid_filedir(cmd->argv[0]);
 	return (127);
 }
-

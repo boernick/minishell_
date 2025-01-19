@@ -37,8 +37,8 @@ int	handle_file(char *filename, int type)
 // check if directory of the file name exists
 int	check_folder(char *filename)
 {
-	char *last_dash;
-	char *folder_path;
+	char	*last_dash;
+	char	*folder_path;
 
 	last_dash = (ft_strrchr(filename, '/'));
 	if (last_dash)
@@ -86,4 +86,3 @@ void	free_int_array(t_execution *pipex, int i)
 	}
 	free(array);
 }
-

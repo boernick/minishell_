@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 17:26:12 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/19 17:26:26 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/19 18:49:13 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	**envlst_to_array(t_shell *shell)
 	char	**array;
 	int		len;
 	int		i;
-	
+
 	i = 0;
 	lst = shell->env_lst;
 	len = lst_len(lst);
@@ -28,7 +28,8 @@ char	**envlst_to_array(t_shell *shell)
 		return (NULL);
 	while (lst)
 	{
-		if (!(array[i] = ft_strdup(lst->content)))
+		array[i] = ft_strdup(lst->content);
+		if (!array[i])
 		{
 			free_array(array);
 			return (NULL);
@@ -44,7 +45,7 @@ char	**envlst_to_array(t_shell *shell)
 int	lst_len(t_env *lst)
 {
 	int	len;
-	
+
 	len = 0;
 	while (lst)
 	{
@@ -54,19 +55,20 @@ int	lst_len(t_env *lst)
 	return (len);
 }
 
-// search for an env variable name in the linked list and return a pointer to it.
+// search for an env variable name in the linked list and return a pointer.
 t_env	*get_env_lst(t_shell *shell, char *name)
 {
-	t_env *lst;
-	int len;
-	
+	t_env	*lst;
+	int		len;
+
 	len = ft_strlen(name);
 	lst = shell->env_lst;
 	if (!lst)
 		return (NULL);
 	while (lst)
 	{
-		if ((!(ft_strncmp(name, lst->content, len)) && (lst->content[len] == '=')))
+		if ((!(ft_strncmp(name, lst->content, len)) 
+				&& (lst->content[len] == '=')))
 			return (lst);
 		lst = lst->next;
 	}
