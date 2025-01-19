@@ -18,6 +18,7 @@ SRCS = ./srcs/builtins/builtins.c \
 ./srcs/builtins/builtins_utils2.c \
 ./srcs/builtins/builtins_utils3.c \
 ./srcs/env/env.c \
+./srcs/env/env2.c \
 ./srcs/env/env_var_tokenize.c \
 ./srcs/error/error.c \
 ./srcs/exec/exec.c \
