@@ -30,17 +30,11 @@ static void	switch_signal_handler(int signal, __sighandler_t handler)
 
 int run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
 {
-	//t_cmd *cmd;
-
-	//cmd = data->cmd;
 	if (!cmd)
 		return (EXIT_FAILURE);
-	//while (cmd)
-	//{
-		if (cmd->redir && cmd->redir->type == TOKEN_HEREDOC)
-			return (fork_heredoc(data, cmd, delimeter, shell));
-		cmd = cmd->next;
-	//}
+	if (cmd->redir && cmd->redir->type == TOKEN_HEREDOC)
+		return (fork_heredoc(data, cmd, delimeter, shell));
+	cmd = cmd->next;
 	return (EXIT_SUCCESS);
 }
 

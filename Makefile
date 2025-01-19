@@ -6,6 +6,10 @@ CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 LDFLAGS = -lreadline
 
 SRCS = ./srcs/builtins/builtins.c \
+./srcs/builtins/builtins2.c \
+./srcs/builtins/builtins_utils1.c \
+./srcs/builtins/builtins_utils2.c \
+./srcs/builtins/builtins_utils3.c \
 ./srcs/env/env.c \
 ./srcs/env/env_var_tokenize.c \
 ./srcs/error/error.c \
