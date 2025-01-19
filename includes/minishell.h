@@ -135,6 +135,7 @@ void						switch_signal_handlers(t_sigact *sa_int,
 								t_sigact *sa_quit, bool pr);
 //---------env_var_tokenize----------//
 char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell);
+char	*get_pid_as_string(void);
 
 //---------tokenize----------//
 void	split_tokens(char *input, t_parse *data);
