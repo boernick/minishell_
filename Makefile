@@ -39,7 +39,6 @@ SRCS = ./srcs/builtins/builtins.c \
 ./srcs/utils/utils.c \
 ./srcs/utils/utils2.c \
 ./srcs/utils/get_next_line.c \
-./test.c \
 
 OBJS = $(SRCS:.c=.o)
 HEADER = ../../includes/minishell.h
