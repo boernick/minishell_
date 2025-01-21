@@ -341,62 +341,6 @@ void	trim_file_quotes(char *str)
 // }
 
 
-void expand_env_variables_heredoc(char *line)
-{
-	char buffer[4096]; // Temporary buffer to build the expanded string
-	size_t buf_idx = 0;
-	size_t len = strlen(line);
-
-	for (size_t i = 0; i < len; i++) {
-		if (line[i] == '$' && i + 1 < len) {
-			// Handle $$ (PID)
-			if (line[i + 1] == '$') {
-				buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%d", getpid());
-				i++;
-			}
-			// Handle environment variables
-			else if ((line[i + 1] >= 'a' && line[i + 1] <= 'z') ||
-						(line[i + 1] >= 'A' && line[i + 1] <= 'Z') ||
-						line[i + 1] == '_') {
-				const char *start = line + i + 1;
-				const char *end = start;
-
-				// Find the end of the variable name
-				while ((*end >= 'a' && *end <= 'z') ||
-						(*end >= 'A' && *end <= 'Z') ||
-						(*end >= '0' && *end <= '9') ||
-						*end == '_') {
-					end++;
-				}
-
-				char var_name[256];
-				size_t var_len = end - start;
-				strncpy(var_name, start, var_len);
-				var_name[var_len] = '\0';
-
-				char *var_value = getenv(var_name);
-				if (var_value) {
-					buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%s", var_value);
-				}
-
-				i += var_len; // Skip past the variable name
-				i--;          // Offset increment in the for loop
-			} else {
-				buffer[buf_idx++] = line[i]; // Copy literal `$`
-			}
-		} else {
-			buffer[buf_idx++] = line[i]; // Copy literal character
-		}
-
-		if (buf_idx >= sizeof(buffer) - 1) {
-			fprintf(stderr, "Error: Expanded line is too long.\n");
-			return;
-		}
-	}
-	buffer[buf_idx] = '\0';
-	strcpy(line, buffer); // Copy the expanded result back to the original string
-	}
-
 ///////////////////////////////////////////////////////
 void handle_quotes(char *input, int *i, char *quote_char)
 {
