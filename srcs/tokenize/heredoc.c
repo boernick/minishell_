@@ -324,32 +324,137 @@ char	*create_heredoc(void)
 
 
 
+char *expand_pid(void)
+{
+	char *pid_str;
+
+	pid_str = get_pid_as_string();
+	if (pid_str)
+		return (pid_str);
+	else
+		return ("");
+}
+
+void handle_dollar(char *input, int *i, char *result, int *res_index)
+{
+	char	*pid_str;
+	
+	if (input[*i + 1] == '$')
+	{
+		pid_str = expand_pid();
+		strcpy(result + *res_index, pid_str);
+		*res_index += ft_strlen(pid_str);
+		free(pid_str);
+		(*i)++;
+	}
+	else
+	{
+		result[*res_index] = '$';
+		(*res_index)++;
+	}
+}
+void	expand_var(char *input, int *i, char *result, int *res_index, t_parse *data, t_shell *shell)
+{
+	char	var_name[256];
+	int		var_index;
+	char	*var_value;
+
+	var_index = 0;
+	ft_memset(var_name, 0, sizeof(var_name));
+	while (ft_isalnum(input[*i]) || input[*i] == '_'
+		|| (*i == 0 && input[*i] == '?'))
+		var_name[var_index++] = input[(*i)++];
+	var_name[var_index] = '\0';
+	var_value = get_env_variable(var_name, data, shell);
+	if (!var_value)
+		var_value = "";
+	ft_strlcpy(result + *res_index, var_value, ft_strlen(var_value) + 1);
+	*res_index += ft_strlen(var_value);
+}
+
+char	*replace_variables_in_heredoc(char *input, t_parse *data,
+		t_shell *shell)
+{
+	char	result[1024];
+	int		res_index;
+	int		i;
+
+	i = 0;
+	res_index = 0;
+	ft_memset(result, 0, sizeof(result));
+	while (input[i] != '\0')
+	{
+		if (input[i] == '$')
+		{
+			i++;
+			if (input[i] == ' ' || !input[i])
+			{
+				result[res_index++] = '$';
+				continue ;
+			}
+			if (input[i] == '$')
+				handle_dollar(input, &i, result, &res_index);
+			else
+				expand_var(input, &i, result, &res_index, data, shell);
+		}
+		else
+			result[res_index++] = input[i++];
+	}
+	result[res_index] = '\0';
+	return (ft_strdup(result));
+}
 
 
-// char	*replace_variables_in_heredoc(char *input, t_parse *data,
-// 		t_shell *shell)
+
+
+
+
+
+
+// char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
 // {
-// 	char	result[1024];
-// 	int		res_index;
-// 	int		i;
-
-// 	i = 0;
-// 	res_index = 0;
-// 	ft_memset(result, 0, sizeof(result));
+// 	char result[1024] = {0};  // Buffer to store the final result
+// 	int res_index = 0;        // Index for writing to result buffer
+// 	int i = 0;                // Index for reading input
 // 	while (input[i] != '\0')
 // 	{
-// 		if (input[i] == '$')
+// 		if (input[i] == '$') // Expand only outside single quotes
 // 		{
-// 			i++;
-// 			if (input[i] == ' ' || !input[i])
+// 			i++; // Skip the `$`
+// 			if (input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
 // 			{
 // 				result[res_index++] = '$';
-// 				continue ;
+// 				continue;
 // 			}
-// 			if (input[i] == '$')
-// 				handle_dollar(input, &i, result, &res_index);
-// 			else
-// 				expand_var(input, &i, result, &res_index, data, shell);
+// 			if (input[i] == '$') // Handle `$$` (expand to PID)
+// 			{
+// 				// Expand `$$` into PID
+// 				char *pid_str = get_pid_as_string();
+// 				if (pid_str)
+// 				{
+// 					int j = 0;
+// 					// Copy the PID into the result buffer
+// 					while (pid_str[j] != '\0')
+// 					{
+// 						result[res_index] = pid_str[j];
+// 						res_index++;
+// 						j++;
+// 					}
+// 					free(pid_str);
+// 				}
+// 				i++; // Skip the second `$` after handling `$$`
+// 			}
+// 			char var_name[256] = {0};
+// 			int var_index = 0;
+// 			while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
+// 				var_name[var_index++] = input[i++];
+// 			var_name[var_index] = '\0';
+// 			char *var_value = get_env_variable(var_name, data, shell);
+// 			if (!var_value)
+// 				var_value = "";
+// 			strcpy(result + res_index, var_value); // Use custom strcpy if required
+// 			res_index += ft_strlen(var_value);
+// 			free(var_value);
 // 		}
 // 		else
 // 			result[res_index++] = input[i++];
@@ -357,62 +462,3 @@ char	*create_heredoc(void)
 // 	result[res_index] = '\0';
 // 	return ft_strdup(result);
 // }
-
-
-
-
-
-
-
-
-char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
-{
-	char result[1024] = {0};  // Buffer to store the final result
-	int res_index = 0;        // Index for writing to result buffer
-	int i = 0;                // Index for reading input
-	while (input[i] != '\0')
-	{
-		if (input[i] == '$') // Expand only outside single quotes
-		{
-			i++; // Skip the `$`
-			if (input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
-			{
-				result[res_index++] = '$';
-				continue;
-			}
-			if (input[i] == '$') // Handle `$$` (expand to PID)
-			{
-				// Expand `$$` into PID
-				char *pid_str = get_pid_as_string();
-				if (pid_str)
-				{
-					int j = 0;
-					// Copy the PID into the result buffer
-					while (pid_str[j] != '\0')
-					{
-						result[res_index] = pid_str[j];
-						res_index++;
-						j++;
-					}
-					free(pid_str);
-				}
-				i++; // Skip the second `$` after handling `$$`
-			}
-			char var_name[256] = {0};
-			int var_index = 0;
-			while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
-				var_name[var_index++] = input[i++];
-			var_name[var_index] = '\0';
-			char *var_value = get_env_variable(var_name, data, shell);
-			if (!var_value)
-				var_value = "";
-			strcpy(result + res_index, var_value); // Use custom strcpy if required
-			res_index += ft_strlen(var_value);
-			free(var_value);
-		}
-		else
-			result[res_index++] = input[i++];
-	}
-	result[res_index] = '\0';
-	return ft_strdup(result);
-}

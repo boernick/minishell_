@@ -444,10 +444,10 @@ void	parse_tokens(t_parse *data, t_shell *shell)
 			add_argument_to_cmd(current_cmd, cur_t->value);
 		else if (cur_t->type == TOKEN_REDIR_IN || cur_t->type == TOKEN_REDIR_OUT
 			|| cur_t->type == TOKEN_REDIR_APPEND)
-				process_token_redirection(cur_t, data, &current_cmd);
+			process_token_redirection(cur_t, data, &current_cmd);
 		else if (cur_t->type == TOKEN_HEREDOC
 			&& (!process_token_heredoc(cur_t, data, &current_cmd, shell)))
-				break ;
+			break ;
 		else if (cur_t->type == TOKEN_PIPE)
 			process_token_pipe(data, &current_cmd);
 		cur_t = cur_t->next;

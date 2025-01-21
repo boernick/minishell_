@@ -68,7 +68,8 @@ void trim_quotes(char *str)
 	len = 0;
 	while (str[len])
 		len++;
-	if (len > 1 && ((str[0] == '\'' || str[0] == '\"') && (str[len - 1] == '\'' || str[len - 1] == '\"')))
+	if (len > 1 && ((str[0] == '\'' || str[0] == '\"')
+		&& (str[len - 1] == '\'' || str[len - 1] == '\"')))
 	{
 		i = 0;
 		while (i < len - 1)
@@ -93,7 +94,7 @@ void	trim_file_quotes(char *str)
 		if (str[i] == '\'' || str[i] == '\"')
 		{
 			i++;
-			continue;
+			continue ;
 		}
 		temp[j++] = str[i++];
 	}
@@ -325,16 +326,16 @@ void	trim_file_quotes(char *str)
 ///////////////////////////////////////////////////////
 void handle_quotes(char *input, int *i, char *quote_char)
 {
-    if ((input[*i] == '\'' || input[*i] == '\"') && *quote_char == 0)
-    {
-        *quote_char = input[*i];
-        (*i)++;
-    }
-    else if (input[*i] == *quote_char)
-    {
-        *quote_char = 0;
-        (*i)++;
-    }
+	if ((input[*i] == '\'' || input[*i] == '\"') && *quote_char == 0)
+	{
+		*quote_char = input[*i];
+		(*i)++;
+	}
+	else if (input[*i] == *quote_char)
+	{
+		*quote_char = 0;
+		(*i)++;
+	}
 }
 void	process_quote(char *input, t_parse *data, char quote_type, int *i);
 
@@ -366,19 +367,22 @@ void	handle_variable_replacement(char *input, int *i, char *result, int *res_ind
 
 char *replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
 {
-	char result[1024] = {0};  // Buffer to store the final result
-	int res_index = 0;        // Index for writing to result buffer
-	int i = 0;                // Index for reading input
+	char result[1024];
+	int		res_index;
+	int		i;
 	char	*var_value;
-	int var_index;
+	int		var_index;
 
+	res_index = 0;
+	i = 0;
 	data->in_double_quote = 0;
 	data->in_single_quote = 0;
+	ft_memset(result, 0, sizeof(result));
 	while (input[i] != '\0')
 	{
 		if ((input[i] == '\'' && !data->in_double_quote) ||
 			(input[i] == '\"' && !data->in_single_quote))
-				process_quote(input, data, input[i], &i);
+			process_quote(input, data, input[i], &i);
 		else if (input[i] == '$' && !data->in_single_quote)
 		{
 			handle_variable_replacement(input, &i, result, &res_index);
