@@ -95,10 +95,7 @@ int	main(int argc, char **argv, char **envp)
 
 	(void) argv;
 	if (argc != 1)
-	{
-		printf("\"./minishell\" must be the only argument\n");
-		return (0);
-	}
+		return (invalid_argument_count(1));
 	struct_init(&parse, &shell);
 	t_env_init(&shell, envp);
 	init_signal_handlers(&sa_int, &sa_quit);

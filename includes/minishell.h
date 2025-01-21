@@ -248,7 +248,7 @@ int		syntax_error(char *token);
 int 	permission_denied(char *arg);
 int 	cmd_not_found(char *arg);
 int		is_a_directory(char *arg);
-
+int		invalid_argument_count(int ret);
 
 //---------utils-----------//
 void	free_array(char **array);
