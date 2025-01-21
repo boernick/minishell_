@@ -365,54 +365,54 @@ char	*create_heredoc(void)
 
 
 
-// char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
-// {
-// 	char result[1024] = {0};  // Buffer to store the final result
-// 	int res_index = 0;        // Index for writing to result buffer
-// 	int i = 0;                // Index for reading input
-// 	while (input[i] != '\0')
-// 	{
-// 		if (input[i] == '$') // Expand only outside single quotes
-// 		{
-// 			i++; // Skip the `$`
-// 			if (input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
-// 			{
-// 				result[res_index++] = '$';
-// 				continue;
-// 			}
-// 			if (input[i] == '$') // Handle `$$` (expand to PID)
-// 			{
-// 				// Expand `$$` into PID
-// 				char *pid_str = get_pid_as_string();
-// 				if (pid_str)
-// 				{
-// 					int j = 0;
-// 					// Copy the PID into the result buffer
-// 					while (pid_str[j] != '\0')
-// 					{
-// 						result[res_index] = pid_str[j];
-// 						res_index++;
-// 						j++;
-// 					}
-// 					free(pid_str);
-// 				}
-// 				i++; // Skip the second `$` after handling `$$`
-// 			}
-// 			char var_name[256] = {0};
-// 			int var_index = 0;
-// 			while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
-// 				var_name[var_index++] = input[i++];
-// 			var_name[var_index] = '\0';
-// 			char *var_value = get_env_variable(var_name, data, shell);
-// 			if (!var_value)
-// 				var_value = "";
-// 			strcpy(result + res_index, var_value); // Use custom strcpy if required
-// 			res_index += ft_strlen(var_value);
-// 			free(var_value);
-// 		}
-// 		else
-// 			result[res_index++] = input[i++];
-// 	}
-// 	result[res_index] = '\0';
-// 	return ft_strdup(result);
-// }
+char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
+{
+	char result[1024] = {0};  // Buffer to store the final result
+	int res_index = 0;        // Index for writing to result buffer
+	int i = 0;                // Index for reading input
+	while (input[i] != '\0')
+	{
+		if (input[i] == '$') // Expand only outside single quotes
+		{
+			i++; // Skip the `$`
+			if (input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
+			{
+				result[res_index++] = '$';
+				continue;
+			}
+			if (input[i] == '$') // Handle `$$` (expand to PID)
+			{
+				// Expand `$$` into PID
+				char *pid_str = get_pid_as_string();
+				if (pid_str)
+				{
+					int j = 0;
+					// Copy the PID into the result buffer
+					while (pid_str[j] != '\0')
+					{
+						result[res_index] = pid_str[j];
+						res_index++;
+						j++;
+					}
+					free(pid_str);
+				}
+				i++; // Skip the second `$` after handling `$$`
+			}
+			char var_name[256] = {0};
+			int var_index = 0;
+			while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
+				var_name[var_index++] = input[i++];
+			var_name[var_index] = '\0';
+			char *var_value = get_env_variable(var_name, data, shell);
+			if (!var_value)
+				var_value = "";
+			strcpy(result + res_index, var_value); // Use custom strcpy if required
+			res_index += ft_strlen(var_value);
+			free(var_value);
+		}
+		else
+			result[res_index++] = input[i++];
+	}
+	result[res_index] = '\0';
+	return ft_strdup(result);
+}
