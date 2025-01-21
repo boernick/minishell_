@@ -14,7 +14,7 @@
 
 // Trims leading and trailing whitespace from a given string.
 // Returns a pointer to the trimmed portion of the original string.
-char *trim_whitespace(char *str)
+char	*trim_whitespace(char *str)
 {
 	int	start;
 	int	end;

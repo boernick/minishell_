@@ -127,33 +127,28 @@ typedef struct	s_execution
 typedef struct sigaction	t_sigaction;
 typedef t_sigaction			t_sigact;
 
-void			check_temp_files(t_cmd *cmd); //for testing
-void		print_temp_files(t_redirect *redir);// for testing
-void						default_sigint_handler(int signum);
-void						process_running_sigint_handler(int signum);
-void						sigquit_handler(int signum);
-void						process_running_sigquit_handler(int signum);
-void						init_signal_handlers(t_sigaction *sa_int,
-								t_sigaction *sa_quit);
-void						switch_signal_handlers(t_sigact *sa_int,
-								t_sigact *sa_quit, bool pr);
+void	check_temp_files(t_cmd *cmd); //for testing
+void	print_temp_files(t_redirect *redir);// for testing
+void	process_running_sigint_handler(int signum);
+void	process_running_sigquit_handler(int signum);
+void	init_signal_handlers(t_sigaction *sa_int, t_sigaction *sa_quit);
+
 //---------env_var_tokenize----------//
 char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell);
 char	*get_pid_as_string(void);
 
 //---------tokenize----------//
-void	split_tokens(char *input, t_parse *data);
-t_token	*new_token(e_token_type type, char *value);
-void 	handle_buffer(t_parse *data, e_token_type token_type);
-void	add_token_to_list(t_parse *data, t_token *new_token);
-void	classify_token_types(t_parse *data, t_shell *shell);
-char	*create_heredoc(void);
+void		split_tokens(char *input, t_parse *data);
+t_token		*new_token(e_token_type type, char *value);
+void 		handle_buffer(t_parse *data, e_token_type token_type);
+void		add_token_to_list(t_parse *data, t_token *new_token);
+void		classify_token_types(t_parse *data, t_shell *shell);
+char		*create_heredoc(void);
 
 //--------utils_token--------//
 void	print_tokens(t_token *token_list);
-char	*trim_whitespace(char *str);
+char	*trim_whitespace(char *str); // not used
 void 	free_tokens(t_token *head);
-//int		validate_input(t_token *tokens);
 int		validate_input(t_token *tokens, t_parse *data, t_shell *shell);
 char	*ft_itoa(int n);
 
@@ -164,7 +159,6 @@ void	free_command_stack(t_cmd *cmd_stack);
 
 //-----------utils------------//
 char	*ft_strdup(const char *src);
-int		ft_isspace(char c); //need to write
 int		ft_isalnum(char c);
 char	*get_next_line(int fd);
 
@@ -210,7 +204,6 @@ void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 
 //---------heredoc-----------//
-//int		run_heredoc(t_execution *pipex);
 int		run_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
 int		fork_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
 int		read_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
