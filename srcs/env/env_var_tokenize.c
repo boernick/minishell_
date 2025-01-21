@@ -12,9 +12,9 @@ char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell)
 	if (ft_strncmp(var_name, "?", 1) == 0)
 	{
 		exit_status_str = ft_itoa(data->exit);
-		remaining = var_name + 1; // Skip `?`
+		remaining = var_name + 1;
 		result = ft_strjoin(exit_status_str, remaining);
-		free(exit_status_str); // Free the temporary exit status string
+		free(exit_status_str);
 		return (result);
 	}
 	env_value = getenv(var_name);
@@ -83,9 +83,9 @@ void trim_quotes(char *str)
 
 void	trim_file_quotes(char *str)
 {
-	int i;
-	int j;
-	char temp[1024];
+	int		i;
+	int		j;
+	char	temp[1024];
 
 	i = 0;
 	j = 0;
@@ -388,14 +388,14 @@ char *replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
 			handle_variable_replacement(input, &i, result, &res_index);
 			char var_name[256] = {0};
 			var_index = 0;
-
-			while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?') )
+			while (ft_isalnum(input[i]) || input[i] == '_'
+				|| (var_index == 0 && input[i] == '?') )
 				var_name[var_index++] = input[i++];
 			var_name[var_index] = '\0';
 			var_value = get_env_variable(var_name, data, shell);
 			if (!var_value)
 				var_value = "";
-			ft_strlcpy(result + res_index, var_value, ft_strlen(var_value) + 1); // Use custom strcpy if required
+			ft_strlcpy(result + res_index, var_value, ft_strlen(var_value) + 1);
 			res_index += ft_strlen(var_value);
 			free(var_value);
 		}
@@ -403,7 +403,7 @@ char *replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
 			result[res_index++] = input[i++];
 	}
 	result[res_index] = '\0';
-	return ft_strdup(result);
+	return	(ft_strdup(result));
 }
 
 //// ////
@@ -422,7 +422,8 @@ void replace_single_token_env_var(t_token *token, t_parse *data, t_shell *shell)
 	trim_quotes(token->value);
 }
 
-void replace_env_variables_in_tokens(t_token *tokens, t_parse *data, t_shell *shell)
+void replace_env_variables_in_tokens(t_token *tokens, t_parse *data,
+		t_shell *shell)
 {
 	if (tokens)
 		replace_single_token_env_var(tokens, data, shell);

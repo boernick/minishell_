@@ -33,28 +33,24 @@ volatile sig_atomic_t g_interrupted = false;
 // Custom SIGINT handler for heredoc
 void heredoc_sigint_handler(int signum)
 {
-    (void)signum;
-    g_interrupted = true;
-    write(STDOUT_FILENO, "\n", 1);  // Print a newline to maintain shell aesthetics
+	(void)signum;
+	g_interrupted = true;
+	write(STDOUT_FILENO, "\n", 1);
 }
 
 // Set custom signal handlers for heredoc
-void setup_heredoc_signals(struct sigaction *prev_sigint, struct sigaction *prev_sigquit) {
-    struct sigaction sa;
+void	setup_heredoc_signals(struct sigaction *prev_sigint, struct sigaction *prev_sigquit)
+{
+	struct sigaction	sa;
 
-    // Save current signal handlers
-    sigaction(SIGINT, NULL, prev_sigint);
-    sigaction(SIGQUIT, NULL, prev_sigquit);
-
-    // Set custom SIGINT handler
-    sa.sa_handler = heredoc_sigint_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    sigaction(SIGINT, &sa, NULL);
-
-    // Ignore SIGQUIT
-    sa.sa_handler = SIG_IGN;
-    sigaction(SIGQUIT, &sa, NULL);
+	sigaction(SIGINT, NULL, prev_sigint);
+	sigaction(SIGQUIT, NULL, prev_sigquit);
+	sa.sa_handler = heredoc_sigint_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &sa, NULL);
 }
 
 // int	get_tempfile_name(char *tempfile)
@@ -75,101 +71,17 @@ void setup_heredoc_signals(struct sigaction *prev_sigint, struct sigaction *prev
 // 	return (-1);
 // }
 
-char *generate_temp_filename(void){
-	static int counter = 0; // Static counter to ensure uniqueness
-	char *filename = malloc(64); // Allocate space for the filename
+char *generate_temp_filename(void)
+{
+	static int	counter = 0;
+	char		*filename;
+
+	filename = malloc(64);
 	if (!filename)
-		return NULL;
+		return (NULL);
 	sprintf(filename, "/tmp/heredoc_temp_%d.txt", counter++);
-	return filename;
+	return (filename);
 }
-
-
-// void cleanup_heredoc(t_cmd *cmd)
-// {
-//     t_redirect *rdir = cmd->redir;
-
-//     while (rdir)
-//     {
-//         if (rdir->type == TOKEN_HEREDOC && rdir->file)
-//         {
-//             unlink(rdir->file); // Delete the temporary heredoc file
-//         }
-//         rdir = rdir->next;
-//     }
-// }
-
-		// // // Handles heredoc input, writes to a temporary file, and returns the file path
-		// char *create_heredoc(char *delimiter)
-		// {
-		// 	struct sigaction	prev_sigint;
-		// 	struct sigaction	prev_sigquit;
-		// 	printf("[DEBUG] Starting heredoc with delimiter: %s\n", delimiter);
-
-		//     char *temp_file = generate_temp_filename();
-		//     if (!temp_file)
-		//     {
-		//         perror("Failed to allocate memory for temp file name");
-		//         return NULL;
-		//     }
-		// 	setup_heredoc_signals(&prev_sigint, &prev_sigquit);
-		// 	// switch_signal_handler(SIGINT, SIG_DFL);
-		// 	// switch_signal_handler(SIGQUIT, SIG_IGN);
-		//     int fd = open(temp_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-		//     if (fd == -1)
-		//     {
-		//         perror("Failed to create heredoc file");
-		//         free(temp_file);
-		//         return NULL;
-		//     }
-
-		//     //printf("Debug: Created heredoc file `%s`\n", temp_file);
-
-		//     char *line;
-		//     while (1)
-		//     {
-		// 			line = readline("heredoc> ");
-		//         // write(STDOUT_FILENO, "heredoc> ", 9);
-		//         // line = get_next_line(STDIN_FILENO);
-		// 	if (!line)
-		// 	{
-		// 		write(STDOUT_FILENO, "\n", 1);
-		// 		fprintf(stderr, "bash: warning: here-document at line %d delimited by end-of-file (wanted '%s')\n", __LINE__, delimiter);
-		// 		close(fd);
-		// 		unlink(temp_file); // Delete the temporary file
-		// 		free(temp_file);
-		// 		//switch_signal_handlers(&sa_int, &sa_quit, false);
-		// 		return NULL; // Return NULL to signal failure
-		// 	}
-
-		//         // Remove trailing newline for comparison
-		//         size_t len = ft_strlen(line);
-		//         if (len > 0 && line[len - 1] == '\n')
-		//             line[len - 1] = '\0';
-
-		//         // Check if line matches the delimiter
-		//         if (strcmp(line, delimiter) == 0)
-		//         {
-		//             free(line);
-		//             printf("Debug: Delimiter `%s` found, ending heredoc\n", delimiter);
-		//             break;
-		//         }
-
-		//         // Write line to file
-		//         //printf("Debug: Writing line to `%s`: %s\n", temp_file, line);
-		//         write(fd, line, ft_strlen(line));
-		//         write(fd, "\n", 1); // Add newline
-		//         free(line);
-		//     }
-
-		//     close(fd);
-		// 	// switch_signal_handler(SIGINT, default_sigint_handler);
-		//     // switch_signal_handler(SIGQUIT, SIG_IGN);
-		//     printf("Debug: Finished writing to heredoc file `%s`\n", temp_file);
-
-		//     return temp_file;
-		// }
-
 
 void	expand_env_variables_heredoc(char *line)
 {
@@ -219,71 +131,6 @@ void	expand_env_variables_heredoc(char *line)
 	}
 	buffer[buf_idx] = '\0';
 	strcpy(line, buffer);
-}
-
-
-
-//for testing
-void print_temp_files(t_redirect *redir)
-{
-            printf("Checking contents of file: %s\n", redir->file);
-
-
-            // Open the file for reading
-            int fd = open(redir->file, O_RDONLY);
-            if (fd == -1)
-            {
-                perror("Failed to open heredoc file");
-				return;
-            }
-
-            // Read and print the file contents
-            char buffer[1024];
-            ssize_t bytes_read;
-            while ((bytes_read = read(fd, buffer, sizeof(buffer) - 1)) > 0)
-            {
-                buffer[bytes_read] = '\0'; // Null-terminate the buffer
-                printf("%s", buffer);
-            }
-            if (bytes_read == -1)
-                perror("Error reading heredoc file");
-
-            close(fd);
-}
-//for testing
-void check_temp_files(t_cmd *cmd)
-{
-    t_redirect *redir = cmd->redir;
-    while (redir)
-	{
-
-		if (redir->type == TOKEN_HEREDOC && redir->file){
-            printf("Checking contents of file: %s\n", cmd->redir->file);
-
-            // Open the file for reading
-            int fd = open(cmd->redir->file, O_RDONLY);
-            if (fd == -1)
-            {
-                perror("Failed to open heredoc file");
-                cmd = cmd->next;
-                continue;
-            }
-
-            // Read and print the file contents
-            char buffer[1024];
-            ssize_t bytes_read;
-            while ((bytes_read = read(fd, buffer, sizeof(buffer) - 1)) > 0)
-            {
-                buffer[bytes_read] = '\0'; // Null-terminate the buffer
-                printf("%s", buffer);
-            }
-            if (bytes_read == -1)
-                perror("Error reading heredoc file");
-
-            close(fd);
-        }
-        redir = redir->next;
-    }
 }
 
 char	*create_heredoc(void)
@@ -338,7 +185,7 @@ char *expand_pid(void)
 void handle_dollar(char *input, int *i, char *result, int *res_index)
 {
 	char	*pid_str;
-	
+
 	if (input[*i + 1] == '$')
 	{
 		pid_str = expand_pid();
@@ -373,7 +220,7 @@ void	expand_var(char *input, int *i, char *result, int *res_index, t_parse *data
 }
 
 char	*replace_variables_in_heredoc(char *input, t_parse *data,
-		t_shell *shell)
+			t_shell *shell)
 {
 	char	result[1024];
 	int		res_index;

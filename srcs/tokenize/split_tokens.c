@@ -4,7 +4,9 @@
 //token to the given input.
 t_token *new_token(e_token_type type, char *value)
 {
-	t_token *token = (t_token *)malloc(sizeof(t_token));
+	t_token *token;
+
+	token = (t_token *)malloc(sizeof(t_token));
 	if (!token)
 	{
 		perror("Failed to allocate token");
@@ -20,12 +22,11 @@ t_token *new_token(e_token_type type, char *value)
 //at the end (tail) of the list of tokens.
 void add_token_to_list(t_parse *data, t_token *new_token)
 {
-    if (data->head == NULL) {
-        data->head = new_token;
-    } else {
-        data->tail->next = new_token;
-    }
-    data->tail = new_token;
+	if (data->head == NULL)
+		data->head = new_token;
+	else
+		data->tail->next = new_token;
+	data->tail = new_token;
 }
 
 //takes the buffer containing a segment of input from the user which has been identified
@@ -104,19 +105,19 @@ int	validate_tokens(t_token *current, t_parse *data, t_shell *shell)
 	if (current->type == TOKEN_PIPE || current->type == TOKEN_REDIR_IN
 		|| current->type == TOKEN_REDIR_OUT
 		|| current->type == TOKEN_REDIR_APPEND)
-		{
-			if (!validate_operator_sequence(current->next, data))
-				return (0);
-		}
+	{
+		if (!validate_operator_sequence(current->next, data))
+			return (0);
+	}
 	if (current->type == TOKEN_REDIR_IN || current->type == TOKEN_REDIR_OUT
 		|| current->type == TOKEN_REDIR_APPEND)
-		{
-			if (!validate_operator_sequence2(current->next, data, shell))
-				return (0);
-		}
+	{
+		if (!validate_operator_sequence2(current->next, data, shell))
+			return (0);
+	}
 	if (current->type == TOKEN_HEREDOC
 		&& !validate_heredoc(current->next, data))
-			return (0);
+		return (0);
 	return (1);
 }
 
@@ -163,7 +164,8 @@ int	validate_input(t_token *tokens, t_parse *data, t_shell *shell)
 	}
 	while (last && last->next)
 		last = last->next;
-	if (last->type == TOKEN_PIPE || last->type == TOKEN_REDIR_IN || last->type == TOKEN_REDIR_OUT || last->type == TOKEN_REDIR_APPEND)
+	if (last->type == TOKEN_PIPE || last->type == TOKEN_REDIR_IN
+		|| last->type == TOKEN_REDIR_OUT || last->type == TOKEN_REDIR_APPEND)
 	{
 		syntax_error("newline");
 		data->valid_input = 0;
@@ -239,7 +241,10 @@ void	finalize_parsing(t_parse *data)
 		data->head = data->tail = NULL;
 	}
 	else
+	{
+		//free_tokens(data->head);
 		data->valid_input = 1;
+	}
 }
 
 void	split_tokens(char *input, t_parse *data)
@@ -256,16 +261,16 @@ void	split_tokens(char *input, t_parse *data)
 		}
 		if ((input[i] == '\'' && !data->in_double_quote) ||
 			(input[i] == '\"' && !data->in_single_quote))
-				process_quote(input, data, input[i], &i);
-		else if ((input[i] == ' ' || input[i] == '\t' || input[i] == '\n') &&
-			!data->in_single_quote && !data->in_double_quote)
-				process_whitespace(data, &i);
-		else if (input[i] == '|' &&
-			!(data->in_single_quote || data->in_double_quote))
-				process_pipe(input, data, &i);
-		else if ((input[i] == '>' || input[i] == '<') &&
-			!(data->in_single_quote || data->in_double_quote))
-				process_redirection(input, data, &i);
+			process_quote(input, data, input[i], &i);
+		else if ((input[i] == ' ' || input[i] == '\t' || input[i] == '\n')
+			&& !data->in_single_quote && !data->in_double_quote)
+			process_whitespace(data, &i);
+		else if (input[i] == '|'
+			&& !(data->in_single_quote || data->in_double_quote))
+			process_pipe(input, data, &i);
+		else if ((input[i] == '>' || input[i] == '<')
+			&& !(data->in_single_quote || data->in_double_quote))
+			process_redirection(input, data, &i);
 		else
 			data->buffer[data->buf_index++] = input[i++];
 	}
