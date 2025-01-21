@@ -116,7 +116,6 @@ int	main(int argc, char **argv, char **envp)
 				exec_mini(&shell, &pipex);
 		}
 		outside_process_signals(&sa_int, &sa_quit);
-		//switch_signal_handlers(&sa_int, &sa_quit, false);
 		free_tokens(parse.head);
 		parse.head = NULL;
 	}

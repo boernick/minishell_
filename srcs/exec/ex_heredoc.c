@@ -96,13 +96,16 @@ int read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 
 	//printf("delimiter: %s\n", data->cmd->redir->delimiter);
 	char *line;
+	static int line_number;
 
+	line_number = 1;
 		line = readline("heredoc> ");
 		if (!line)
 		{
 			write(STDOUT_FILENO, "\n", 1);
-			fprintf(stderr, "minishell: warning: here-document at line %d delimited by end-of-file (wanted '%s')\n", __LINE__, delimeter);
-			return 0; // Return NULL to signal failure
+			data->valid_input = 0;
+			fprintf(stderr, "minishell: warning: here-document at line %d delimited by end-of-file (wanted `%s')\n", line_number, delimeter);
+			return (0); // Return NULL to signal failure
 		}
 		// Remove trailing newline for comparison
 		size_t len = ft_strlen(line);
@@ -124,6 +127,7 @@ int read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 			write(fd, "\n", 1); // Add newline to file
 			free(expanded_line); // Free the replaced line
 		}
+		line_number++;
 		return (1);
 }
 

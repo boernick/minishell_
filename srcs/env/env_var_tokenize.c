@@ -155,7 +155,7 @@ void trim_quotes(char *str)
 	}
 }
 
-void trim_file_quotes(char *str)
+void	trim_file_quotes(char *str)
 {
 	int i;
 	int j;

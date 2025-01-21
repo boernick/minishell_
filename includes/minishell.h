@@ -171,16 +171,20 @@ void	inside_process_signals(t_sigact *sa_int, t_sigact *sa_quit);
 void	outside_process_signals(t_sigact *sa_int, t_sigact *sa_quit);
 
 //------tokenize_and_parse-------//
-void	tokenize(t_parse *parse, t_shell *shell, t_sigaction *sa_int, t_sigaction *sa_quit);
+void	tokenize(t_parse *parse, t_shell *shell,
+			t_sigaction *sa_int, t_sigaction *sa_quit);
 
 //------handle_struct-------//
 void	struct_init(t_parse *data, t_shell *shell);
 void	reset_parse(t_parse *data);
 
 //---------env_var---------//
-void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data, t_shell *shell);
-char	*replace_variables_in_string(char *input, t_parse *data, t_shell *shell);
-char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell);
+void	replace_env_variables_in_tokens(t_token *tokens,
+			t_parse *data, t_shell *shell);
+char	*replace_variables_in_string(char *input,
+			t_parse *data, t_shell *shell);
+char	*replace_variables_in_heredoc(char *input, t_parse *data,
+			t_shell *shell);
 
 //---------exec-----------//
 char	*path_join(char *path_split, char *cmd_arg);
@@ -204,11 +208,15 @@ void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 
 //---------heredoc-----------//
-int		run_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
-int		fork_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
-int		read_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell);
+int		run_heredoc(t_parse *data, t_redirect *redir,
+			char *delimeter, t_shell *shell);
+int		fork_heredoc(t_parse *data, t_redirect *redir,
+			char *delimeter, t_shell *shell);
+int		read_heredoc(t_parse *data, t_redirect *redir,
+			char *delimeter, t_shell *shell);
 void	cleanup_heredoc(t_cmd *cmd_p);
-int		read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell);
+int		read_line_heredoc(t_parse *data, int fd,
+			char *delimeter, t_shell *shell);
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);

@@ -14,7 +14,7 @@
 
 
 //for testing
-char *get_token_type_name(e_token_type type);
+char	*get_token_type_name(e_token_type type);
 
 // void	classify_empty_tokens(t_parse *data)
 // {
@@ -59,7 +59,8 @@ void	process_tokens(char *input, t_parse *data, t_shell *shell)
 
 // Repeatedly prompts for user input, tokenizes, validates, and processes commands.
 // Exits the loop if "exit" or EOF is detected, handling cleanup and history appropriately.
-void	tokenize(t_parse *data, t_shell *shell, t_sigaction *sa_int, t_sigaction *sa_quit)
+void	tokenize(t_parse *data, t_shell *shell,
+		t_sigaction *sa_int, t_sigaction *sa_quit)
 {
 	char	*input;
 
