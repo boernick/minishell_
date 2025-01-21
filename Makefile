@@ -28,6 +28,8 @@ SRCS = ./srcs/builtins/builtins.c \
 ./srcs/exec/ex_builtin.c \
 ./srcs/exec/ex_env.c \
 ./srcs/main/minishell.c \
+./srcs/main/cleanup.c \
+./srcs/main/run_mini.c \
 ./srcs/parse/parse.c \
 ./srcs/signals/signals.c \
 ./srcs/tokenize/handle_struct.c \

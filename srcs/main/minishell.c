@@ -99,27 +99,15 @@ int	main(int argc, char **argv, char **envp)
 	struct_init(&parse, &shell);
 	t_env_init(&shell, envp);
 	init_signal_handlers(&sa_int, &sa_quit);
-	shell.exit = 0;
 	while (shell.exit == 0)
 	{
-
 		tokenize(&parse, &shell, &sa_int, &sa_quit);
 		if (parse.valid_input)
-		{
-			parse_tokens(&parse, &shell);
-			pipex.cmd = parse.cmd;
-			//print_command_stack(pipex.cmd);
-			//check_temp_files(parse.cmd);
-			if (parse.valid_input)
-				exec_mini(&shell, &pipex);
-		}
+			run_mini(&parse, &shell, &pipex);
 		outside_process_signals(&sa_int, &sa_quit);
 		free_tokens(parse.head);
 		parse.head = NULL;
 	}
-	free_tokens(parse.head); // put this in one function cleanup
-	free_command_stack(parse.cmd); // ^^^^^^^^^^^^^^^
-	clear_history();				// ^^^^^^^^^^^^^^^
-	free_envlst(shell.env_lst);		// ^^^^^^^^^^^^^^^
+	cleanup(&parse, &shell);
 	return (shell.last_exit);
 }

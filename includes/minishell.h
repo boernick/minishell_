@@ -275,5 +275,8 @@ int		check_folder(char *filename);
 //---------minishell-----------//
 void	calibrate_exec(t_execution *pipex);
 void	exec_mini(t_shell *shell, t_execution *pipex);
+void	cleanup(t_parse *parse, t_shell *shell);
+void	run_mini(t_parse *parse, t_shell *shell, t_execution *pipex);
+
 
 #endif
