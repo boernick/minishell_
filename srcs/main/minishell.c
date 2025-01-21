@@ -105,6 +105,7 @@ int	main(int argc, char **argv, char **envp)
 	shell.exit = 0;
 	while (shell.exit == 0)
 	{
+
 		tokenize(&parse, &shell, &sa_int, &sa_quit);
 		if (parse.valid_input)
 		{

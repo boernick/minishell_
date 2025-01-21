@@ -75,23 +75,44 @@ void setup_heredoc_signals(struct sigaction *prev_sigint, struct sigaction *prev
 // 	return (-1);
 // }
 
-char *generate_temp_filename(void) {
-    static int counter = 0; // Static counter to ensure uniqueness
-    char *filename = malloc(64); // Allocate space for the filename
-	if (!filename)
-		return NULL;
-	sprintf(filename, "/tmp/heredoc_temp_%d.txt", counter++);
-	return filename;
-}
-
 // char *generate_temp_filename(void) {
-//     static int counter = 0; // Static counter for uniqueness
-//     char *filename = malloc(64); // Allocate space for filename
-//     if (!filename)
-//         return NULL;
-//     sprintf(filename, "/tmp/heredoc_temp_%d_%d.txt", getpid(), counter++); // Include PID
-//     return filename;
+//     static int counter = 0; // Static counter to ensure uniqueness
+//     char *filename = malloc(64); // Allocate space for the filename
+// 	if (!filename)
+// 		return NULL;
+// 	sprintf(filename, "/tmp/heredoc_temp_%d.txt", counter++);
+// 	return filename;
 // }
+
+char	*generate_temp_filename(void) {
+    static int counter = 0;
+    char *filename = malloc(64);
+    if (!filename)
+        return NULL;
+    filename[0] = '/';
+    filename[1] = 't';
+    filename[2] = 'm';
+    filename[3] = 'p';
+    filename[4] = '/';
+    filename[5] = 'h';
+    filename[6] = 'e';
+    filename[7] = 'r';
+    filename[8] = 'e';
+    filename[9] = 'd';
+    filename[10] = 'o';
+    filename[11] = 'c';
+    filename[12] = '_';
+    filename[13] = '0' + (counter / 100);
+    filename[14] = '0' + ((counter / 10) % 10);
+    filename[15] = '0' + (counter % 10);
+    filename[16] = '.';
+    filename[17] = 't';
+    filename[18] = 'x';
+    filename[19] = 't';
+    filename[20] = '\0';
+    counter++;
+    return filename;
+}
 
 // void cleanup_heredoc(t_cmd *cmd)
 // {
@@ -349,7 +370,8 @@ void check_temp_files(t_cmd *cmd)
     }
 }
 
-char *create_heredoc(void) {
+char *create_heredoc(void)
+{
 
 	char *temp_file = generate_temp_filename();
 	if (!temp_file) {
@@ -367,47 +389,16 @@ char *create_heredoc(void) {
 	return temp_file;
 }
 
-// char *get_env_variable_heredoc(char *var_name, t_parse *data, t_shell *shell)
-// {
-// 	char	*env_value;
-// 	char	*exit_status_str;
-// 	t_env	*env_node;
-// 	char	*equals_sign;
 
-//     if (ft_strncmp(var_name, "?", 1) == 0)
-//     {
-//         exit_status_str = ft_itoa(data->exit);
-
-//         // Concatenate the exit status with the rest of `var_name`, if any
-//         char *remaining = var_name + 1; // Skip `?`
-//         char *result = ft_strjoin(exit_status_str, remaining);
-
-//         free(exit_status_str); // Free the temporary exit status string
-//         return result;
-//     }
-// 	env_node = get_env_lst(shell, var_name);
-// 	if (env_node)
-// 	{
-// 		equals_sign = ft_strchr(env_node->content, '=');
-// 		if (equals_sign)
-// 			return ft_strdup(equals_sign + 1); // Return the value part only
-// 	}
-// 	env_value = getenv(var_name);
-// 	if (env_value)
-// 		return ft_strdup(env_value); // Return an empty string if variable doesn't exist
-// 	return ft_strdup(""); // Duplicate the value for safe usage
-// }
-
-
-char *replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
+char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
 {
-    char result[1024] = {0};  // Buffer to store the final result
-    int res_index = 0;        // Index for writing to result buffer
-    int i = 0;                // Index for reading input
-    while (input[i] != '\0')
-    {
-        if (input[i] == '$') // Expand only outside single quotes
-        {
+	char result[1024] = {0};  // Buffer to store the final result
+	int res_index = 0;        // Index for writing to result buffer
+	int i = 0;                // Index for reading input
+	while (input[i] != '\0')
+	{
+		if (input[i] == '$') // Expand only outside single quotes
+		{
 			i++; // Skip the `$`
 			if (input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
 			{
@@ -432,26 +423,26 @@ char *replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
 				}
 				i++; // Skip the second `$` after handling `$$`
 			}
-            char var_name[256] = {0};
-            int var_index = 0;
+			char var_name[256] = {0};
+			int var_index = 0;
 
-            while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
+			while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
 				var_name[var_index++] = input[i++];
-            var_name[var_index] = '\0';
+			var_name[var_index] = '\0';
 
-            char *var_value = get_env_variable(var_name, data, shell);
-            if (!var_value)
-                var_value = "";
+			char *var_value = get_env_variable(var_name, data, shell);
+			if (!var_value)
+				var_value = "";
 
-            strcpy(result + res_index, var_value); // Use custom strcpy if required
-            res_index += ft_strlen(var_value);
-            free(var_value);
-        }
-        else
-        {
-            result[res_index++] = input[i++];
-        }
-    }
-    result[res_index] = '\0';
-    return ft_strdup(result);
+			strcpy(result + res_index, var_value); // Use custom strcpy if required
+			res_index += ft_strlen(var_value);
+			free(var_value);
+		}
+		else
+		{
+			result[res_index++] = input[i++];
+		}
+	}
+	result[res_index] = '\0';
+	return ft_strdup(result);
 }

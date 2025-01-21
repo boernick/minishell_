@@ -154,22 +154,6 @@ void	exit_perror(const char *msg)
 	perror(msg);
 	exit(EXIT_FAILURE);
 }
-//ORIGINAL
-// void add_argument_to_cmd(t_cmd *cmd, char *arg)
-// {
-// 	int i = 0;
-
-// 	while (cmd->argv && cmd->argv[i]) // Find the current size of argv
-// 		i++;
-
-// 	char **new_argv = (char **)malloc(sizeof(char *) * (i + 2)); // Allocate space for new argv
-// 	for (int j = 0; j < i; j++)
-// 		new_argv[j] = cmd->argv[j]; // Copy existing arguments
-// 	new_argv[i] = ft_strdup(arg);
-// 	new_argv[i + 1] = NULL;
-// 	free(cmd->argv);
-// 	cmd->argv = new_argv;
-// }
 
 void	add_argument_to_cmd(t_cmd *cmd, char *arg)
 {
@@ -284,8 +268,196 @@ char *get_token_type_name(e_token_type type) {
     }
 }
 
+int malloc_error(size_t n)
+{
+	ft_putstr_fd("minishell: malloc: cannot allocate ", STDERR_FILENO);
+	ft_putnbr_fd(n, STDERR_FILENO);
+	ft_putendl_fd(" bytes (or more)", STDERR_FILENO);
+	return (1);
+}
 
-//ORIGINAL
+int	process_token_skip(t_token **cur_tkn, t_parse *data)
+{
+	if ((*cur_tkn)->next)
+	{
+		*cur_tkn = (*cur_tkn)->next;
+	}
+	else
+	{
+		if (data->n_cmds > 0)
+			return (1);
+		data->valid_input = 0;
+		return (0);
+	}
+	return (1);
+}
+
+void init_cmd_cmd(t_cmd **current_cmd, t_parse *data, char *cmd_value)
+{
+	t_cmd	*new_cmd;
+
+	new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+	if (!new_cmd)
+	{
+		malloc_error(sizeof(t_cmd));
+		data->valid_input = 0;
+	}
+	new_cmd->cmd = ft_strdup(cmd_value);
+	new_cmd->argv = (char **)malloc(sizeof(char *) * 2);
+	new_cmd->argv[0] = ft_strdup(cmd_value);
+	new_cmd->argv[1] = NULL;
+	new_cmd->index = data->n_cmds;
+	new_cmd->is_builtin = is_builtin_(new_cmd->cmd);
+	new_cmd->redir = NULL;
+	new_cmd->next = NULL;
+	add_cmd_to_list(data, new_cmd);
+	*current_cmd = new_cmd;
+	data->n_cmds++;
+}
+void	add_cmd_to_token(t_token *cur_tkn, t_parse *data,
+			t_cmd **current_cmd)
+{
+	if (!*current_cmd)
+		init_cmd_cmd(current_cmd, data, cur_tkn->value);
+	else if ((*current_cmd)->cmd == NULL)
+	{
+		(*current_cmd)->cmd = ft_strdup(cur_tkn->value);
+		(*current_cmd)->argv = (char **)malloc(sizeof(char *) * 2);
+		(*current_cmd)->argv[0] = ft_strdup(cur_tkn->value);
+		(*current_cmd)->argv[1] = NULL;
+		(*current_cmd)->is_builtin = is_builtin_((*current_cmd	free_tokens(parse.head); // put this in one function cleanup
+	free_command_stack(parse.cmd); // ^^^^^^^^^^^^^^^
+	clear_history();				// ^^^^^^^^^^^^^^^
+	free_envlst(shell.env_lst);		// ^^^^^^^^^^^^^^^)->cmd);
+	}
+}
+
+int init_cmd_redir(t_parse *data, t_cmd **current_cmd)
+{
+	t_cmd	*new_cmd;
+
+	new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+	if (!new_cmd)
+	{
+		malloc_error(sizeof(t_cmd));
+		data->valid_input = 0;
+		return (0);
+	}
+	new_cmd->cmd = NULL;
+	new_cmd->argv = NULL;
+	new_cmd->index = data->n_cmds;
+	new_cmd->is_builtin = false;
+	new_cmd->redir = NULL;
+	new_cmd->next = NULL;
+	add_cmd_to_list(data, new_cmd);
+	*current_cmd = new_cmd;
+	data->n_cmds++;
+	return (1);
+}
+
+void process_token_redirection(t_token *cur_tkn, t_parse *data,
+		t_cmd **current_cmd)
+{
+	t_redirect	*redir;
+
+	if (!*current_cmd)
+		init_cmd_redir(data, current_cmd);
+	redir = (t_redirect *)malloc(sizeof(t_redirect));
+	if (!redir)
+	{
+		malloc_error(sizeof(t_redirect));
+		exit (EXIT_FAILURE);
+	}
+	redir->file = ft_strdup(cur_tkn->next->value);
+	redir->type = cur_tkn->type;
+	redir->next = NULL;
+	add_redirection_to_cmd(*current_cmd, redir);
+}
+
+int heredoc_exit(t_redirect *redir, t_parse *data,
+		int exit_code, t_shell *shell)
+{
+	if (exit_code == 130)
+	{
+		data->valid_input = 0;
+		shell->last_exit = 130;
+		if (access(redir->file, F_OK) == 0 && exit_code == 130)
+			unlink(redir->file);
+		return (0);
+	}
+	return (1);
+}
+
+
+int	process_token_heredoc(t_token *cur_tkn, t_parse *data,
+			t_cmd **current_cmd, t_shell *shell)
+{
+	t_redirect	*redir;
+	char		*delimeter;
+
+	if (!*current_cmd)
+	{
+		if (!init_cmd_redir(data, current_cmd))
+			return (0);
+	}
+	redir = (t_redirect *)malloc(sizeof(t_redirect));
+	if (!redir)
+	{
+		malloc_error(sizeof(t_cmd));
+		return (0);
+	}
+	redir->file = create_heredoc();
+	redir->type = TOKEN_HEREDOC;
+	redir->next = NULL;
+	add_redirection_to_cmd(*current_cmd, redir);
+	delimeter = ft_strdup(cur_tkn->next->value);
+	cur_tkn = cur_tkn->next;
+	data->exit = run_heredoc(data, redir, delimeter, shell);
+	free(delimeter);
+	return (heredoc_exit((*current_cmd)->redir, data, data->exit, shell));
+}
+void	init_parse_data(t_parse *data, t_token **cur_tkn, t_cmd **current_cmd)
+{
+	*cur_tkn = data->head;
+	*current_cmd = NULL;
+	data->n_cmds = 0;
+	data->n_pipes = 0;
+}
+
+void process_token_pipe(t_parse *data, t_cmd **current_cmd)
+{
+	data->n_pipes++;
+	*current_cmd = NULL;
+}
+
+void	parse_tokens(t_parse *data, t_shell *shell)
+{
+	t_token		*cur_t;
+	t_cmd		*current_cmd;
+
+	init_parse_data(data, &cur_t, &current_cmd);
+	while (cur_t)
+	{
+		if (cur_t->type == TOKEN_SKIP && !process_token_skip(&cur_t, data))
+			break ;
+		if (cur_t->type == TOKEN_CMD)
+			add_cmd_to_token(cur_t, data, &current_cmd);
+		else if ((cur_t->type == TOKEN_ARG || cur_t->type == TOKEN_FLAG_ARG)
+			&& current_cmd)
+			add_argument_to_cmd(current_cmd, cur_t->value);
+		else if (cur_t->type == TOKEN_REDIR_IN || cur_t->type == TOKEN_REDIR_OUT
+			|| cur_t->type == TOKEN_REDIR_APPEND)
+				process_token_redirection(cur_t, data, &current_cmd);
+		else if (cur_t->type == TOKEN_HEREDOC
+			&& (!process_token_heredoc(cur_t, data, &current_cmd, shell)))
+				break ;
+		else if (cur_t->type == TOKEN_PIPE)
+			process_token_pipe(data, &current_cmd);
+		cur_t = cur_t->next;
+	}
+}
+
+// ORIGINAL
 // void	parse_tokens(t_parse *data, t_shell *shell)
 // {
 // 	t_token		*cur_tkn;
@@ -305,19 +477,10 @@ char *get_token_type_name(e_token_type type) {
 // 				cur_tkn = cur_tkn->next;
 // 			else
 // 			{
-// 				data->valid_input = 0;
-// 				break ;
-// 			}
-// 		}
-// 		if (cur_tkn->type == TOKEN_CMD)
-// 		{
-// 			if (!current_cmd)
-// 			{
-// 				t_cmd *new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
-// 				if (!new_cmd)
-// 					exit_perror("Failed to allocate memory for command");
-// 				new_cmd->cmd = ft_strdup(cur_tkn->value);
-// 				new_cmd->argv = (char **)malloc(sizeof(char *) * 2);
+// 				data->valid_input = 0;	free_tokens(parse.head); // put this in one function cleanup
+	free_command_stack(parse.cmd); // ^^^^^^^^^^^^^^^
+	clear_history();				// ^^^^^^^^^^^^^^^
+	free_envlst(shell.env_lst);		// ^^^^^^^^^^^^^^^ * 2);
 // 				new_cmd->argv[0] = ft_strdup(cur_tkn->value);
 // 				new_cmd->argv[1] = NULL;
 // 				new_cmd->index = data->n_cmds;
@@ -425,223 +588,3 @@ char *get_token_type_name(e_token_type type) {
 // 		cur_tkn = cur_tkn->next;
 // 	}
 // }
-
-
-
-
-////////////////////////////////////
-int malloc_error(size_t n)
-{
-	ft_putstr_fd("minishell: malloc: cannot allocate ", STDERR_FILENO);
-	ft_putnbr_fd(n, STDERR_FILENO);
-	ft_putendl_fd(" bytes (or more)", STDERR_FILENO);
-	return (1);
-}
-
-int	process_token_skip(t_token **cur_tkn, t_parse *data)
-{
-	if ((*cur_tkn)->next)
-	{
-		*cur_tkn = (*cur_tkn)->next;
-	}
-	else
-	{
-		if (data->n_cmds > 0)
-			return (1);
-		data->valid_input = 0;
-		return (0);
-	}
-	return (1);
-}
-
-void	process_token_cmd(t_token *cur_tkn, t_parse *data, t_cmd **current_cmd)
-{
-	t_cmd	*new_cmd;
-
-	if (!*current_cmd)
-	{
-		new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
-		if (!new_cmd)
-			exit_perror("Failed to allocate memory for command");
-		new_cmd->cmd = ft_strdup(cur_tkn->value);
-		new_cmd->argv = (char **)malloc(sizeof(char *) * 2);
-		new_cmd->argv[0] = ft_strdup(cur_tkn->value);
-		new_cmd->argv[1] = NULL;
-		new_cmd->index = data->n_cmds;
-		new_cmd->is_builtin = is_builtin_(new_cmd->cmd);
-		new_cmd->redir = NULL;
-		new_cmd->next = NULL;
-		add_cmd_to_list(data, new_cmd);
-		*current_cmd = new_cmd;
-		data->n_cmds++;
-	}
-	else if ((*current_cmd)->cmd == NULL)
-	{
-		(*current_cmd)->cmd = ft_strdup(cur_tkn->value);
-		(*current_cmd)->argv = (char **)malloc(sizeof(char *) * 2);
-		(*current_cmd)->argv[0] = ft_strdup(cur_tkn->value);
-		(*current_cmd)->argv[1] = NULL;
-		(*current_cmd)->is_builtin = is_builtin_((*current_cmd)->cmd);
-	}
-}
-void	add_cmd_to_token(t_token *cur_tkn, t_parse *data,
-			t_cmd **current_cmd)
-{
-	t_cmd	*new_cmd;
-
-	if (!*current_cmd)
-	{
-		new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
-		if (!new_cmd)
-		{
-			malloc_error(sizeof(t_cmd));
-			exit (EXIT_FAILURE);
-		}
-		new_cmd->cmd = ft_strdup(cur_tkn->value);
-		new_cmd->argv = (char **)malloc(sizeof(char *) * 2);
-		new_cmd->argv[0] = ft_strdup(cur_tkn->value);
-		new_cmd->argv[1] = NULL;
-		new_cmd->index = data->n_cmds;
-		new_cmd->is_builtin = is_builtin_(new_cmd->cmd);
-		new_cmd->redir = NULL;
-		new_cmd->next = NULL;
-		add_cmd_to_list(data, new_cmd);
-		*current_cmd = new_cmd;
-		data->n_cmds++;
-	}
-	else if ((*current_cmd)->cmd == NULL)
-	{
-		(*current_cmd)->cmd = ft_strdup(cur_tkn->value);
-		(*current_cmd)->argv = (char **)malloc(sizeof(char *) * 2);
-		(*current_cmd)->argv[0] = ft_strdup(cur_tkn->value);
-		(*current_cmd)->argv[1] = NULL;
-		(*current_cmd)->is_builtin = is_builtin_((*current_cmd)->cmd);
-	}
-}
-
-void process_token_redirection(t_token *cur_tkn, t_parse *data,
-		t_cmd **current_cmd)
-{
-	t_cmd		*new_cmd;
-	t_redirect	*redir;
-
-	if (!*current_cmd)
-	{
-		new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
-		if (!new_cmd)
-		{
-			malloc_error(sizeof(t_cmd));
-			exit (EXIT_FAILURE);
-		}
-		new_cmd->cmd = NULL;
-		new_cmd->argv = NULL;
-		new_cmd->index = data->n_cmds;
-		new_cmd->is_builtin = false;
-		new_cmd->redir = NULL;
-		new_cmd->next = NULL;
-		add_cmd_to_list(data, new_cmd);
-		*current_cmd = new_cmd;
-		data->n_cmds++;
-	}
-	redir = (t_redirect *)malloc(sizeof(t_redirect));
-	if (!redir)
-	{
-		malloc_error(sizeof(t_redirect));
-		exit (EXIT_FAILURE);
-	}
-	redir->file = ft_strdup(cur_tkn->next->value);
-	redir->type = cur_tkn->type;
-	redir->next = NULL;
-	add_redirection_to_cmd(*current_cmd, redir);
-}
-
-
-int	process_token_heredoc(t_token *cur_tkn, t_parse *data,
-			t_cmd **current_cmd, t_shell *shell)
-{
-	t_cmd		*new_cmd;
-	t_redirect	*redir;
-	char		*delimeter;
-
-	if (!*current_cmd)
-	{
-		new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
-		if (!new_cmd)
-		{
-			malloc_error(sizeof(t_cmd));
-			return (0);
-		}
-		new_cmd->cmd = NULL;
-		new_cmd->argv = NULL;
-		new_cmd->index = data->n_cmds;
-		new_cmd->is_builtin = false;
-		new_cmd->redir = NULL;
-		new_cmd->next = NULL;
-		add_cmd_to_list(data, new_cmd);
-		*current_cmd = new_cmd;
-		data->n_cmds++;
-	}
-	redir = (t_redirect *)malloc(sizeof(t_redirect));
-	if (!redir)
-	{
-		malloc_error(sizeof(t_cmd));
-		return (0);
-	}
-	redir->file = create_heredoc();
-	redir->type = TOKEN_HEREDOC;
-	redir->next = NULL;
-	add_redirection_to_cmd(*current_cmd, redir);
-	delimeter = ft_strdup(cur_tkn->next->value);
-	cur_tkn = cur_tkn->next;
-	data->exit = run_heredoc(data, redir, delimeter, shell);
-	free(delimeter);
-	if (data->exit == 130)
-	{
-		data->valid_input = 0;
-		shell->last_exit = 130;
-		if (access(redir->file, F_OK) == 0 && data->exit == 130)
-			unlink(redir->file);
-		return (0);
-	}
-	return (1);
-}
-void	init_parse_data(t_parse *data, t_token **cur_tkn, t_cmd **current_cmd)
-{
-	*cur_tkn = data->head;
-	*current_cmd = NULL;
-	data->n_cmds = 0;
-	data->n_pipes = 0;
-}
-
-void process_token_pipe(t_parse *data, t_cmd **current_cmd)
-{
-	data->n_pipes++;
-	*current_cmd = NULL;
-}
-
-void	parse_tokens(t_parse *data, t_shell *shell)
-{
-	t_token		*cur_t;
-	t_cmd		*current_cmd;
-
-	init_parse_data(data, &cur_t, &current_cmd);
-	while (cur_t)
-	{
-		if (cur_t->type == TOKEN_SKIP && !process_token_skip(&cur_t, data))
-			break ;
-		if (cur_t->type == TOKEN_CMD)
-			add_cmd_to_token(cur_t, data, &current_cmd);
-		else if ((cur_t->type == TOKEN_ARG || cur_t->type == TOKEN_FLAG_ARG)
-			&& current_cmd)
-			add_argument_to_cmd(current_cmd, cur_t->value);
-		else if (cur_t->type == TOKEN_REDIR_IN || cur_t->type == TOKEN_REDIR_OUT
-			|| cur_t->type == TOKEN_REDIR_APPEND)
-				process_token_redirection(cur_t, data, &current_cmd);
-		else if (cur_t->type == TOKEN_HEREDOC
-			&& (!process_token_heredoc(cur_t, data, &current_cmd, shell)))
-				break ;
-		else if (cur_t->type == TOKEN_PIPE)
-			process_token_pipe(data, &current_cmd);
-		cur_t = cur_t->next;
-	}
-}
