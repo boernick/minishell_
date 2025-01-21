@@ -325,10 +325,7 @@ void	add_cmd_to_token(t_token *cur_tkn, t_parse *data,
 		(*current_cmd)->argv = (char **)malloc(sizeof(char *) * 2);
 		(*current_cmd)->argv[0] = ft_strdup(cur_tkn->value);
 		(*current_cmd)->argv[1] = NULL;
-		(*current_cmd)->is_builtin = is_builtin_((*current_cmd	free_tokens(parse.head); // put this in one function cleanup
-	free_command_stack(parse.cmd); // ^^^^^^^^^^^^^^^
-	clear_history();				// ^^^^^^^^^^^^^^^
-	free_envlst(shell.env_lst);		// ^^^^^^^^^^^^^^^)->cmd);
+		(*current_cmd)->is_builtin = is_builtin_((*current_cmd)->cmd);
 	}
 }
 
@@ -478,9 +475,9 @@ void	parse_tokens(t_parse *data, t_shell *shell)
 // 			else
 // 			{
 // 				data->valid_input = 0;	free_tokens(parse.head); // put this in one function cleanup
-	free_command_stack(parse.cmd); // ^^^^^^^^^^^^^^^
-	clear_history();				// ^^^^^^^^^^^^^^^
-	free_envlst(shell.env_lst);		// ^^^^^^^^^^^^^^^ * 2);
+	// free_command_stack(parse.cmd); // ^^^^^^^^^^^^^^^
+	// clear_history();				// ^^^^^^^^^^^^^^^
+	// free_envlst(shell.env_lst);		// ^^^^^^^^^^^^^^^ * 2);
 // 				new_cmd->argv[0] = ft_strdup(cur_tkn->value);
 // 				new_cmd->argv[1] = NULL;
 // 				new_cmd->index = data->n_cmds;

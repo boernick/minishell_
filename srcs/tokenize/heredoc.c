@@ -64,7 +64,7 @@ void setup_heredoc_signals(struct sigaction *prev_sigint, struct sigaction *prev
 // 	ft_memcpy(tempfile, ".tmphered000", 13);
 // 	i = 1;
 // 	while (i < 1000)
-// 	{
+//
 // 		tempfile[11] = '0' + (i % 10);
 // 		tempfile[10] = '0' + ((i / 10) % 10);
 // 		tempfile[9] = '0' + (i / 100);
@@ -75,44 +75,15 @@ void setup_heredoc_signals(struct sigaction *prev_sigint, struct sigaction *prev
 // 	return (-1);
 // }
 
-// char *generate_temp_filename(void) {
-//     static int counter = 0; // Static counter to ensure uniqueness
-//     char *filename = malloc(64); // Allocate space for the filename
-// 	if (!filename)
-// 		return NULL;
-// 	sprintf(filename, "/tmp/heredoc_temp_%d.txt", counter++);
-// 	return filename;
-// }
-
-char	*generate_temp_filename(void) {
-    static int counter = 0;
-    char *filename = malloc(64);
-    if (!filename)
-        return NULL;
-    filename[0] = '/';
-    filename[1] = 't';
-    filename[2] = 'm';
-    filename[3] = 'p';
-    filename[4] = '/';
-    filename[5] = 'h';
-    filename[6] = 'e';
-    filename[7] = 'r';
-    filename[8] = 'e';
-    filename[9] = 'd';
-    filename[10] = 'o';
-    filename[11] = 'c';
-    filename[12] = '_';
-    filename[13] = '0' + (counter / 100);
-    filename[14] = '0' + ((counter / 10) % 10);
-    filename[15] = '0' + (counter % 10);
-    filename[16] = '.';
-    filename[17] = 't';
-    filename[18] = 'x';
-    filename[19] = 't';
-    filename[20] = '\0';
-    counter++;
-    return filename;
+char *generate_temp_filename(void){
+	static int counter = 0; // Static counter to ensure uniqueness
+	char *filename = malloc(64); // Allocate space for the filename
+	if (!filename)
+		return NULL;
+	sprintf(filename, "/tmp/heredoc_temp_%d.txt", counter++);
+	return filename;
 }
+
 
 // void cleanup_heredoc(t_cmd *cmd)
 // {
@@ -200,111 +171,56 @@ char	*generate_temp_filename(void) {
 		// }
 
 
-char *expand_env_variables_heredoc(const char *input);
+void	expand_env_variables_heredoc(char *line)
+{
+	char buffer[4096];
+	size_t buf_idx = 0;
+	size_t len = strlen(line);
 
-// char *create_heredoc(char *delimiter)
-// {
-//     struct sigaction prev_sigint, prev_sigquit;
-//     struct sigaction sa;
+	for (size_t i = 0; i < len; i++) {
+		if (line[i] == '$' && i + 1 < len) {
+			if (line[i + 1] == '$')
+			{
+				buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%d", getpid());
+				i++;
+			}
+			else if ((line[i + 1] >= 'a' && line[i + 1] <= 'z') ||
+						(line[i + 1] >= 'A' && line[i + 1] <= 'Z') ||
+						line[i + 1] == '_')
+						{
+				const char *start = line + i + 1;
+				const char *end = start;
+				while ((*end >= 'a' && *end <= 'z') ||
+						(*end >= 'A' && *end <= 'Z') ||
+						(*end >= '0' && *end <= '9') ||
+						*end == '_') {
+					end++;
+				}
+				char var_name[256];
+				size_t var_len = end - start;
+				strncpy(var_name, start, var_len);
+				var_name[var_len] = '\0';
+				char *var_value = getenv(var_name);
+				if (var_value)
+					buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%s", var_value);
+				i += var_len;
+				i--;
+			}
+			else
+				buffer[buf_idx++] = line[i];
+		}
+		else
+			buffer[buf_idx++] = line[i];
+		if (buf_idx >= sizeof(buffer) - 1)
+		{
+			fprintf(stderr, "Error: Expanded line is too long.\n");
+			return ;
+		}
+	}
+	buffer[buf_idx] = '\0';
+	strcpy(line, buffer);
+}
 
-//     // Set up custom SIGINT and SIGQUIT handlers for heredoc
-//     sigaction(SIGINT, NULL, &prev_sigint);
-//     sigaction(SIGQUIT, NULL, &prev_sigquit);
-
-//     sa.sa_handler = heredoc_sigint_handler;  // Custom SIGINT handler
-//     sigemptyset(&sa.sa_mask);
-//     sa.sa_flags = 0;
-//     sigaction(SIGINT, &sa, NULL);
-
-//     sa.sa_handler = SIG_IGN;  // Ignore SIGQUIT
-//     sigaction(SIGQUIT, &sa, NULL);
-
-//     // Generate a unique temporary file for heredoc
-//     char *temp_file = generate_temp_filename();
-//     if (!temp_file)
-//     {
-//         perror("Failed to allocate memory for temp file name");
-//         return NULL;
-//     }
-
-//     int fd = open(temp_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-//     if (fd == -1)
-//     {
-//         perror("Failed to create heredoc file");
-//         free(temp_file);
-//         return NULL;
-//     }
-
-//     char *line;
-//     g_interrupted = false;  // Reset interruption flag
-//     while (!g_interrupted) // Stop loop if interrupted
-//     {
-//         //write(STDOUT_FILENO, "heredoc> ", 9);
-//         // line = get_next_line(STDIN_FILENO)
-// 		line = readline("heredoc> ");
-//         if (!line)
-//         {
-// 				write(STDOUT_FILENO, "\n", 1);
-// 				fprintf(stderr, "bash: warning: here-document at line %d delimited by end-of-file (wanted '%s')\n", __LINE__, delimiter);
-// 				close(fd);
-// 				unlink(temp_file); // Delete the temporary file
-// 				free(temp_file);
-// 				//switch_signal_handlers(&sa_int, &sa_quit, false);
-// 				break; // Return NULL to signal failure
-//         }
-// 		//printf("g_interrupted: %d\n", g_interrupted);
-//         size_t len = ft_strlen(line);
-//         if (len > 0 && line[len - 1] == '\n')
-//             line[len - 1] = '\0';
-
-//         if (strcmp(line, delimiter) == 0)
-//         {
-//             free(line);
-//             break;
-//         }
-// 		printf("line before: %s\n", line);
-// 		expand_env_variables_heredoc(line);
-// 		printf("line after: %s\n", line);
-//         write(fd, line, ft_strlen(line));
-//         write(fd, "\n", 1);
-//         free(line);
-//     }
-
-//     close(fd);
-
-//     if (g_interrupted)  // Cleanup if interrupted
-//     {
-//         unlink(temp_file);  // Delete temporary file
-//         free(temp_file);
-//         temp_file = NULL;
-// 		//printf("Debug: Heredoc interrupted by SIGINT\n");
-// 		return NULL;
-//     }
-
-//     return temp_file;
-// }
-
-// char *create_heredoc(char *delimiter)
-// {
-// 	(void)delimiter;
-
-//     char *temp_file = generate_temp_filename();
-//     if (!temp_file) {
-//         perror("Failed to allocate memory for temp file name");
-//         return NULL;
-//     }
-
-//     int fd = open(temp_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-//     if (fd == -1) {
-//         perror("Failed to create heredoc file");
-//         free(temp_file);
-//         return NULL;
-//     }
-
-//     // Signal handling and reading input will be done by `run_heredoc` now.
-//     close(fd);
-//     return temp_file;
-// }
 
 
 //for testing
@@ -370,79 +286,133 @@ void check_temp_files(t_cmd *cmd)
     }
 }
 
-char *create_heredoc(void)
+char	*create_heredoc(void)
 {
+	char	*temp_file;
+	int		fd;
 
-	char *temp_file = generate_temp_filename();
-	if (!temp_file) {
-		ft_putstr_fd("Failed to allocate memory for temp file name", STDERR_FILENO);
-		return NULL;
+	temp_file = generate_temp_filename();
+	if (!temp_file)
+	{
+		ft_putstr_fd("Failed to allocate memory for temp file name",
+			STDERR_FILENO);
+		return (NULL);
 	}
-	int fd = open(temp_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	fd = open(temp_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd == -1)
 	{
 		ft_putstr_fd("Failed to create heredoc file", STDERR_FILENO);
 		free(temp_file);
-		return NULL;
+		return (NULL);
 	}
-	// Store the file path and delimiter in t_redirect for later use.
-	return temp_file;
+	return (temp_file);
 }
 
 
-char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
-{
-	char result[1024] = {0};  // Buffer to store the final result
-	int res_index = 0;        // Index for writing to result buffer
-	int i = 0;                // Index for reading input
-	while (input[i] != '\0')
-	{
-		if (input[i] == '$') // Expand only outside single quotes
-		{
-			i++; // Skip the `$`
-			if (input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
-			{
-				result[res_index++] = '$';
-				continue;
-			}
-			if (input[i] == '$') // Handle `$$` (expand to PID)
-			{
-				// Expand `$$` into PID
-				char *pid_str = get_pid_as_string();
-				if (pid_str)
-				{
-					int j = 0;
-					// Copy the PID into the result buffer
-					while (pid_str[j] != '\0')
-					{
-						result[res_index] = pid_str[j];
-						res_index++;
-						j++;
-					}
-					free(pid_str);
-				}
-				i++; // Skip the second `$` after handling `$$`
-			}
-			char var_name[256] = {0};
-			int var_index = 0;
 
-			while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
-				var_name[var_index++] = input[i++];
-			var_name[var_index] = '\0';
 
-			char *var_value = get_env_variable(var_name, data, shell);
-			if (!var_value)
-				var_value = "";
 
-			strcpy(result + res_index, var_value); // Use custom strcpy if required
-			res_index += ft_strlen(var_value);
-			free(var_value);
-		}
-		else
-		{
-			result[res_index++] = input[i++];
-		}
-	}
-	result[res_index] = '\0';
-	return ft_strdup(result);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// char	*replace_variables_in_heredoc(char *input, t_parse *data,
+// 		t_shell *shell)
+// {
+// 	char	result[1024];
+// 	int		res_index;
+// 	int		i;
+
+// 	i = 0;
+// 	res_index = 0;
+// 	ft_memset(result, 0, sizeof(result));
+// 	while (input[i] != '\0')
+// 	{
+// 		if (input[i] == '$')
+// 		{
+// 			i++;
+// 			if (input[i] == ' ' || !input[i])
+// 			{
+// 				result[res_index++] = '$';
+// 				continue ;
+// 			}
+// 			if (input[i] == '$')
+// 				handle_dollar(input, &i, result, &res_index);
+// 			else
+// 				expand_var(input, &i, result, &res_index, data, shell);
+// 		}
+// 		else
+// 			result[res_index++] = input[i++];
+// 	}
+// 	result[res_index] = '\0';
+// 	return ft_strdup(result);
+// }
+
+
+
+
+
+
+
+
+// char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
+// {
+// 	char result[1024] = {0};  // Buffer to store the final result
+// 	int res_index = 0;        // Index for writing to result buffer
+// 	int i = 0;                // Index for reading input
+// 	while (input[i] != '\0')
+// 	{
+// 		if (input[i] == '$') // Expand only outside single quotes
+// 		{
+// 			i++; // Skip the `$`
+// 			if (input[i] == ' ' || !input[i]) // Handle single `$` or `$ $`
+// 			{
+// 				result[res_index++] = '$';
+// 				continue;
+// 			}
+// 			if (input[i] == '$') // Handle `$$` (expand to PID)
+// 			{
+// 				// Expand `$$` into PID
+// 				char *pid_str = get_pid_as_string();
+// 				if (pid_str)
+// 				{
+// 					int j = 0;
+// 					// Copy the PID into the result buffer
+// 					while (pid_str[j] != '\0')
+// 					{
+// 						result[res_index] = pid_str[j];
+// 						res_index++;
+// 						j++;
+// 					}
+// 					free(pid_str);
+// 				}
+// 				i++; // Skip the second `$` after handling `$$`
+// 			}
+// 			char var_name[256] = {0};
+// 			int var_index = 0;
+// 			while (ft_isalnum(input[i]) || input[i] == '_' || (var_index == 0 && input[i] == '?'))
+// 				var_name[var_index++] = input[i++];
+// 			var_name[var_index] = '\0';
+// 			char *var_value = get_env_variable(var_name, data, shell);
+// 			if (!var_value)
+// 				var_value = "";
+// 			strcpy(result + res_index, var_value); // Use custom strcpy if required
+// 			res_index += ft_strlen(var_value);
+// 			free(var_value);
+// 		}
+// 		else
+// 			result[res_index++] = input[i++];
+// 	}
+// 	result[res_index] = '\0';
+// 	return ft_strdup(result);
+// }
