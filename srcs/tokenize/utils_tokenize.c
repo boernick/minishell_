@@ -61,9 +61,9 @@ void print_tokens(t_token *token_list)
 // 	(void)lst;
 // }
 // Frees all nodes in a linked list of tokens
-void free_tokens(t_token *head)
+void	free_tokens(t_token *head)
 {
-	t_token *temp;
+	t_token	*temp;
 
 	while (head)
 	{

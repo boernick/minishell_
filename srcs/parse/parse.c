@@ -12,42 +12,47 @@
 
 #include "../../includes/minishell.h"
 
-//frees commands stack which includes redir stacks
-void free_command_stack(t_cmd *cmd_stack)
+void	free_redir_stack(t_redirect *redir)
 {
-    t_cmd *temp;
-    while (cmd_stack) {
-        temp = cmd_stack;
+	t_redirect	*temp_redir;
 
-        if (cmd_stack->cmd)
-            free(cmd_stack->cmd);
+	while (redir)
+	{
+		if (redir->type == TOKEN_HEREDOC && redir->file != NULL)
+			unlink(redir->file);
+		if (redir->file)
+			free(redir->file);
+		temp_redir = redir;
+		redir = redir->next;
+		free(temp_redir);
+	}
+}
 
-        if (cmd_stack->argv) {
-            int i = 0;
-            while (cmd_stack->argv[i]) { // Explicit loop for freeing argv
-                free(cmd_stack->argv[i]);
-                i++;
-            }
-            free(cmd_stack->argv);
-        }
+//frees commands stack which includes redir stacks
+void	free_command_stack(t_cmd *cmd_stack)
+{
+	t_cmd	*temp;
+	int		i;
 
-        if (cmd_stack->redir) {
-            t_redirect *redir = cmd_stack->redir, *temp_redir;
-            while (redir) {
-				if (redir->type == TOKEN_HEREDOC)
-					if (redir->file != NULL)
-						unlink(redir->file);
-                if (redir->file)
-                    free(redir->file);
-                temp_redir = redir;
-                redir = redir->next;
-                free(temp_redir);
-            }
-        }
-
-        cmd_stack = cmd_stack->next;
-        free(temp); // Free the command node
-    }
+	while (cmd_stack)
+	{
+		temp = cmd_stack;
+		if (cmd_stack->cmd)
+			free(cmd_stack->cmd);
+		if (cmd_stack->argv) {
+			i = 0;
+			while (cmd_stack->argv[i])
+			{
+				free(cmd_stack->argv[i]);
+				i++;
+			}
+			free(cmd_stack->argv);
+		}
+		if (cmd_stack->redir)
+			free_redir_stack(cmd_stack->redir);
+		cmd_stack = cmd_stack->next;
+		free(temp);
+	}
 }
 
 
@@ -116,56 +121,79 @@ void print_command_stack(t_cmd *cmd_stack)
 
 void add_cmd_to_list(t_parse *data, t_cmd *new_cmd)
 {
-if (!new_cmd)
-	return;
+	t_cmd	*current;
 
-if (data->cmd == NULL) // If the list is empty, initialize it
-{
-	data->cmd = new_cmd;
-}
-else // Append to the end of the list
-{
-	t_cmd *current = data->cmd;
-	while (current->next) // Traverse to the end
-		current = current->next;
-	current->next = new_cmd;
-}
+	if (!new_cmd)
+		return;
+	if (data->cmd == NULL)
+		data->cmd = new_cmd;
+	else
+	{
+		current = data->cmd;
+		while (current->next)
+			current = current->next;
+		current->next = new_cmd;
+	}
 }
 
 bool is_builtin_(char *cmd)
 {
-if (!cmd)
-	return false;
-return (ft_strncmp(cmd, "echo", 5) == 0 || ft_strncmp(cmd, "cd", 3) == 0 ||
-		ft_strncmp(cmd, "pwd", 4) == 0 || ft_strncmp(cmd, "export", 7) == 0 ||
-		ft_strncmp(cmd, "unset", 6) == 0 || ft_strncmp(cmd, "env", 4) == 0 ||
-		ft_strncmp(cmd, "exit", 5) == 0);
+	if (!cmd)
+		return false;
+	return (ft_strncmp(cmd, "echo", 5) == 0 || ft_strncmp(cmd, "cd", 3) == 0 ||
+			ft_strncmp(cmd, "pwd", 4) == 0
+			|| ft_strncmp(cmd, "export", 7) == 0
+			|| ft_strncmp(cmd, "unset", 6) == 0
+			|| ft_strncmp(cmd, "env", 4) == 0
+			|| ft_strncmp(cmd, "exit", 5) == 0);
 }
 
 void exit_perror(const char *msg)
 {
-perror(msg);
-exit(EXIT_FAILURE);
+	perror(msg);
+	exit(EXIT_FAILURE);
 }
+//ORIGINAL
+// void add_argument_to_cmd(t_cmd *cmd, char *arg)
+// {
+// 	int i = 0;
+
+// 	while (cmd->argv && cmd->argv[i]) // Find the current size of argv
+// 		i++;
+
+// 	char **new_argv = (char **)malloc(sizeof(char *) * (i + 2)); // Allocate space for new argv
+// 	for (int j = 0; j < i; j++)
+// 		new_argv[j] = cmd->argv[j]; // Copy existing arguments
+// 	new_argv[i] = ft_strdup(arg);
+// 	new_argv[i + 1] = NULL;
+// 	free(cmd->argv);
+// 	cmd->argv = new_argv;
+// }
 
 void add_argument_to_cmd(t_cmd *cmd, char *arg)
 {
-int i = 0;
+	int		i;
+	int		j;
+	char	**new_argv;
 
-while (cmd->argv && cmd->argv[i]) // Find the current size of argv
-	i++;
+	i = 0;
+	while (cmd->argv && cmd->argv[i])
+		i++;
+	new_argv = (char **)malloc(sizeof(char *) * (i + 2));
+	j = 0;
+	while (j < i)
+	{
+		new_argv[j] = cmd->argv[j];
+		j++;
+	}
+	new_argv[i] = ft_strdup(arg);
+	new_argv[i + 1] = NULL;
 
-char **new_argv = (char **)malloc(sizeof(char *) * (i + 2)); // Allocate space for new argv
-for (int j = 0; j < i; j++)
-	new_argv[j] = cmd->argv[j]; // Copy existing arguments
-
-new_argv[i] = ft_strdup(arg); // Add new argument
-new_argv[i + 1] = NULL;
-
-free(cmd->argv); // Free old argv
-cmd->argv = new_argv;
+	free(cmd->argv);
+	cmd->argv = new_argv;
 }
 
+//for testing
 void print_parsed_data(t_parse *data)
 {
 t_cmd *cmd = data->cmd;
@@ -227,15 +255,17 @@ printf("Number of pipes: %d\n", data->n_pipes);
 
 void add_redirection_to_cmd(t_cmd *cmd, t_redirect *new_redir)
 {
-    if (!cmd->redir) {
-        cmd->redir = new_redir; // If no redirections exist, set the first redirection
-    } else {
-        t_redirect *current = cmd->redir;
-        while (current->next) {
-            current = current->next; // Traverse to the end of the list
-        }
-        current->next = new_redir; // Append the new redirection
-    }
+	t_redirect *current;
+
+	if (!cmd->redir)
+		cmd->redir = new_redir;
+	else
+	{
+		current = cmd->redir;
+		while (current->next)
+			current = current->next;
+		current->next = new_redir;
+	}
 }
 // void parse_tokens(t_parse *data) {
 //     t_token *current_token = data->head;
@@ -344,7 +374,8 @@ char *get_token_type_name(e_token_type type) {
     }
 }
 
-void parse_tokens(t_parse *data, t_shell *shell) {
+void parse_tokens(t_parse *data, t_shell *shell)
+{
 	t_token *current_token = data->head;
 	t_cmd *current_cmd = NULL;
 	t_redirect *redir = NULL;
@@ -352,38 +383,20 @@ void parse_tokens(t_parse *data, t_shell *shell) {
 	data->n_cmds = 0;
 	data->n_pipes = 0;
 
-	while (current_token) {
-		// if (!current_token->value || current_token->value[0] == '\0')
-		// {
-		// 	if (current_token->next )
-		// 	{
-		// 		current_token = current_token->next;
-		// 		printf("current_token->value: %s\n", current_token->value);
-		// 		continue;
-		// 	}
-		// 	else
-		// 	{
-		// 		data->valid_input = 0;
-		// 		break;
-		// 	}
-		// }
-		//printf("current token type: %d\n", current_token->type);
-		// printf("current_token->value: %s\n", current_token->value);
-		// printf("current_token->type: %s\n", get_token_type_name(current_token->type));
+	while (current_token)
+	{
 		if (current_token->type == TOKEN_SKIP)
 		{
-			if (current_token->next)
-			{
+			if (current_token->next) //need special case for when it's the last token
 				current_token = current_token->next;
-				continue;
-			}
 			else
 			{
 				data->valid_input = 0;
 				break;
 			}
 		}
-		if (current_token->type == TOKEN_CMD) {
+		if (current_token->type == TOKEN_CMD)
+		{
 			if (!current_cmd) {
 				// Create a new command node if none exists
 				t_cmd *new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
@@ -403,7 +416,9 @@ void parse_tokens(t_parse *data, t_shell *shell) {
 				add_cmd_to_list(data, new_cmd);
 				current_cmd = new_cmd;
 				data->n_cmds++;
-			} else if (current_cmd->cmd == NULL) {
+			}
+			else if (current_cmd->cmd == NULL)
+			{
 				// If a placeholder exists, set the command value
 				current_cmd->cmd = ft_strdup(current_token->value);
 				current_cmd->argv = (char **)malloc(sizeof(char *) * 2);
@@ -411,7 +426,8 @@ void parse_tokens(t_parse *data, t_shell *shell) {
 				current_cmd->argv[1] = NULL;
 				current_cmd->is_builtin = is_builtin_(current_cmd->cmd);
 			}
-		} else if (current_token->type == TOKEN_ARG || current_token->type == TOKEN_FLAG_ARG) {
+		}
+		else if (current_token->type == TOKEN_ARG || current_token->type == TOKEN_FLAG_ARG) {
 			if (current_cmd)
 				add_argument_to_cmd(current_cmd, current_token->value);
 		} else if (current_token->type == TOKEN_REDIR_IN || current_token->type == TOKEN_REDIR_OUT ||

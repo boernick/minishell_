@@ -164,7 +164,7 @@ void	free_command_stack(t_cmd *cmd_stack);
 
 //-----------utils------------//
 char	*ft_strdup(const char *src);
-int		ft_isspace(char c);
+int		ft_isspace(char c); //need to write
 int		ft_isalnum(char c);
 char	*get_next_line(int fd);
 

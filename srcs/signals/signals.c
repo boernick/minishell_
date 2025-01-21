@@ -1,36 +1,28 @@
- #include "../../includes/minishell.h"
+#include "../../includes/minishell.h"
 
-void handle_eof(t_shell *shell, t_parse *parse)
+void	handle_eof(t_shell *shell, t_parse *parse)
 {
-	(void)shell;
 	printf("exit\n");
 	free_tokens(parse->head);
 	free_command_stack(parse->cmd);
 	free_envlst(shell->env_lst);
-	clear_history();//make sure to use the better one (this vs the one below)
+	clear_history();
 	exit(0);
 }
 
-
 void	setup_signal_handlers(int signum)
 {
-	// (void)signum;
-	// ft_putendl_fd("", STDOUT_FILENO);
-	// printf("Redisplaying prompt\n");
-	// rl_on_new_line();
-	// rl_replace_line("", 1);
-	// rl_redisplay();
 	(void)signum;
-	write(STDOUT_FILENO, "\n", 1);           // Move to a new line
-	rl_replace_line("", 0);                 // Clear the current input
-	rl_on_new_line();                       // Inform readline of a new prompt
-	rl_redisplay();                         // Refresh the display
+	write(STDOUT_FILENO, "\n", 1);
+	rl_replace_line("", 0);
+	rl_on_new_line();
+	rl_redisplay();
 }
 
 void	process_running_sigint_handler(int signum)
 {
-	ft_putendl_fd("", STDOUT_FILENO);
 	(void)signum;
+	ft_putendl_fd("", STDOUT_FILENO);
 }
 
 void	handle_sigquit(int signum)
@@ -56,74 +48,16 @@ void	init_signal_handlers(t_sigaction *sa_int, t_sigaction *sa_quit)
 
 void	outside_process_signals(t_sigact *sa_int, t_sigact *sa_quit)
 {
-		//printf("[DEBUG] switch_signal_handlers: outisde process running\n");
-		sa_int->sa_handler = setup_signal_handlers;
-		sigaction(SIGINT, sa_int, NULL);
-		sa_quit->sa_handler = SIG_IGN;
-		sigaction(SIGQUIT, sa_quit, NULL);
+	sa_int->sa_handler = setup_signal_handlers;
+	sigaction(SIGINT, sa_int, NULL);
+	sa_quit->sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, sa_quit, NULL);
 }
 
 void	inside_process_signals(t_sigact *sa_int, t_sigact *sa_quit)
 {
-		//printf("[DEBUG] switch_signal_handlers: inside process running\n");
-		sa_int->sa_handler = process_running_sigint_handler;
-		sigaction(SIGINT, sa_int, NULL);
-		sa_quit->sa_handler = handle_sigquit;
-		sigaction(SIGQUIT, sa_quit, NULL);
+	sa_int->sa_handler = process_running_sigint_handler;
+	sigaction(SIGINT, sa_int, NULL);
+	sa_quit->sa_handler = handle_sigquit;
+	sigaction(SIGQUIT, sa_quit, NULL);
 }
-
-// void handle_sigint(int sig)
-// {
-// 	(void)sig;
-// 	write(STDOUT_FILENO, "\n", 1);           // Move to a new line
-// 	rl_replace_line("", 0);                 // Clear the current input
-// 	rl_on_new_line();                       // Inform readline of a new prompt
-// 	rl_redisplay();                         // Refresh the display
-// }
-
-// void handle_sigquit(int sig)
-// {
-// 	(void) sig;
-// 	rl_on_new_line();
-// 	rl_redisplay();
-// 	return ;
-// }
-
-
-// void setup_signal_handlers(void)
-// {
-// 	struct sigaction sa_int;
-// 	struct sigaction sa_quit;
-
-// 	// SIGINT
-// 	sa_int.sa_handler = handle_sigint;
-// 	sa_int.sa_flags = SA_RESTART;           // Automatically restart interrupted syscalls
-// 	sigemptyset(&sa_int.sa_mask);
-// 	sigaction(SIGINT, &sa_int, NULL);
-
-// 	// SIGQUIT
-// 	sa_quit.sa_handler = handle_sigquit;
-// 	sa_quit.sa_flags = SA_RESTART;          // Same behavior as SIGINT
-// 	sigemptyset(&sa_quit.sa_mask);
-// 	sigaction(SIGQUIT, &sa_quit, NULL);
-// }
-
-// void	switch_signal_handlers(t_sigact *sa_int, t_sigact *sa_quit, bool pr)
-// {
-// 	if (pr)
-// 	{
-// 		//printf("switch_signal_handlers: process running\n");
-// 		sa_int->sa_handler = process_running_sigint_handler;
-// 		sigaction(SIGINT, sa_int, NULL);
-// 		sa_quit->sa_handler = handle_sigquit;
-// 		sigaction(SIGQUIT, sa_quit, NULL);
-// 	}
-// 	else
-// 	{
-// 		//printf("switch_signal_handlers: signal standard running\n");
-// 		sa_int->sa_handler = setup_signal_handlers;
-// 		sigaction(SIGINT, sa_int, NULL);
-// 		sa_quit->sa_handler = SIG_IGN;
-// 		sigaction(SIGQUIT, sa_quit, NULL);
-// 	}
-// }

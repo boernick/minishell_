@@ -15,58 +15,75 @@
 //WORKING
 //Go trough the list of tokens and correcltly split up WORD_TOKENS
 //to be arguments or commands
+// Function declarations
+int		check_empty_variable(t_token *current_token, t_parse *data, t_shell *shell);
+void	classify_command_token(t_token *current_token, int *cmd_flag);
+void	classify_file_arg(t_token **current_token);
+void	classify_word_arg(t_token *current_token);
+
+
 void classify_token_types(t_parse *data, t_shell *shell)
 {
-	t_token	*current_token;
-	int		i;
+	t_token	*curr;
+	int		cmd_flag;
 
-	i = 0;
-	current_token = data->head;
-	while (current_token)
+	cmd_flag = 0;
+	curr = data->head;
+	while (curr)
 	{
-		if (current_token->value[0] == '$')
-		{
-			char *expanded_var = replace_variables_in_heredoc(current_token->value, data, shell);
-			if (!expanded_var || expanded_var[0] == '\0')
+		if (curr->value[0] == '$'
+			&& !check_empty_variable(curr, data, shell))
 			{
-				current_token->type = TOKEN_SKIP;
-				current_token = current_token->next;
-				continue;
+				if (curr->next)
+					curr = curr->next;
 			}
-			free(expanded_var);
-		}
-		// Reset i to 0 if we're starting a new command sequence after a pipe
-		if (current_token->type == TOKEN_PIPE)
-			i = 0;
-		// Identify command at the start of each sequence or after a pipe
-		// else if (current_token->value[0] == '$')
-		// 	current_token->type = TOKEN_ARG;
-		else if (current_token->type == TOKEN_WORD && i == 0)
-		{
-			current_token->type = TOKEN_CMD;
-			i++;
-		}
-		// Mark the following token after any redirection as a file argument
-		else if (current_token->type == TOKEN_REDIR_IN ||
-				current_token->type == TOKEN_REDIR_OUT ||
-				current_token->type == TOKEN_REDIR_APPEND ||
-				current_token->type == TOKEN_HEREDOC)
-		{
-			// Ensure the next token is marked as a file argument if it's a word
-			if (current_token->next && current_token->next->type == TOKEN_WORD)
-			{
-				current_token->next->type = TOKEN_FILE_ARG;
-			current_token = current_token->next; // Skip to the file argument
-		}
-		}
-		// Handle other arguments and flags
-		else if (current_token->type == TOKEN_WORD)
-		{
-			if (current_token->value[0] == '-' && current_token->value[1] == 'n')
-				current_token->type = TOKEN_FLAG_ARG;
-			else
-				current_token->type = TOKEN_ARG;
-		}
-		current_token = current_token->next;
+		if (curr->type == TOKEN_PIPE)
+			cmd_flag = 0;
+		else if (curr->type == TOKEN_WORD && cmd_flag == 0)
+			classify_command_token(curr, &cmd_flag);
+		else if (curr->type == TOKEN_REDIR_IN || curr->type == TOKEN_REDIR_OUT
+		|| curr->type == TOKEN_REDIR_APPEND || curr->type == TOKEN_HEREDOC)
+			classify_file_arg(&curr);
+		else if (curr->type == TOKEN_WORD)
+			classify_word_arg(curr);
+		curr = curr->next;
 	}
+}
+
+int	check_empty_variable(t_token *current_token, t_parse *data, t_shell *shell)
+{
+	char *expnd_var;
+
+	expnd_var = replace_variables_in_heredoc(current_token->value, data, shell);
+	if (!expnd_var || expnd_var[0] == '\0')
+	{
+		current_token->type = TOKEN_SKIP;
+		free(expnd_var);
+		return (0);
+	}
+	free(expnd_var);
+	return (1);
+}
+
+void classify_command_token(t_token *current_token, int *cmd_flag)
+{
+	current_token->type = TOKEN_CMD;
+	(*cmd_flag)++;
+}
+
+void classify_file_arg(t_token **current_token)
+{
+	if ((*current_token)->next && (*current_token)->next->type == TOKEN_WORD)
+	{
+		(*current_token)->next->type = TOKEN_FILE_ARG;
+		*current_token = (*current_token)->next;
+	}
+}
+
+void classify_word_arg(t_token *current_token)
+{
+	if (current_token->value[0] == '-' && current_token->value[1] == 'n')
+		current_token->type = TOKEN_FLAG_ARG;
+	else
+		current_token->type = TOKEN_ARG;
 }
