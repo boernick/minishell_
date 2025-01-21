@@ -31,7 +31,7 @@
 # include "../includes/ft_printf/ft_printf.h"
 # define BUFFER_SIZE 1024
 
-typedef enum
+typedef enum t_type
 {
 	TOKEN_WORD,
 	TOKEN_ARG,
@@ -44,12 +44,12 @@ typedef enum
 	TOKEN_REDIR_APPEND,
 	TOKEN_HEREDOC,
 	TOKEN_SKIP
-}	e_token_type;
+}	t_token_type;
 
 
-typedef struct	s_token
+typedef struct s_token
 {
-	e_token_type	type;
+	t_token_type	type;
 	char			*value;
 	struct s_token	*next;
 }					t_token;
@@ -57,9 +57,9 @@ typedef struct	s_token
 typedef struct s_redirect
 {
 	char				*file;
-	e_token_type		type;
+	t_token_type		type;
 	struct s_redirect	*next;
-	int 				processed;
+	int					processed;
 }	t_redirect;
 
 typedef struct s_env
@@ -92,7 +92,7 @@ typedef struct s_cmd
 	t_redirect		*redir;
 }				t_cmd;
 
-typedef struct	s_parse
+typedef struct s_parse
 {
 	t_token	*head;
 	t_token	*tail;
@@ -108,7 +108,7 @@ typedef struct	s_parse
 	t_cmd	*cmd;
 }			t_parse;
 
-typedef struct	s_execution
+typedef struct s_execution
 {
 	pid_t	pid;
 	int		n_pipes;
@@ -122,7 +122,7 @@ typedef struct	s_execution
 	int		start_in;
 	int		start_out;
 	t_cmd	*cmd;
-} t_execution;
+}	t_execution;
 
 typedef struct sigaction	t_sigaction;
 typedef t_sigaction			t_sigact;
@@ -138,17 +138,17 @@ char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell);
 char	*get_pid_as_string(void);
 
 //---------tokenize----------//
-void		split_tokens(char *input, t_parse *data);
-t_token		*new_token(e_token_type type, char *value);
-void 		handle_buffer(t_parse *data, e_token_type token_type);
-void		add_token_to_list(t_parse *data, t_token *new_token);
-void		classify_token_types(t_parse *data, t_shell *shell);
-char		*create_heredoc(void);
+void	split_tokens(char *input, t_parse *data);
+t_token	*new_token(t_token_type type, char *value);
+void	handle_buffer(t_parse *data, t_token_type token_type);
+void	add_token_to_list(t_parse *data, t_token *new_token);
+void	classify_token_types(t_parse *data, t_shell *shell);
+char	*create_heredoc(void);
 
 //--------utils_token--------//
 void	print_tokens(t_token *token_list);
 char	*trim_whitespace(char *str); // not used
-void 	free_tokens(t_token *head);
+void	free_tokens(t_token *head);
 int		validate_input(t_token *tokens, t_parse *data, t_shell *shell);
 char	*ft_itoa(int n);
 
@@ -228,7 +228,7 @@ int		builtin_unset(char **argv, t_shell *shell);
 int		builtin_export(char **argv, t_shell *shell);
 
 //---------env-----------//
-t_env 	*env_add_node(char *env_str);
+t_env	*env_add_node(char *env_str);
 int		t_env_init(t_shell *shell, char **envp);
 int		env_addback(t_shell *shell, char *envp);
 int		env_del(t_shell *shell, char *env);
@@ -245,8 +245,8 @@ int		invalid_identifier(char *builtin, char *arg);
 int		invalid_filedir(char *file);
 int		invalid_filedir_builtin(char *builtin, char *file);
 int		syntax_error(char *token);
-int 	permission_denied(char *arg);
-int 	cmd_not_found(char *arg);
+int		permission_denied(char *arg);
+int		cmd_not_found(char *arg);
 int		is_a_directory(char *arg);
 int		invalid_argument_count(int ret);
 
@@ -254,7 +254,7 @@ int		invalid_argument_count(int ret);
 void	free_array(char **array);
 void	free_envlst(t_env *lst);
 void	free_int_array(t_execution *pipex, int i);
-t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int	n);
+t_cmd	*find_cmdlst_index(t_cmd *cmd_lst, int n);
 int		cmdlst_length(t_cmd *cmd_lst);
 int		check_num(char *str);
 void	export_lst(t_env *env_lst);
@@ -267,7 +267,7 @@ void	export_env_var(char *env, t_shell *shell);
 void	print_lst(t_env *lst);
 char	*cd_update_path(t_shell *shell, char *str);
 int		cd_check_error(int err_status, char *dir);
-int 	cd_to_path(t_shell *shell, char *arg);
+int		cd_to_path(t_shell *shell, char *arg);
 int		check_dir(char *path);
 bool	exit_is_valid(char *pnum);
 int		check_folder(char *filename);

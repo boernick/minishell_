@@ -14,7 +14,7 @@
 
 
 //for testing
-char	*get_token_type_name(e_token_type type);
+char	*get_token_type_name(t_token_type type);
 
 // void	classify_empty_tokens(t_parse *data)
 // {

@@ -253,7 +253,7 @@ void	add_redirection_to_cmd(t_cmd *cmd, t_redirect *new_redir)
 }
 
 //for testing
-char *get_token_type_name(e_token_type type) {
+char *get_token_type_name(t_token_type type) {
     switch (type) {
         case TOKEN_CMD:         return "TOKEN_CMD";
         case TOKEN_ARG:         return "TOKEN_ARG";

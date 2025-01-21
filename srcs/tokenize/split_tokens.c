@@ -2,7 +2,7 @@
 
 //creats a new token and allocates memory for it. Sets the value and type of the new
 //token to the given input.
-t_token *new_token(e_token_type type, char *value)
+t_token *new_token(t_token_type type, char *value)
 {
 	t_token *token;
 
@@ -31,7 +31,7 @@ void add_token_to_list(t_parse *data, t_token *new_token)
 
 //takes the buffer containing a segment of input from the user which has been identified
 //as a token. Functions New_token and add_token_to_list are called for next steps
-void handle_buffer(t_parse *data, e_token_type token_type)
+void handle_buffer(t_parse *data, t_token_type token_type)
 {
 	if (data->buf_index > 0)
 	{
