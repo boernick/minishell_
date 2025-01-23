@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 18:25:17 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/23 19:59:20 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/23 20:28:22 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,7 @@ void	get_fd(t_execution *pipex, t_cmd *cmd)
 	if (cmd->fdin != -2)
 		dup2(cmd->fdin, STDIN_FILENO);
 	else if (pipex->index_pipe == 0)
-		{
-			dup2(pipex->start_in, STDIN_FILENO);
-			close(pipex->start_in);
-		}
+		dup2(pipex->start_in, STDIN_FILENO);
 	else
 		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
 	if (pipex->outfile >= 0)
@@ -48,14 +45,10 @@ void	get_fd(t_execution *pipex, t_cmd *cmd)
 	if (cmd->fdout != -2)
 		dup2(cmd->fdout, STDOUT_FILENO);
 	else if (pipex->index_cmd == pipex->n_cmds - 1)
-	{
 		dup2(pipex->start_out, STDOUT_FILENO);
-		close(pipex->start_out);
-	}
 	else
 		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
 }
-
 
 // close all file descriptors in the pipe FD array
 void	clean_pipes(t_execution *pipex)
@@ -63,7 +56,7 @@ void	clean_pipes(t_execution *pipex)
 	int	i;
 
 	if (pipex->start_in != -2)
-	{	
+	{
 		close(pipex->start_in);
 		pipex->start_in = -2;
 	}

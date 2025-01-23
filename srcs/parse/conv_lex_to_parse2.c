@@ -39,7 +39,7 @@ void	init_cmd_cmd(t_cmd **current_cmd, t_parse *data, char *cmd_value)
 		malloc_error(sizeof(t_cmd));
 	new_cmd->cmd = ft_strdup(cmd_value);
 	new_cmd->argv = (char **)malloc(sizeof(char *) * 2);
-	if(!new_cmd->argv)
+	if (!new_cmd->argv)
 		malloc_error(sizeof(char *) * 2);
 	new_cmd->argv[0] = ft_strdup(cmd_value);
 	new_cmd->argv[1] = NULL;
