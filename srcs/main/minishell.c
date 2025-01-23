@@ -31,7 +31,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 	{
 		while (pipex->index_cmd < pipex->n_cmds)
 			pid_last = run_single_cmd(shell, pipex, pids);
-		clean_pipes(pipex, pipex->cmd);
+		clean_pipes(pipex);
 		waitpids(pids, pipex->n_cmds, shell, pid_last);
 	}
 	if (pids != NULL)
@@ -58,39 +58,12 @@ pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 	return (pids[pipex->index_cmd - 1]);
 }
 
-/////////////////
-int is_fd_open(int fd) {
-    return fcntl(fd, F_GETFD) != -1 || errno != EBADF;
-}
-
-void open_check_fd(t_execution *pipex, char *str)
-{
-	if (is_fd_open(pipex->outfile))
-		fprintf(stderr, "in %s outfile (%d) is open.\n", str, pipex->outfile);
-	else
-		fprintf(stderr, "in %s outfile (%d) is closed.\n", str, pipex->outfile);
-	if (is_fd_open(pipex->infile))
-		fprintf(stderr, "in %s infile (%d) is open.\n", str, pipex->infile);
-	else
-		fprintf(stderr, "in %s infile (%d) is closed.\n", str, pipex->infile);
-	if (is_fd_open(pipex->start_in))
-		fprintf(stderr, "in %s start in (%d) is open.\n", str, pipex->start_in);
-	else
-		fprintf(stderr, "in %s start in (%d) is closed.\n", str, pipex->start_in);
-	if (is_fd_open(pipex->start_out))
-		fprintf(stderr, "in %s start out (%d) is open.\n", str, pipex->start_out);
-	else
-		fprintf(stderr, "in %s start out (%d) is closed.\n", str, pipex->start_out);
-}
-
-//////////////////
-
 // child process runs builtin or executable
 void	run_child_exec(t_execution *pipex, t_shell *shell)
 {
 	get_fd(pipex, pipex->cmd);
-	clean_pipes(pipex, pipex->cmd);
-	// open_check_fd(pipex, "child");
+	clean_pipes(pipex);
+	close_fd_in_out(pipex->cmd);
 	if (pipex->cmd->is_builtin)
 		run_builtin(pipex->cmd->argv, shell);
 	else
@@ -136,7 +109,6 @@ int	main(int argc, char **argv, char **envp)
 		free_tokens(parse.head);
 		parse.head = NULL;
 	}
-	// open_check_fd(&pipex, "parent");
 	cleanup(&parse, &shell);
 	return (shell.last_exit);
 }

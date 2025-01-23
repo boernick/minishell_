@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 18:25:17 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/23 18:56:52 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/23 19:59:20 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,20 @@ void	get_fd(t_execution *pipex, t_cmd *cmd)
 
 
 // close all file descriptors in the pipe FD array
-void	clean_pipes(t_execution *pipex, t_cmd *cmd)
+void	clean_pipes(t_execution *pipex)
 {
 	int	i;
 
+	if (pipex->start_in != -2)
+	{	
+		close(pipex->start_in);
+		pipex->start_in = -2;
+	}
+	if (pipex->start_out != -2)
+	{
+		close(pipex->start_out);
+		pipex->start_out = -2;
+	}
 	if (pipex->n_pipes == 0)
 		return ;
 	i = 0;
@@ -72,12 +82,7 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 		free(pipex->pipe_arr[i]);
 		i++;
 	}
-	if (pipex->start_in != -2)
-		close(pipex->start_in);
-	if (pipex->start_out != -2)
-		close(pipex->start_out);
 	free(pipex->pipe_arr);
-	close_fd_in_out(cmd);
 }
 
 // waits for a series of given child processes
@@ -116,8 +121,14 @@ void	close_fd_in_out(t_cmd *cmd)
 	if (cmd)
 	{
 		if (cmd->fdin >= 0)
+		{
 			close(cmd->fdin);
+			cmd->fdin = -2;
+		}
 		if (cmd->fdout >= 0)
+		{
 			close(cmd->fdout);
+			cmd->fdout = -2;
+		}
 	}
 }

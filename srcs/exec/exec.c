@@ -60,9 +60,15 @@ int	setup_redirections(t_cmd *cmd)
 void	reset_fds(t_execution *pipex)
 {
 	if (pipex->infile >= 0)
+	{
 		close(pipex->infile);
+		pipex->infile = -2;
+	}
 	if (pipex->outfile >= 0)
+	{
 		close(pipex->outfile);
+		pipex->outfile = -2;
+	}
 	dup2(pipex->start_in, STDIN_FILENO);
 	dup2(pipex->start_out, STDOUT_FILENO);
 }
@@ -70,6 +76,7 @@ void	reset_fds(t_execution *pipex)
 // prepare exec struct for next call.
 void	update_exec(t_execution *pipex)
 {
+	close_fd_in_out(pipex->cmd);
 	pipex->index_prev_pipe = pipex->index_pipe;
 	pipex->index_pipe++;
 	pipex->index_cmd++;

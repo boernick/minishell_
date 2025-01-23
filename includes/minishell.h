@@ -216,7 +216,7 @@ void	update_exec(t_execution *pipex);
 void	create_pipes(t_execution *pipex);
 pid_t	fork_child(void);
 void	get_fd(t_execution *pipex, t_cmd *cmd);
-void	clean_pipes(t_execution *pipex, t_cmd *cmd);
+void	clean_pipes(t_execution *pipex);
 void	run_builtin(char **argv, t_shell *shell);
 pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids);
 void	run_single_builtin(t_execution *pipex, t_shell *shell);
@@ -304,9 +304,5 @@ int		check_folder(char *filename);
 void	exec_mini(t_shell *shell, t_execution *pipex);
 void	cleanup(t_parse *parse, t_shell *shell);
 void	run_mini(t_parse *parse, t_shell *shell, t_execution *pipex);
-
-//------debug-----------//
-int is_fd_open(int fd);
-void open_check_fd(t_execution *pipex, char *str);
 
 #endif
