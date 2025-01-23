@@ -6,7 +6,7 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 18:25:17 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/23 17:17:03 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/23 18:47:17 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,32 +23,40 @@ pid_t	fork_child(void)
 	return (pid);
 }
 
-//organizes filedescriptors for input and output redirection
-void	get_fd(t_execution *pipex, t_cmd *cmd)
+void get_fd(t_execution *pipex, t_cmd *cmd)
 {
-	if (cmd->fdin != -2)
-		dup2(cmd->fdin, STDIN_FILENO);
-	else if (pipex->index_pipe == 0)
-	{
-		if (pipex->infile != -2)
-			dup2(pipex->infile, STDIN_FILENO);
-		else
-			dup2(pipex->start_in, STDIN_FILENO);
-	}
-	else
-		dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
-	if (cmd->fdout != -2)
-		dup2(cmd->fdout, STDOUT_FILENO);
-	else if (pipex->index_cmd == pipex->n_cmds - 1)
-	{
-		if (pipex->outfile != -2)
-			dup2(pipex->outfile, STDOUT_FILENO);
-		else
-			dup2(pipex->start_out, STDOUT_FILENO);
-	}
-	else
-		dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
+    if (pipex->infile >= 0)
+    {
+        close(pipex->infile);  // Close the existing file descriptor
+        pipex->infile = -2;    // Mark it as closed
+    }
+    if (cmd->fdin != -2)
+        dup2(cmd->fdin, STDIN_FILENO);  // Duplicate the input file descriptor
+    else if (pipex->index_pipe == 0)
+    {
+        dup2(pipex->start_in, STDIN_FILENO);  // Use the starting input descriptor
+        close(pipex->start_in);  // Close it after duplication
+    }
+    else
+        dup2(pipex->pipe_arr[pipex->index_prev_pipe][0], STDIN_FILENO);
+
+    if (pipex->outfile >= 0)
+    {
+        close(pipex->outfile);  // Close the existing output file descriptor
+        pipex->outfile = -2;    // Mark it as closed
+    }
+    if (cmd->fdout != -2)
+        dup2(cmd->fdout, STDOUT_FILENO);  // Duplicate the output file descriptor
+    else if (pipex->index_cmd == pipex->n_cmds - 1)
+    {
+        dup2(pipex->start_out, STDOUT_FILENO);  // Use the starting output descriptor
+        close(pipex->start_out);  // Close it after duplication
+    }
+    else
+        dup2(pipex->pipe_arr[pipex->index_pipe][1], STDOUT_FILENO);
 }
+
+
 
 // close all file descriptors in the pipe FD array
 void	clean_pipes(t_execution *pipex, t_cmd *cmd)

@@ -305,4 +305,8 @@ void	exec_mini(t_shell *shell, t_execution *pipex);
 void	cleanup(t_parse *parse, t_shell *shell);
 void	run_mini(t_parse *parse, t_shell *shell, t_execution *pipex);
 
+//------debug-----------//
+int is_fd_open(int fd);
+void open_check_fd(t_execution *pipex, char *str);
+
 #endif

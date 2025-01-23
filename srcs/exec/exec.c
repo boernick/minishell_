@@ -59,8 +59,10 @@ int	setup_redirections(t_cmd *cmd)
 // reset FDs after execution process.
 void	reset_fds(t_execution *pipex)
 {
-	pipex->infile = STDIN_FILENO;
-	pipex->outfile = STDOUT_FILENO;
+	if (pipex->infile >= 0)
+		close(pipex->infile);
+	if (pipex->outfile >= 0)
+		close(pipex->outfile);
 	dup2(pipex->start_in, STDIN_FILENO);
 	dup2(pipex->start_out, STDOUT_FILENO);
 }
