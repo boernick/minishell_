@@ -30,6 +30,5 @@ int heredoc_eof_warning(int line_number, char *delimeter, t_parse *data)
 	ft_putstr_fd(" delimited by end-of-file (wanted `", STDERR_FILENO);
 	ft_putstr_fd(delimeter, STDERR_FILENO);
 	ft_putendl_fd("')", STDERR_FILENO);
-	sprinf("sup");
 	return (0);
 }
