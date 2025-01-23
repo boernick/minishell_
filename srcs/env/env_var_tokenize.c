@@ -51,6 +51,7 @@ char	*handle_variable(t_expand_var *exp, t_parse *data, t_shell *shell)
 	var_val = get_env_variable(exp->var_name, data, shell);
 	ft_strlcpy(exp->result + exp->res_index, var_val, ft_strlen(var_val) + 1);
 	exp->res_index += ft_strlen(var_val);
+	free(var_val);
 	return (exp->result);
 }
 

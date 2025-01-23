@@ -37,7 +37,7 @@ char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell)
 		return (handle_exit_status_variable(var_name, data));
 	env_value = getenv(var_name);
 	if (env_value)
-		return (env_value);
+		return (ft_strdup(env_value));
 	if (shell->env_lst && shell)
 		env_node = get_env_lst(shell, var_name);
 	if (env_node)
