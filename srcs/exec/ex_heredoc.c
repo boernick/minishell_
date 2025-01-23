@@ -91,44 +91,43 @@ int	read_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *she
 
 char *replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell);
 
-int read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
+int heredoc_eof_warning(int line_number, char *delimeter, t_parse *data)
 {
+	data->valid_input = 0;
+	ft_putstr_fd("minishell: warning: here-document at line ", STDERR_FILENO);
+	ft_putnbr_fd(line_number, STDERR_FILENO);
+	ft_putstr_fd(" delimited by end-of-file (wanted `", STDERR_FILENO);
+	ft_putstr_fd(delimeter, STDERR_FILENO);
+	ft_putendl_fd("')", STDERR_FILENO);
+	return (0);
+}
 
-	//printf("delimiter: %s\n", data->cmd->redir->delimiter);
-	char *line;
-	static int line_number;
+int	read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
+{
+	char	*line;
+	char	*expanded_line;
+	size_t	len;
 
-	line_number = 1;
-		line = readline("heredoc> ");
-		if (!line)
-		{
-			write(STDOUT_FILENO, "\n", 1);
-			data->valid_input = 0;
-			fprintf(stderr, "minishell: warning: here-document at line %d delimited by end-of-file (wanted `%s')\n", line_number, delimeter);
-			return (0); // Return NULL to signal failure
-		}
-		// Remove trailing newline for comparison
-		size_t len = ft_strlen(line);
-		if (len > 0 && line[len - 1] == '\n')
-			line[len - 1] = '\0';
-		if (strcmp(line, delimeter) == 0)
-		{
-			free(line);
-			//printf("Debug: Delimiter `%s` found, ending heredoc\n", data->cmd->redir->delimiter);
-			return 0; // Exit heredoc loop
-		}
-		//Write line to file
-		//printf("line before: %s\n", line);
-		char *expanded_line = replace_variables_in_heredoc(line, data, shell);
+	line = readline("heredoc> ");
+	if (!line)
+		return  (heredoc_eof_warning(__LINE__, delimeter, data));
+	len = ft_strlen(line);
+	if (len > 0 && line[len - 1] == '\n')
+		line[len - 1] = '\0';
+	if (strcmp(line, delimeter) == 0)
+	{
 		free(line);
-		if (expanded_line)
-		{
-			write(fd, expanded_line, ft_strlen(expanded_line));
-			write(fd, "\n", 1); // Add newline to file
-			free(expanded_line); // Free the replaced line
-		}
-		line_number++;
-		return (1);
+		return 0;
+	}
+	expanded_line = replace_variables_in_heredoc(line, data, shell);
+	free(line);
+	if (expanded_line)
+	{
+		write(fd, expanded_line, ft_strlen(expanded_line));
+		write(fd, "\n", 1);
+		free(expanded_line);
+	}
+	return (1);
 }
 
 void	cleanup_heredoc(t_cmd *cmd_p)

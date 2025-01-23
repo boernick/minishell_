@@ -1,7 +1,6 @@
 #include "../../includes/minishell.h"
 
-//creats a new token and allocates memory for it. Sets the value and type of the new
-//token to the given input.
+//split_tokens_utils
 t_token *new_token(t_token_type type, char *value)
 {
 	t_token *token;
@@ -9,7 +8,7 @@ t_token *new_token(t_token_type type, char *value)
 	token = (t_token *)malloc(sizeof(t_token));
 	if (!token)
 	{
-		perror("Failed to allocate token");
+		malloc_error(sizeof(t_token));
 		exit(EXIT_FAILURE);
 	}
 	token->type = type;
@@ -18,8 +17,8 @@ t_token *new_token(t_token_type type, char *value)
 	return (token);
 }
 
-//Takes pointer to data and a pointer to a new token so it can add the new token
-//at the end (tail) of the list of tokens.
+
+//split_tokens_utils
 void add_token_to_list(t_parse *data, t_token *new_token)
 {
 	if (data->head == NULL)
@@ -29,9 +28,8 @@ void add_token_to_list(t_parse *data, t_token *new_token)
 	data->tail = new_token;
 }
 
-//takes the buffer containing a segment of input from the user which has been identified
-//as a token. Functions New_token and add_token_to_list are called for next steps
-void handle_buffer(t_parse *data, t_token_type token_type)
+//split_tokens_utils
+void	handle_buffer(t_parse *data, t_token_type token_type)
 {
 	if (data->buf_index > 0)
 	{
@@ -41,8 +39,8 @@ void handle_buffer(t_parse *data, t_token_type token_type)
 	}
 }
 
-
-int ambiguous_redirect_error(char *token)
+//error_ext
+int	ambiguous_redirect_error(char *token)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(token, STDERR_FILENO);
@@ -54,25 +52,18 @@ int validate_heredoc(t_token *next, t_parse *data);
 int validate_operator_sequence(t_token *next, t_parse *data);
 int validate_tokens(t_token *tokens, t_parse *data, t_shell *shell);
 int validate_pipe_start(t_token *tokens, t_parse *data);
-int validate_empty_input(t_token *tokens);
 
-
-int	validate_empty_input(t_token *tokens)
-{
-	return (tokens == NULL);
-}
-
+//validate_input_utils
 int	validate_pipe_start(t_token *tokens, t_parse *data)
 {
-	if (tokens->value[0] == '|') {
-		syntax_error("|");
-		data->valid_input = 0;
-		data->exit = 2;
+	if (tokens->value[0] == '|')
+	{
+		syntax_error("|", data);
 		return (0);
 	}
 	return (1);
 }
-
+//validate_input
 int	validate_operator_sequence2(t_token *next, t_parse *data, t_shell *shell)
 {
 	char	*expanded_var;
@@ -80,9 +71,7 @@ int	validate_operator_sequence2(t_token *next, t_parse *data, t_shell *shell)
 	if ((next && (next->type == TOKEN_REDIR_IN || next->type == TOKEN_REDIR_OUT ||
 	next->type == TOKEN_REDIR_APPEND)))
 	{
-		syntax_error(next->value);
-		data->valid_input = 0;
-		data->exit = 2;
+		syntax_error(next->value, data);
 		return (0);
 	}
 	if (next->value[0] == '$')
@@ -99,7 +88,7 @@ int	validate_operator_sequence2(t_token *next, t_parse *data, t_shell *shell)
 	}
 	return (1);
 }
-
+//validate_input
 int	validate_tokens(t_token *current, t_parse *data, t_shell *shell)
 {
 	if (current->type == TOKEN_PIPE || current->type == TOKEN_REDIR_IN
@@ -120,31 +109,33 @@ int	validate_tokens(t_token *current, t_parse *data, t_shell *shell)
 		return (0);
 	return (1);
 }
-
+//validate_input
 int validate_operator_sequence(t_token *next, t_parse *data)
 {
-	if (!next || next->type == TOKEN_PIPE )
+	if (!next || next->type == TOKEN_PIPE)
 	{
-		syntax_error(next ? next->value : "newline");
-		data->valid_input = 0;
-		data->exit = 2;
+		if (next)
+			syntax_error(next->value, data);
+		else
+			syntax_error("newline", data);
 		return (0);
 	}
 	return (1);
 }
-
+//validate_input_utils
 int	validate_heredoc(t_token *next, t_parse *data)
 {
 	if (!next || next->type != TOKEN_WORD)
 	{
-		syntax_error(next ? next->value : "newline");
-		data->valid_input = 0;
-		data->exit = 2;
+		if (next)
+			syntax_error(next->value, data);
+		else
+			syntax_error("newline", data);
 		return (0);
 	}
 	return (1);
 }
-
+//validate_input
 int	validate_input(t_token *tokens, t_parse *data, t_shell *shell)
 {
 	t_token *current = tokens;
@@ -167,24 +158,29 @@ int	validate_input(t_token *tokens, t_parse *data, t_shell *shell)
 	if (last->type == TOKEN_PIPE || last->type == TOKEN_REDIR_IN
 		|| last->type == TOKEN_REDIR_OUT || last->type == TOKEN_REDIR_APPEND)
 	{
-		syntax_error("newline");
-		data->valid_input = 0;
-		data->exit = 2;
+		syntax_error("newline", data);
 		return (0);
 	}
 	return (1);
 }
-
-void	process_quote(char *input, t_parse *data, char quote_type, int *i)
+//split_tokens
+void process_quote(char *input, t_parse *data, int *i)
 {
-	data->buffer[data->buf_index++] = input[*i];
-	if (quote_type == '\'')
+	if (input[*i] == '\'' && !data->in_double_quote)
+	{
+		data->buffer[data->buf_index++] = input[*i];
 		data->in_single_quote = !data->in_single_quote;
-	else
+		(*i)++;
+	}
+	if (input[*i] == '\"' && !data->in_single_quote)
+	{
+		data->buffer[data->buf_index++] = input[*i];
 		data->in_double_quote = !data->in_double_quote;
-	(*i)++;
-}
+		(*i)++;
+	}
 
+}
+//split_tokens
 void	process_pipe(char *input, t_parse *data, int *i)
 {
 	(void)input;
@@ -192,7 +188,7 @@ void	process_pipe(char *input, t_parse *data, int *i)
 	add_token_to_list(data, new_token(TOKEN_PIPE, "|"));
 	(*i)++;
 }
-
+//split_tokens
 void	process_redirection(char *input, t_parse *data, int *i)
 {
 	handle_buffer(data, TOKEN_WORD);
@@ -217,7 +213,7 @@ void	process_redirection(char *input, t_parse *data, int *i)
 		(*i)++;
 	}
 }
-
+//split_tokens
 void	process_whitespace(t_parse *data, int *i)
 {
 	handle_buffer(data, TOKEN_WORD);
@@ -229,8 +225,8 @@ void	append_character(char *input, t_parse *data, int *i)
 	data->buffer[data->buf_index++] = input[*i];
 	(*i)++;
 }
-
-void	finalize_parsing(t_parse *data)
+//split_tokens
+void	finalize_splitting(t_parse *data)
 {
 	handle_buffer(data, TOKEN_WORD);
 	if (data->in_single_quote || data->in_double_quote)
@@ -246,22 +242,19 @@ void	finalize_parsing(t_parse *data)
 		data->valid_input = 1;
 	}
 }
-
+//split_tokens
 void	split_tokens(char *input, t_parse *data)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (input[i] != '\0')
 	{
 		if (data->buf_index >= BUFFER_SIZE - 1)
-		{
-			printf("Buffer overflow detected\n"); // Use error msg
-			exit(EXIT_FAILURE);
-		}
+			exit_perror("Buffer overflow detected\n");
 		if ((input[i] == '\'' && !data->in_double_quote) ||
 			(input[i] == '\"' && !data->in_single_quote))
-			process_quote(input, data, input[i], &i);
+			process_quote(input, data, &i);
 		else if ((input[i] == ' ' || input[i] == '\t' || input[i] == '\n')
 			&& !data->in_single_quote && !data->in_double_quote)
 			process_whitespace(data, &i);
@@ -274,5 +267,5 @@ void	split_tokens(char *input, t_parse *data)
 		else
 			data->buffer[data->buf_index++] = input[i++];
 	}
-	finalize_parsing(data);
+	finalize_splitting(data);
 }

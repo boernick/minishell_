@@ -46,6 +46,15 @@ typedef enum t_type
 	TOKEN_SKIP
 }	t_token_type;
 
+typedef struct s_expand_var
+{
+	char	result[1024];
+	int		res_index;
+	int		i;
+	int		var_index;
+	char	var_name[256];
+	char	*input;
+}	t_expand_var;
 
 typedef struct s_token
 {
@@ -127,6 +136,7 @@ typedef struct s_execution
 typedef struct sigaction	t_sigaction;
 typedef t_sigaction			t_sigact;
 
+
 void	check_temp_files(t_cmd *cmd); //for testing
 void	print_temp_files(t_redirect *redir);// for testing
 void	process_running_sigint_handler(int signum);
@@ -136,6 +146,10 @@ void	init_signal_handlers(t_sigaction *sa_int, t_sigaction *sa_quit);
 //---------env_var_tokenize----------//
 char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell);
 char	*get_pid_as_string(void);
+void init_expand_var(t_expand_var *expand, char *input);
+void	handle_pid_var(char *input, int *i, char *result, int *res_index);
+void reset_expand_var(t_expand_var *expand);
+char *handle_variable(t_expand_var *exp, t_parse *data, t_shell *shell);
 
 //---------tokenize----------//
 void	split_tokens(char *input, t_parse *data);
@@ -144,6 +158,7 @@ void	handle_buffer(t_parse *data, t_token_type token_type);
 void	add_token_to_list(t_parse *data, t_token *new_token);
 void	classify_token_types(t_parse *data, t_shell *shell);
 char	*create_heredoc(void);
+void	finalize_splitting(t_parse *data);
 
 //--------utils_token--------//
 void	print_tokens(t_token *token_list);
@@ -151,6 +166,7 @@ char	*trim_whitespace(char *str); // not used
 void	free_tokens(t_token *head);
 int		validate_input(t_token *tokens, t_parse *data, t_shell *shell);
 char	*ft_itoa(int n);
+void	process_quote(char *input, t_parse *data, int *i);
 
 //-----------Parse-----------//
 void	parse_tokens(t_parse *data, t_shell *shell);
@@ -177,6 +193,7 @@ void	tokenize(t_parse *parse, t_shell *shell,
 //------handle_struct-------//
 void	struct_init(t_parse *data, t_shell *shell);
 void	reset_parse(t_parse *data);
+void	init_parse_data(t_parse *data, t_token **cur_tkn, t_cmd **current_cmd);
 
 //---------env_var---------//
 void	replace_env_variables_in_tokens(t_token *tokens,
@@ -244,11 +261,14 @@ int		invalid_option(char *builtin, char *arg);
 int		invalid_identifier(char *builtin, char *arg);
 int		invalid_filedir(char *file);
 int		invalid_filedir_builtin(char *builtin, char *file);
-int		syntax_error(char *token);
+int		syntax_error(char *token, t_parse *data);
 int		permission_denied(char *arg);
 int		cmd_not_found(char *arg);
 int		is_a_directory(char *arg);
 int		invalid_argument_count(int ret);
+int		malloc_error(size_t n);
+int		ambiguous_redirect_error(char *token);
+void	exit_perror(const char *msg);
 
 //---------utils-----------//
 void	free_array(char **array);

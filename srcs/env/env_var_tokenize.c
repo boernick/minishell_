@@ -1,25 +1,31 @@
 #include "../../includes/minishell.h"
 
-char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell)
+char	*handle_exit_status_variable(char *var_name, t_parse *data)
 {
-	char	*env_value;
 	char	*exit_status_str;
-	t_env	*env_node;
-	char	*equals_sign;
 	char	*remaining;
 	char	*result;
 
+	exit_status_str = ft_itoa(data->exit);
+	remaining = var_name + 1;
+	result = ft_strjoin(exit_status_str, remaining);
+	free(exit_status_str);
+	if (!result)
+		return (NULL);
+	return (result);
+}
+
+char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell)
+{
+	char	*env_value;
+	t_env	*env_node;
+	char	*equals_sign;
+
 	if (ft_strncmp(var_name, "?", 1) == 0)
-	{
-		exit_status_str = ft_itoa(data->exit);
-		remaining = var_name + 1;
-		result = ft_strjoin(exit_status_str, remaining);
-		free(exit_status_str);
-		return (result);
-	}
+		return (handle_exit_status_variable(var_name, data));
 	env_value = getenv(var_name);
 	if (env_value)
-		return ft_strdup(env_value);
+		return (env_value);
 	if (shell->env_lst && shell)
 		env_node = get_env_lst(shell, var_name);
 	if (env_node)
@@ -28,7 +34,7 @@ char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell)
 		if (equals_sign)
 			return (ft_strdup(equals_sign + 1));
 	}
-	return ft_strdup("");
+	return (ft_strdup(""));
 }
 
 char	*get_pid_as_string(void)
@@ -60,25 +66,73 @@ char	*get_pid_as_string(void)
 	return (pid_str);
 }
 
-void trim_quotes(char *str)
+int find_first_quote(char *str)
 {
-	int len;
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '\"')
+			return i;
+	}
+	return -1;
+}
+
+int	find_matching_quote(char *str, char quote_char, int start)
+{
 	int	i;
 
+	i = start + 1;
+	while (str[i])
+	{
+		if (str[i] == quote_char)
+			return i;
+		i++;
+	}
+	return (-1);
+}
+
+void trim_and_shift(char *str, int start, int end, int len)
+{
+	int	i;
+
+	i = start;
+	while (i < len)
+	{
+		str[i] = str[i + 1];
+		i++;
+	}
+	len--;
+	i = end - 1;
+	while (i < len)
+	{
+		str[i] = str[i + 1];
+		i++;
+	}
+	str[len - 1] = '\0';
+}
+
+void	trim_quotes(char *str)
+{
+	int		len = 0;
+	int		start;
+	int		end;
+	char	quote_char;
+
 	len = 0;
+	start = -1;
+	end = -1;
 	while (str[len])
 		len++;
-	if (len > 1 && ((str[0] == '\'' || str[0] == '\"')
-		&& (str[len - 1] == '\'' || str[len - 1] == '\"')))
-	{
-		i = 0;
-		while (i < len - 1)
-		{
-			str[i] = str[i + 1];
-			i++;
-		}
-		str[len - 2] = '\0';
-	}
+	start = find_first_quote(str);
+	if (start == -1)
+		return ;
+	quote_char = str[start];
+	end = find_matching_quote(str, quote_char, start);
+	if (end == -1 || end <= start)
+		return ;
+	trim_and_shift(str, start, end, len);
 }
 
 void	trim_file_quotes(char *str)
@@ -324,6 +378,21 @@ void	trim_file_quotes(char *str)
 // 	}
 
 ///////////////////////////////////////////////////////
+void process_quote_env(char *input, t_parse *data, t_expand_var *exp)
+{
+	if (input[exp->i] == '\'' && !data->in_double_quote)
+	{
+		exp->result[exp->res_index++] = input[exp->i++];
+		data->in_single_quote = !data->in_single_quote;
+	}
+	else if (input[exp->i] == '\"' && !data->in_single_quote)
+	{
+		exp->result[exp->res_index++] = input[exp->i++];
+		data->in_double_quote = !data->in_double_quote;
+	}
+
+}
+
 void handle_quotes(char *input, int *i, char *quote_char)
 {
 	if ((input[*i] == '\'' || input[*i] == '\"') && *quote_char == 0)
@@ -337,9 +406,24 @@ void handle_quotes(char *input, int *i, char *quote_char)
 		(*i)++;
 	}
 }
-void	process_quote(char *input, t_parse *data, char quote_type, int *i);
+//void	process_quote(char *input, t_parse *data, char quote_type, int *i);
+void init_expand_var(t_expand_var *expand, char *input)
+{
+	if (!expand)
+	{
+		malloc_error(sizeof(t_expand_var));
+		exit (EXIT_FAILURE);
+	}
+	expand->i = 0;
+	expand->res_index = 0;
+	expand->var_index = 0;
+	ft_memset(expand->result, 0, sizeof(expand->result));
+	ft_memset(expand->var_name, 0, sizeof(expand->var_name));
+	expand->input = input;
+}
 
-void	handle_variable_replacement(char *input, int *i, char *result, int *res_index)
+
+void	handle_pid_var(char *input, int *i, char *result, int *res_index)
 {
 	int		j;
 	char	*pid_str;
@@ -364,47 +448,113 @@ void	handle_variable_replacement(char *input, int *i, char *result, int *res_ind
 		return ;
 	}
 }
+void reset_expand_var(t_expand_var *expand)
+{
+	expand->var_index = 0;
+	ft_memset(expand->var_name, 0, sizeof(expand->var_name));
+}
+
+char *handle_variable(t_expand_var *exp, t_parse *data, t_shell *shell)
+{
+	char		*var_val;
+
+	handle_pid_var(exp->input, &(exp->i), exp->result, &(exp->res_index));
+	while (ft_isalnum(exp->input[exp->i])
+		|| exp->input[exp->i] == '_'
+		|| (exp->var_index == 0 && exp->input[exp->i] == '?'))
+		exp->var_name[exp->var_index++] = exp->input[(exp->i)++];
+	exp->var_name[exp->var_index] = '\0';
+	var_val = get_env_variable(exp->var_name, data, shell);
+	ft_strlcpy(exp->result + exp->res_index, var_val, ft_strlen(var_val) + 1);
+	exp->res_index += ft_strlen(var_val);
+	return (exp->result);
+}
 
 char *replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
 {
-	char result[1024];
-	int		res_index;
-	int		i;
-	char	*var_value;
-	int		var_index;
 
-	res_index = 0;
-	i = 0;
+	t_expand_var	*exp;
+	char			*ret;
+
+	exp = malloc(sizeof(t_expand_var));
+	init_expand_var(exp, input);
 	data->in_double_quote = 0;
 	data->in_single_quote = 0;
-	ft_memset(result, 0, sizeof(result));
-	while (input[i] != '\0')
+	while (input[exp->i] != '\0')
 	{
-		if ((input[i] == '\'' && !data->in_double_quote) ||
-			(input[i] == '\"' && !data->in_single_quote))
-			process_quote(input, data, input[i], &i);
-		else if (input[i] == '$' && !data->in_single_quote)
-		{
-			handle_variable_replacement(input, &i, result, &res_index);
-			char var_name[256] = {0};
-			var_index = 0;
-			while (ft_isalnum(input[i]) || input[i] == '_'
-				|| (var_index == 0 && input[i] == '?') )
-				var_name[var_index++] = input[i++];
-			var_name[var_index] = '\0';
-			var_value = get_env_variable(var_name, data, shell);
-			if (!var_value)
-				var_value = "";
-			ft_strlcpy(result + res_index, var_value, ft_strlen(var_value) + 1);
-			res_index += ft_strlen(var_value);
-			free(var_value);
-		}
+		if ((input[exp->i] == '\'' && !data->in_double_quote)
+			|| (input[exp->i] == '\"' && !data->in_single_quote))
+			process_quote_env(input, data, exp);
+		else if (input[exp->i] == '$' && !data->in_single_quote)
+			handle_variable(exp, data, shell);
 		else
-			result[res_index++] = input[i++];
+		{
+			exp->result[exp->res_index++] = input[exp->i++];
+			reset_expand_var(exp);
+		}
 	}
-	result[res_index] = '\0';
-	return	(ft_strdup(result));
+	exp->result[exp->res_index] = '\0';
+	ret = ft_strdup(exp->result);
+	free(exp);
+	return (ret);
 }
+
+
+// void	handle_variable_replacement(t_parse *data, t_shell *shell, char *input, int *res_index, char *result, int *i)
+// {
+// 	char	*var_value;
+// 	int		var_index;
+
+// 	char var_name[256] = {0};
+// 	var_index = 0;
+// 	handle_pid_replacement(input, i, result, res_index);
+// 	while (ft_isalnum(input[*i]) || input[*i] == '_'
+// 		|| (var_index == 0 && input[*i] == '?') )
+// 		var_name[var_index++] = input[*i++];
+// 	var_name[var_index] = '\0';
+// 	var_value = get_env_variable(var_name, data, shell);
+// 	ft_strlcpy(result + *res_index, var_value, ft_strlen(var_value) + 1);
+// 	*res_index += ft_strlen(var_value);
+// 	free(var_value);
+// }
+
+// char *replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
+// {
+// 	char	result[1024];
+// 	int		res_index;
+// 	int		i;
+
+// 	res_index = 0;
+// 	i = 0;
+// 	data->in_double_quote = 0;
+// 	data->in_single_quote = 0;
+// 	ft_memset(result, 0, sizeof(result));
+// 	while (input[i] != '\0')
+// 	{
+// 		if ((input[i] == '\'' && !data->in_double_quote) ||
+// 			(input[i] == '\"' && !data->in_single_quote))
+// 			process_quote(input, data, &i);
+// 		else if (input[i] == '$' && !data->in_single_quote)
+// 		{
+
+// 			handle_variable_replacement(data, shell, input, &res_index, result, &i);
+// 			// char var_name[256] = {0};
+// 			// var_index = 0;
+// 			// while (ft_isalnum(input[i]) || input[i] == '_'
+// 			// 	|| (var_index == 0 && input[i] == '?') )
+// 			// 	var_name[var_index++] = input[i++];
+// 			// var_name[var_index] = '\0';
+// 			// var_value = get_env_variable(var_name, data, shell);
+// 			// ft_strlcpy(result + res_index, var_value, ft_strlen(var_value) + 1);
+// 			// res_index += ft_strlen(var_value);
+// 			// free(var_value);
+// 		}
+// 		else
+// 			result[res_index++] = input[i++];
+// 	}
+// 	result[res_index] = '\0';
+// 	return	(ft_strdup(result));
+// }
 
 //// ////
 void replace_single_token_env_var(t_token *token, t_parse *data, t_shell *shell)

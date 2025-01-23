@@ -34,3 +34,10 @@ void	reset_parse(t_parse *data)
 	data->in_double_quote = 0;
 	data->in_single_quote = 0;
 }
+void	init_parse_data(t_parse *data, t_token **cur_tkn, t_cmd **current_cmd)
+{
+	*cur_tkn = data->head;
+	*current_cmd = NULL;
+	data->n_cmds = 0;
+	data->n_pipes = 0;
+}

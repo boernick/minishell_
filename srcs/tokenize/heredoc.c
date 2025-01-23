@@ -83,55 +83,55 @@ char *generate_temp_filename(void)
 	return (filename);
 }
 
-void	expand_env_variables_heredoc(char *line)
-{
-	char buffer[4096];
-	size_t buf_idx = 0;
-	size_t len = strlen(line);
+// void	expand_env_variables_heredoc(char *line)
+// {
+// 	char buffer[4096];
+// 	size_t buf_idx = 0;
+// 	size_t len = strlen(line);
 
-	for (size_t i = 0; i < len; i++) {
-		if (line[i] == '$' && i + 1 < len) {
-			if (line[i + 1] == '$')
-			{
-				buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%d", getpid());
-				i++;
-			}
-			else if ((line[i + 1] >= 'a' && line[i + 1] <= 'z') ||
-						(line[i + 1] >= 'A' && line[i + 1] <= 'Z') ||
-						line[i + 1] == '_')
-						{
-				const char *start = line + i + 1;
-				const char *end = start;
-				while ((*end >= 'a' && *end <= 'z') ||
-						(*end >= 'A' && *end <= 'Z') ||
-						(*end >= '0' && *end <= '9') ||
-						*end == '_') {
-					end++;
-				}
-				char var_name[256];
-				size_t var_len = end - start;
-				strncpy(var_name, start, var_len);
-				var_name[var_len] = '\0';
-				char *var_value = getenv(var_name);
-				if (var_value)
-					buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%s", var_value);
-				i += var_len;
-				i--;
-			}
-			else
-				buffer[buf_idx++] = line[i];
-		}
-		else
-			buffer[buf_idx++] = line[i];
-		if (buf_idx >= sizeof(buffer) - 1)
-		{
-			fprintf(stderr, "Error: Expanded line is too long.\n");
-			return ;
-		}
-	}
-	buffer[buf_idx] = '\0';
-	strcpy(line, buffer);
-}
+// 	for (size_t i = 0; i < len; i++) {
+// 		if (line[i] == '$' && i + 1 < len) {
+// 			if (line[i + 1] == '$')
+// 			{
+// 				buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%d", getpid());
+// 				i++;
+// 			}
+// 			else if ((line[i + 1] >= 'a' && line[i + 1] <= 'z') ||
+// 						(line[i + 1] >= 'A' && line[i + 1] <= 'Z') ||
+// 						line[i + 1] == '_')
+// 						{
+// 				const char *start = line + i + 1;
+// 				const char *end = start;
+// 				while ((*end >= 'a' && *end <= 'z') ||
+// 						(*end >= 'A' && *end <= 'Z') ||
+// 						(*end >= '0' && *end <= '9') ||
+// 						*end == '_') {
+// 					end++;
+// 				}
+// 				char var_name[256];
+// 				size_t var_len = end - start;
+// 				strncpy(var_name, start, var_len);
+// 				var_name[var_len] = '\0';
+// 				char *var_value = getenv(var_name);
+// 				if (var_value)
+// 					buf_idx += snprintf(buffer + buf_idx, sizeof(buffer) - buf_idx, "%s", var_value);
+// 				i += var_len;
+// 				i--;
+// 			}
+// 			else
+// 				buffer[buf_idx++] = line[i];
+// 		}
+// 		else
+// 			buffer[buf_idx++] = line[i];
+// 		if (buf_idx >= sizeof(buffer) - 1)
+// 		{
+// 			fprintf(stderr, "Error: Expanded line is too long.\n");
+// 			return ;
+// 		}
+// 	}
+// 	buffer[buf_idx] = '\0';
+// 	strcpy(line, buffer);
+// }
 
 char	*create_heredoc(void)
 {
@@ -219,36 +219,65 @@ void	expand_var(char *input, int *i, char *result, int *res_index, t_parse *data
 	*res_index += ft_strlen(var_value);
 }
 
-char	*replace_variables_in_heredoc(char *input, t_parse *data,
-			t_shell *shell)
-{
-	char	result[1024];
-	int		res_index;
-	int		i;
 
-	i = 0;
-	res_index = 0;
-	ft_memset(result, 0, sizeof(result));
-	while (input[i] != '\0')
+void	init_rep_var_heredoc(int *i, int *res_index, char *results)
+{
+	*i = 0;
+	*res_index = 0;
+	ft_memset(results, 0, sizeof(results));
+}
+// char	*replace_variables_in_heredoc(char *input, t_parse *data,
+// 			t_shell *shell)
+// {
+// 	char	result[1024];
+// 	int		res_index;
+// 	int		i;
+
+// 	init_rep_var_heredoc(&i, &res_index, result);
+// 	while (input[i] != '\0')
+// 	{
+// 		if (input[i] == '$')
+// 		{
+// 			i++;
+// 			if (input[i] == ' ' || !input[i])
+// 			{
+// 				result[res_index++] = '$';
+// 				//continue ;
+// 			}
+// 			if (input[i] == '$')
+// 				handle_dollar(input, &i, result, &res_index);
+// 			else
+// 				expand_var(input, &i, result, &res_index, data, shell);
+// 		}
+// 		else
+// 			result[res_index++] = input[i++];
+// 	}
+// 	result[res_index] = '\0';
+// 	return (ft_strdup(result));
+// }
+
+char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
+{
+
+	t_expand_var	*exp;
+	char			*ret;
+
+	exp = malloc(sizeof(t_expand_var));
+	init_expand_var(exp, input);
+	while (input[exp->i] != '\0')
 	{
-		if (input[i] == '$')
-		{
-			i++;
-			if (input[i] == ' ' || !input[i])
-			{
-				result[res_index++] = '$';
-				continue ;
-			}
-			if (input[i] == '$')
-				handle_dollar(input, &i, result, &res_index);
-			else
-				expand_var(input, &i, result, &res_index, data, shell);
-		}
+		if (input[exp->i] == '$' && !data->in_single_quote)
+			handle_variable(exp, data, shell);
 		else
-			result[res_index++] = input[i++];
+		{
+			exp->result[exp->res_index++] = input[exp->i++];
+			reset_expand_var(exp);
+		}
 	}
-	result[res_index] = '\0';
-	return (ft_strdup(result));
+	exp->result[exp->res_index] = '\0';
+	ret = ft_strdup(exp->result);
+	free(exp);
+	return (ret);
 }
 
 

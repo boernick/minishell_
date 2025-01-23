@@ -13,8 +13,10 @@
 #include "../../includes/minishell.h"
 
 
-int	syntax_error(char *token)
+int	syntax_error(char *token, t_parse *data)
 {
+	data->valid_input = 0;
+	data->exit = 2;
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd("syntax error near unexpected token `", STDERR_FILENO);
 	ft_putstr_fd(token, STDERR_FILENO);
