@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_var_tokenize2.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:41:58 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:41:58 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 char	*handle_exit_status_variable(char *var_name, t_parse *data)
@@ -55,7 +67,7 @@ char	*get_pid_as_string(void)
 	}
 	pid_str = malloc(index + 1);
 	if (!pid_str)
-		return NULL;
+		return (NULL);
 	reverse_index = 0;
 	while (reverse_index < index)
 	{
@@ -66,7 +78,7 @@ char	*get_pid_as_string(void)
 	return (pid_str);
 }
 
-void process_quote_env(char *input, t_parse *data, t_expand_var *exp)
+void	process_quote_env(char *input, t_parse *data, t_expand_var *exp)
 {
 	if (input[exp->i] == '\'' && !data->in_double_quote)
 	{
@@ -78,10 +90,9 @@ void process_quote_env(char *input, t_parse *data, t_expand_var *exp)
 		exp->result[exp->res_index++] = input[exp->i++];
 		data->in_double_quote = !data->in_double_quote;
 	}
-
 }
 
-void handle_quotes(char *input, int *i, char *quote_char)
+void	handle_quotes(char *input, int *i, char *quote_char)
 {
 	if ((input[*i] == '\'' || input[*i] == '\"') && *quote_char == 0)
 	{

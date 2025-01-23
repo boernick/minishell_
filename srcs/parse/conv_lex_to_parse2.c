@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   conv_lex_to_parse2.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:39:26 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:39:26 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "../../includes/minishell.h"
 
 int	init_cmd_redir(t_parse *data, t_cmd **current_cmd)
@@ -6,10 +17,7 @@ int	init_cmd_redir(t_parse *data, t_cmd **current_cmd)
 
 	new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
 	if (!new_cmd)
-	{
 		malloc_error(sizeof(t_cmd));
-		exit(EXIT_FAILURE);
-	}
 	new_cmd->cmd = NULL;
 	new_cmd->argv = NULL;
 	new_cmd->index = data->n_cmds;
@@ -22,16 +30,13 @@ int	init_cmd_redir(t_parse *data, t_cmd **current_cmd)
 	return (1);
 }
 
-void init_cmd_cmd(t_cmd **current_cmd, t_parse *data, char *cmd_value)
+void	init_cmd_cmd(t_cmd **current_cmd, t_parse *data, char *cmd_value)
 {
 	t_cmd	*new_cmd;
 
 	new_cmd = (t_cmd *)malloc(sizeof(t_cmd));
 	if (!new_cmd)
-	{
 		malloc_error(sizeof(t_cmd));
-		exit(EXIT_FAILURE);
-	}
 	new_cmd->cmd = ft_strdup(cmd_value);
 	new_cmd->argv = (char **)malloc(sizeof(char *) * 2);
 	new_cmd->argv[0] = ft_strdup(cmd_value);
@@ -49,8 +54,8 @@ bool	is_builtin_(char *cmd)
 {
 	if (!cmd)
 		return (false);
-	return (ft_strncmp(cmd, "echo", 5) == 0 || ft_strncmp(cmd, "cd", 3) == 0 ||
-		ft_strncmp(cmd, "pwd", 4) == 0
+	return (ft_strncmp(cmd, "echo", 5) == 0 || ft_strncmp(cmd, "cd", 3) == 0
+		|| ft_strncmp(cmd, "pwd", 4) == 0
 		|| ft_strncmp(cmd, "export", 7) == 0
 		|| ft_strncmp(cmd, "unset", 6) == 0
 		|| ft_strncmp(cmd, "env", 4) == 0

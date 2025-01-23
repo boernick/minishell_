@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   singals2.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:38:53 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:38:53 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "../../includes/minishell.h"
 
 void	init_signal_handlers(t_sigaction *sa_int, t_sigaction *sa_quit)
@@ -15,13 +26,14 @@ void	init_signal_handlers(t_sigaction *sa_int, t_sigaction *sa_quit)
 	sigaction(SIGQUIT, sa_quit, NULL);
 }
 
-void heredoc_sigint_handler(int signum)
+void	heredoc_sigint_handler(int signum)
 {
 	(void)signum;
 	write(STDOUT_FILENO, "\n", 1);
 }
 
-void	setup_heredoc_signals(struct sigaction *prev_sigint, struct sigaction *prev_sigquit)
+void	setup_heredoc_signals(struct sigaction *prev_sigint,
+		struct sigaction *prev_sigquit)
 {
 	struct sigaction	sa;
 
@@ -34,4 +46,3 @@ void	setup_heredoc_signals(struct sigaction *prev_sigint, struct sigaction *prev
 	sa.sa_handler = SIG_IGN;
 	sigaction(SIGQUIT, &sa, NULL);
 }
-

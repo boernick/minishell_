@@ -23,7 +23,8 @@ static void	switch_signal_handler(int signal, __sighandler_t handler)
 	sigaction(signal, &sa, NULL);
 }
 
-int	run_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell)
+int	run_heredoc(t_parse *data, t_redirect *redir,
+		char *delimeter, t_shell *shell)
 {
 	if (!redir)
 		return (EXIT_FAILURE);
@@ -32,11 +33,12 @@ int	run_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shel
 	return (EXIT_SUCCESS);
 }
 
-int	fork_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell)
+int	fork_heredoc(t_parse *data, t_redirect *redir,
+		char *delimeter, t_shell *shell)
 {
-	pid_t pid;
-	int status;
-	int ret;
+	pid_t	pid;
+	int		status;
+	int		ret;
 
 	pid = fork();
 	if (pid < 0)
@@ -57,7 +59,8 @@ int	fork_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *she
 	return (ret);
 }
 
-int	read_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell)
+int	read_heredoc(t_parse *data, t_redirect *redir,
+		char *delimeter, t_shell *shell)
 {
 	int	fd;
 	int	read_heredoc;
@@ -82,14 +85,14 @@ int	read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 
 	line = readline("heredoc> ");
 	if (!line)
-		return  (heredoc_eof_warning(__LINE__, delimeter, data));
+		return (heredoc_eof_warning(__LINE__, delimeter, data));
 	len = ft_strlen(line);
 	if (len > 0 && line[len - 1] == '\n')
 		line[len - 1] = '\0';
 	if (strcmp(line, delimeter) == 0)
 	{
 		free(line);
-		return 0;
+		return (0);
 	}
 	expanded_line = replace_variables_in_heredoc(line, data, shell);
 	free(line);
@@ -101,4 +104,3 @@ int	read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 	}
 	return (1);
 }
-

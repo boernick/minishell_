@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   conv_lex_to_parse.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:40:07 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:40:07 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 void	add_cmd_to_list(t_parse *data, t_cmd *new_cmd)
@@ -28,10 +40,7 @@ void	add_argument_to_cmd(t_cmd *cmd, char *arg)
 		i++;
 	new_argv = (char **)malloc(sizeof(char *) * (i + 2));
 	if (!new_argv)
-	{
 		malloc_error(sizeof(char *));
-		exit (EXIT_FAILURE);
-	}
 	j = 0;
 	while (j < i)
 	{

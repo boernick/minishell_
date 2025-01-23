@@ -5,18 +5,31 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:19:38 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:19:38 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 14:23:55 by prichugh          #+#    #+#             */
 /*   Updated: 2024/12/03 14:23:55 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "../../includes/minishell.h"
 
-void reverse_str(char *str, int start, int end)
+void	reverse_str(char *str, int start, int end)
 {
+	char	tmp_char;
+
 	while (start < end)
 	{
-		char tmp_char = str[start];
+		tmp_char = str[start];
 		str[start] = str[end];
 		str[end] = tmp_char;
 		start++;
@@ -52,11 +65,12 @@ void	int_to_str(int num, char *str, int *i)
 char	*generate_temp_filename(void)
 {
 	static int	counter = 0;
-	char		*filename = malloc(32);
+	char		*filename;
 	int			i;
 
+	filename = malloc(32);
 	if (!filename)
-		return NULL;
+		malloc_error(sizeof(char *));
 	filename[0] = '/';
 	filename[1] = 't';
 	filename[2] = 'm';
@@ -72,7 +86,7 @@ char	*generate_temp_filename(void)
 	filename[i++] = 'x';
 	filename[i] = 't';
 	counter++;
-	return filename;
+	return (filename);
 }
 
 char	*create_heredoc(void)
@@ -102,7 +116,6 @@ void	cleanup_heredoc(t_cmd *cmd_p)
 	t_cmd	*cmd;
 
 	cmd = cmd_p;
-
 	while (cmd)
 	{
 		if (cmd->redir->type == TOKEN_HEREDOC)

@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc_env_var.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:12:00 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:12:00 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
-char *expand_pid(void)
+char	*expand_pid(void)
 {
-	char *pid_str;
+	char	*pid_str;
 
 	pid_str = get_pid_as_string();
 	if (pid_str)
@@ -11,7 +23,7 @@ char *expand_pid(void)
 		return ("");
 }
 
-void handle_dollar(char *input, int *i, char *result, int *res_index)
+void	handle_dollar(char *input, int *i, char *result, int *res_index)
 {
 	char	*pid_str;
 
@@ -30,25 +42,6 @@ void handle_dollar(char *input, int *i, char *result, int *res_index)
 	}
 }
 
-void	expand_var(char *input, int *i, char *result, int *res_index, t_parse *data, t_shell *shell)
-{
-	char	var_name[256];
-	int		var_index;
-	char	*var_value;
-
-	var_index = 0;
-	ft_memset(var_name, 0, sizeof(var_name));
-	while (ft_isalnum(input[*i]) || input[*i] == '_'
-		|| (*i == 0 && input[*i] == '?'))
-		var_name[var_index++] = input[(*i)++];
-	var_name[var_index] = '\0';
-	var_value = get_env_variable(var_name, data, shell);
-	if (!var_value)
-		var_value = "";
-	ft_strlcpy(result + *res_index, var_value, ft_strlen(var_value) + 1);
-	*res_index += ft_strlen(var_value);
-}
-
 void	init_rep_var_heredoc(int *i, int *res_index, char *results)
 {
 	*i = 0;
@@ -56,9 +49,9 @@ void	init_rep_var_heredoc(int *i, int *res_index, char *results)
 	ft_memset(results, 0, sizeof(results));
 }
 
-char	*replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell)
+char	*replace_variables_in_heredoc(char *input,
+		t_parse *data, t_shell *shell)
 {
-
 	t_expand_var	*exp;
 	char			*ret;
 

@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   trim_token_quotes.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:21:13 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:21:13 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "../../includes/minishell.h"
 
 int	find_first_quote(char *str)
@@ -5,7 +16,6 @@ int	find_first_quote(char *str)
 	int	i;
 
 	i = 0;
-
 	while (str[i] != '\0')
 	{
 		if (str[i] == '\'' || str[i] == '\"')

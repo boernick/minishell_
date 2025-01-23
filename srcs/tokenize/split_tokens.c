@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   split_tokens.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:27:50 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:27:50 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 void	process_redirection(char *input, t_parse *data, int *i)
@@ -39,7 +51,7 @@ void	process_whitespace(t_parse *data, int *i)
 	(*i)++;
 }
 
-void process_quote(char *input, t_parse *data, int *i)
+void	process_quote(char *input, t_parse *data, int *i)
 {
 	if (input[*i] == '\'' && !data->in_double_quote)
 	{
@@ -53,7 +65,6 @@ void process_quote(char *input, t_parse *data, int *i)
 		data->in_double_quote = !data->in_double_quote;
 		(*i)++;
 	}
-
 }
 
 void	split_tokens(char *input, t_parse *data)
@@ -65,8 +76,8 @@ void	split_tokens(char *input, t_parse *data)
 	{
 		if (data->buf_index >= BUFFER_SIZE - 1)
 			exit_perror("Buffer overflow detected\n");
-		if ((input[i] == '\'' && !data->in_double_quote) ||
-			(input[i] == '\"' && !data->in_single_quote))
+		if ((input[i] == '\'' && !data->in_double_quote)
+			|| (input[i] == '\"' && !data->in_single_quote))
 			process_quote(input, data, &i);
 		else if ((input[i] == ' ' || input[i] == '\t' || input[i] == '\n')
 			&& !data->in_single_quote && !data->in_double_quote)

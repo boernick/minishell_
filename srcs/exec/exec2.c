@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 18:25:17 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/19 18:52:56 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/23 12:41:20 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,6 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 	}
 	free(pipex->pipe_arr);
 	close_fd_in_out(cmd);
-	//!!!!
-	//cleanup_heredoc(cmd); //causes lots of errors in minishell tester
-	//!!!!
 }
 
 // waits for a series of given child processes

@@ -9,15 +9,9 @@
 /*   Updated: 2024/11/13 18:30:28 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "../../includes/minishell.h"
 
-int		check_empty_variable(t_token *current_token, t_parse *data, t_shell *shell);
-void	classify_command_token(t_token *current_token, int *cmd_flag);
-void	classify_file_arg(t_token **current_token);
-void	classify_word_arg(t_token *current_token);
-
-void classify_token_types(t_parse *data, t_shell *shell)
+void	classify_token_types(t_parse *data, t_shell *shell)
 {
 	t_token	*curr;
 	int		cmd_flag;
@@ -28,16 +22,16 @@ void classify_token_types(t_parse *data, t_shell *shell)
 	{
 		if (curr->value[0] == '$'
 			&& !check_empty_variable(curr, data, shell))
-			{
-				if (curr->next)
-					curr = curr->next;
-			}
+		{
+			if (curr->next)
+				curr = curr->next;
+		}
 		if (curr->type == TOKEN_PIPE)
 			cmd_flag = 0;
 		else if (curr->type == TOKEN_WORD && cmd_flag == 0)
 			classify_command_token(curr, &cmd_flag);
 		else if (curr->type == TOKEN_REDIR_IN || curr->type == TOKEN_REDIR_OUT
-		|| curr->type == TOKEN_REDIR_APPEND || curr->type == TOKEN_HEREDOC)
+			|| curr->type == TOKEN_REDIR_APPEND || curr->type == TOKEN_HEREDOC)
 			classify_file_arg(&curr);
 		else if (curr->type == TOKEN_WORD)
 			classify_word_arg(curr);
@@ -47,7 +41,7 @@ void classify_token_types(t_parse *data, t_shell *shell)
 
 int	check_empty_variable(t_token *current_token, t_parse *data, t_shell *shell)
 {
-	char *expnd_var;
+	char	*expnd_var;
 
 	expnd_var = replace_variables_in_heredoc(current_token->value, data, shell);
 	if (!expnd_var || expnd_var[0] == '\0')
@@ -60,13 +54,13 @@ int	check_empty_variable(t_token *current_token, t_parse *data, t_shell *shell)
 	return (1);
 }
 
-void classify_command_token(t_token *current_token, int *cmd_flag)
+void	classify_command_token(t_token *current_token, int *cmd_flag)
 {
 	current_token->type = TOKEN_CMD;
 	(*cmd_flag)++;
 }
 
-void classify_file_arg(t_token **current_token)
+void	classify_file_arg(t_token **current_token)
 {
 	if ((*current_token)->next && (*current_token)->next->type == TOKEN_WORD)
 	{
@@ -75,7 +69,7 @@ void classify_file_arg(t_token **current_token)
 	}
 }
 
-void classify_word_arg(t_token *current_token)
+void	classify_word_arg(t_token *current_token)
 {
 	if (current_token->value[0] == '-' && current_token->value[1] == 'n')
 		current_token->type = TOKEN_FLAG_ARG;

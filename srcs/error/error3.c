@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error3.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:41:43 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:41:43 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 void	exit_perror(const char *msg)
@@ -11,7 +23,7 @@ int	malloc_error(size_t n)
 	ft_putstr_fd("minishell: malloc: cannot allocate ", STDERR_FILENO);
 	ft_putnbr_fd(n, STDERR_FILENO);
 	ft_putendl_fd(" bytes (or more)", STDERR_FILENO);
-	return (1);
+	exit(EXIT_FAILURE);
 }
 
 int	ambiguous_redirect_error(char *token)
@@ -22,7 +34,7 @@ int	ambiguous_redirect_error(char *token)
 	return (1);
 }
 
-int heredoc_eof_warning(int line_number, char *delimeter, t_parse *data)
+int	heredoc_eof_warning(int line_number, char *delimeter, t_parse *data)
 {
 	data->valid_input = 0;
 	ft_putstr_fd("minishell: warning: here-document at line ", STDERR_FILENO);

@@ -35,17 +35,15 @@ void	process_token_redirection(t_token *cur_tkn, t_parse *data,
 		init_cmd_redir(data, current_cmd);
 	redir = (t_redirect *)malloc(sizeof(t_redirect));
 	if (!redir)
-	{
 		malloc_error(sizeof(t_redirect));
-		exit (EXIT_FAILURE);
-	}
 	redir->file = ft_strdup(cur_tkn->next->value);
 	redir->type = cur_tkn->type;
 	redir->next = NULL;
 	add_redirection_to_cmd(*current_cmd, redir);
 }
+
 int	process_token_heredoc(t_token *cur_tkn, t_parse *data,
-			t_cmd **current_cmd, t_shell *shell)
+		t_cmd **current_cmd, t_shell *shell)
 {
 	t_redirect	*redir;
 	char		*delimeter;
@@ -57,10 +55,7 @@ int	process_token_heredoc(t_token *cur_tkn, t_parse *data,
 	}
 	redir = (t_redirect *)malloc(sizeof(t_redirect));
 	if (!redir)
-	{
 		malloc_error(sizeof(t_cmd));
-		exit(EXIT_FAILURE);
-	}
 	redir->file = create_heredoc();
 	redir->type = TOKEN_HEREDOC;
 	redir->next = NULL;

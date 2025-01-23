@@ -21,7 +21,8 @@ char	*trim_whitespace(char *str)
 	end = ft_strlen(str) - 1;
 	while (str[start] == ' ' || str[start] == '\t' || str[start] == '\n')
 		start++;
-	while (end >= start && (str[end] == ' ' || str[end] == '\t' || str[end] == '\n'))
+	while (end >= start && (str[end] == ' '
+			|| str[end] == '\t' || str[end] == '\n'))
 		end--;
 	str[end + 1] = '\0';
 	return (&str[start]);

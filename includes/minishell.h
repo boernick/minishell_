@@ -136,21 +136,13 @@ typedef struct s_execution
 typedef struct sigaction	t_sigaction;
 typedef t_sigaction			t_sigact;
 
-
-void	check_temp_files(t_cmd *cmd); //for testing
-void	print_temp_files(t_redirect *redir);// for testing
-void	process_running_sigint_handler(int signum);
-void	process_running_sigquit_handler(int signum);
-void	init_signal_handlers(t_sigaction *sa_int, t_sigaction *sa_quit);
-
 //---------env_var_tokenize----------//
 char	*get_env_variable(char *var_name, t_parse *data, t_shell *shell);
 char	*get_pid_as_string(void);
-void init_expand_var(t_expand_var *expand, char *input);
+void	init_expand_var(t_expand_var *expand, char *input);
 void	handle_pid_var(char *input, int *i, char *result, int *res_index);
-void reset_expand_var(t_expand_var *expand);
-char *handle_variable(t_expand_var *exp, t_parse *data, t_shell *shell);
-void process_quote_env(char *input, t_parse *data, t_expand_var *exp);
+char	*handle_variable(t_expand_var *exp, t_parse *data, t_shell *shell);
+void	process_quote_env(char *input, t_parse *data, t_expand_var *exp);
 
 //---------tokenize----------//
 void	split_tokens(char *input, t_parse *data);
@@ -163,18 +155,15 @@ void	finalize_splitting(t_parse *data);
 int		validate_heredoc(t_token *next, t_parse *data);
 
 //--------utils_token--------//
-void	print_tokens(t_token *token_list);
 char	*trim_whitespace(char *str); // not used
 void	free_tokens(t_token *head);
 int		validate_input(t_token *tokens, t_parse *data, t_shell *shell);
-char	*ft_itoa(int n);
 void	process_quote(char *input, t_parse *data, int *i);
 void	trim_quotes(char *str);
 void	trim_file_quotes(char *str);
 
 //-----------Parse-----------//
 void	parse_tokens(t_parse *data, t_shell *shell);
-void	print_command_stack(t_cmd *cmd_stack); //for testing
 void	free_command_stack(t_cmd *cmd_stack);
 int		init_cmd_redir(t_parse *data, t_cmd **current_cmd);
 void	add_redirection_to_cmd(t_cmd *cmd, t_redirect *new_redir);
@@ -185,23 +174,23 @@ void	init_cmd_cmd(t_cmd **current_cmd, t_parse *data, char *cmd_value);
 bool	is_builtin_(char *cmd);
 void	add_cmd_to_list(t_parse *data, t_cmd *new_cmd);
 
-//-----------utils------------//
-char	*ft_strdup(const char *src);
-int		ft_isalnum(char c);
-char	*get_next_line(int fd);
-
 //-----------signals----------//
 void	handle_eof(t_shell *shell, t_parse *parse);
 void	setup_signal_handlers(int signum);
 void	handle_sigquit(int sig);
-void	handle_sigint(int sig);
 void	inside_process_signals(t_sigact *sa_int, t_sigact *sa_quit);
 void	outside_process_signals(t_sigact *sa_int, t_sigact *sa_quit);
-
+void	process_running_sigint_handler(int signum);
+void	init_signal_handlers(t_sigaction *sa_int, t_sigaction *sa_quit);
 
 //------tokenize_and_parse-------//
 void	tokenize(t_parse *parse, t_shell *shell,
 			t_sigaction *sa_int, t_sigaction *sa_quit);
+int		check_empty_variable(t_token *current_token,
+			t_parse *data, t_shell *shell);
+void	classify_command_token(t_token *current_token, int *cmd_flag);
+void	classify_file_arg(t_token **current_token);
+void	classify_word_arg(t_token *current_token);
 
 //------handle_struct-------//
 void	struct_init(t_parse *data, t_shell *shell);
@@ -215,6 +204,7 @@ char	*replace_variables_in_string(char *input,
 			t_parse *data, t_shell *shell);
 char	*replace_variables_in_heredoc(char *input, t_parse *data,
 			t_shell *shell);
+void	reset_expand_var(t_expand_var *expand);
 
 //---------exec-----------//
 char	*path_join(char *path_split, char *cmd_arg);
@@ -311,10 +301,8 @@ bool	exit_is_valid(char *pnum);
 int		check_folder(char *filename);
 
 //---------minishell-----------//
-void	calibrate_exec(t_execution *pipex);
 void	exec_mini(t_shell *shell, t_execution *pipex);
 void	cleanup(t_parse *parse, t_shell *shell);
 void	run_mini(t_parse *parse, t_shell *shell, t_execution *pipex);
-
 
 #endif

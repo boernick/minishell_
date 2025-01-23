@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   split_tokens1.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:23:42 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:23:42 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "../../includes/minishell.h"
 
 int	validate_heredoc(t_token *next, t_parse *data)
@@ -13,23 +24,20 @@ int	validate_heredoc(t_token *next, t_parse *data)
 	return (1);
 }
 
-t_token *new_token(t_token_type type, char *value)
+t_token	*new_token(t_token_type type, char *value)
 {
-	t_token *token;
+	t_token	*token;
 
 	token = (t_token *)malloc(sizeof(t_token));
 	if (!token)
-	{
 		malloc_error(sizeof(t_token));
-		exit(EXIT_FAILURE);
-	}
 	token->type = type;
 	token->value = ft_strdup(value);
 	token->next = NULL;
 	return (token);
 }
 
-void add_token_to_list(t_parse *data, t_token *new_token)
+void	add_token_to_list(t_parse *data, t_token *new_token)
 {
 	if (data->head == NULL)
 		data->head = new_token;
@@ -57,11 +65,11 @@ void	finalize_splitting(t_parse *data)
 		ft_putstr_fd("minishell: syntax error: unclosed quote detected\n",
 			STDERR_FILENO);
 		free_tokens(data->head);
-		data->head = data->tail = NULL;
+		data->head = NULL;
+		data->tail = NULL;
 	}
 	else
 	{
-		//free_tokens(data->head);
 		data->valid_input = 1;
 	}
 }

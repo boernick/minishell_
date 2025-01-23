@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 18:23:22 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/21 15:24:55 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/23 12:41:54 by prichugh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int	is_a_directory(char *arg)
 	return (126);
 }
 
-int invalid_argument_count(int ret)
+int	invalid_argument_count(int ret)
 {
 	ft_putendl_fd("\"./minishell\" must be the only argument", STDERR_FILENO);
 	return (ret);

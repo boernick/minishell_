@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_var_tokenize.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:42:33 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:42:33 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 void	handle_pid_var(char *input, int *i, char *result, int *res_index)
@@ -26,7 +38,7 @@ void	handle_pid_var(char *input, int *i, char *result, int *res_index)
 	}
 }
 
-char *handle_variable(t_expand_var *exp, t_parse *data, t_shell *shell)
+char	*handle_variable(t_expand_var *exp, t_parse *data, t_shell *shell)
 {
 	char		*var_val;
 
@@ -42,9 +54,8 @@ char *handle_variable(t_expand_var *exp, t_parse *data, t_shell *shell)
 	return (exp->result);
 }
 
-char *replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
+char	*replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
 {
-
 	t_expand_var	*exp;
 	char			*ret;
 
@@ -71,9 +82,10 @@ char *replace_variables_in_string(char *input, t_parse *data, t_shell *shell)
 	return (ret);
 }
 
-void replace_single_token_env_var(t_token *token, t_parse *data, t_shell *shell)
+void	replace_single_token_env_var(t_token *token,
+	t_parse *data, t_shell *shell)
 {
-	char *new_value;
+	char	*new_value;
 
 	new_value = replace_variables_in_string(token->value, data, shell);
 	if (new_value != token->value)
@@ -86,7 +98,7 @@ void replace_single_token_env_var(t_token *token, t_parse *data, t_shell *shell)
 	trim_quotes(token->value);
 }
 
-void replace_env_variables_in_tokens(t_token *tokens, t_parse *data,
+void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data,
 		t_shell *shell)
 {
 	if (tokens)

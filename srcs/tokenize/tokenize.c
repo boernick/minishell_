@@ -52,7 +52,6 @@ void	process_tokens(char *input, t_parse *data, t_shell *shell)
 	free(input);
 }
 
-
 void	tokenize(t_parse *data, t_shell *shell,
 		t_sigaction *sa_int, t_sigaction *sa_quit)
 {

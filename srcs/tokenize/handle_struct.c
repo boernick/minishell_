@@ -25,7 +25,7 @@ void	struct_init(t_parse *data, t_shell *shell)
 	data->in_single_quote = 0;
 }
 
-void reset_expand_var(t_expand_var *expand)
+void	eset_expand_var(t_expand_var *expand)
 {
 	expand->var_index = 0;
 	ft_memset(expand->var_name, 0, sizeof(expand->var_name));
@@ -42,10 +42,7 @@ void	init_parse_data(t_parse *data, t_token **cur_tkn, t_cmd **current_cmd)
 void	init_expand_var(t_expand_var *expand, char *input)
 {
 	if (!expand)
-	{
 		malloc_error(sizeof(t_expand_var));
-		exit (EXIT_FAILURE);
-	}
 	expand->i = 0;
 	expand->res_index = 0;
 	expand->var_index = 0;

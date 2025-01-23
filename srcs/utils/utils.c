@@ -86,3 +86,9 @@ void	free_int_array(t_execution *pipex, int i)
 	}
 	free(array);
 }
+
+void	reset_expand_var(t_expand_var *expand)
+{
+	expand->var_index = 0;
+	ft_memset(expand->var_name, 0, sizeof(expand->var_name));
+}

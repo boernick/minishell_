@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   validate_token.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/23 12:20:52 by prichugh          #+#    #+#             */
+/*   Updated: 2025/01/23 12:20:52 by prichugh         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "../../includes/minishell.h"
 
 int	validate_pipe_start(t_token *tokens, t_parse *data)
@@ -10,7 +21,7 @@ int	validate_pipe_start(t_token *tokens, t_parse *data)
 	return (1);
 }
 
-int validate_operator_sequence(t_token *next, t_parse *data)
+int	validate_operator_sequence(t_token *next, t_parse *data)
 {
 	if (!next || next->type == TOKEN_PIPE)
 	{
@@ -27,8 +38,9 @@ int	validate_operator_sequence2(t_token *next, t_parse *data, t_shell *shell)
 {
 	char	*expanded_var;
 
-	if ((next && (next->type == TOKEN_REDIR_IN || next->type == TOKEN_REDIR_OUT
-		|| next->type == TOKEN_REDIR_APPEND)))
+	if ((next && (next->type == TOKEN_REDIR_IN
+				|| next->type == TOKEN_REDIR_OUT
+				|| next->type == TOKEN_REDIR_APPEND)))
 	{
 		syntax_error(next->value, data);
 		return (0);
