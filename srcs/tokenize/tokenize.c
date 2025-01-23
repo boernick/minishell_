@@ -47,7 +47,6 @@ void	process_tokens(char *input, t_parse *data, t_shell *shell)
 	{
 		shell->last_exit = data->exit;
 		data->valid_input = 0;
-		reset_parse(data);
 	}
 	free(input);
 }
