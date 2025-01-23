@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 18:25:17 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/23 12:41:20 by prichugh         ###   ########.fr       */
+/*   Updated: 2025/01/23 17:17:03 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,10 @@ void	clean_pipes(t_execution *pipex, t_cmd *cmd)
 		free(pipex->pipe_arr[i]);
 		i++;
 	}
+	if (pipex->start_in != -2)
+		close(pipex->start_in);
+	if (pipex->start_out != -2)
+		close(pipex->start_out);
 	free(pipex->pipe_arr);
 	close_fd_in_out(cmd);
 }

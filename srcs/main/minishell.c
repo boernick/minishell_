@@ -32,6 +32,7 @@ void	exec_mini(t_shell *shell, t_execution *pipex)
 		while (pipex->index_cmd < pipex->n_cmds)
 			pid_last = run_single_cmd(shell, pipex, pids);
 		clean_pipes(pipex, pipex->cmd);
+		
 		waitpids(pids, pipex->n_cmds, shell, pid_last);
 	}
 	if (pids != NULL)
@@ -69,6 +70,7 @@ void	run_child_exec(t_execution *pipex, t_shell *shell)
 		shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
 	exit(shell->last_exit);
 }
+
 
 // organizes parent process for a single builtin without pipes
 void	run_single_builtin(t_execution *pipex, t_shell *shell)
