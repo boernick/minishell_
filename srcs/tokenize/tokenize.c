@@ -12,6 +12,23 @@
 
 #include "../../includes/minishell.h"
 
+void	handle_eof(t_shell *shell, t_parse *parse)
+{
+	printf("exit\n");
+	free_tokens(parse->head);
+	free_command_stack(parse->cmd);
+	free_envlst(shell->env_lst);
+	clear_history();
+	exit(0);
+}
+
+void	reset_parse(t_parse *data)
+{
+	data->head = NULL;
+	data->tail = NULL;
+	data->in_double_quote = 0;
+	data->in_single_quote = 0;
+}
 
 void	process_tokens(char *input, t_parse *data, t_shell *shell)
 {
@@ -20,14 +37,11 @@ void	process_tokens(char *input, t_parse *data, t_shell *shell)
 	reset_parse(data);
 	split_tokens(input, data);
 	data->exit = shell->last_exit;
-	//print_tokens(data->head); //REMOVE
 	if (validate_input(data->head, data, shell) && data->valid_input)
 	{
 		data->valid_input = 1;
 		classify_token_types(data, shell);
-		//print_tokens(data->head); //REMOVE
 		replace_env_variables_in_tokens(data->head, data, shell);
-		//print_tokens(data->head); //REMOVE
 	}
 	else
 	{
@@ -38,8 +52,7 @@ void	process_tokens(char *input, t_parse *data, t_shell *shell)
 	free(input);
 }
 
-// Repeatedly prompts for user input, tokenizes, validates, and processes commands.
-// Exits the loop if "exit" or EOF is detected, handling cleanup and history appropriately.
+
 void	tokenize(t_parse *data, t_shell *shell,
 		t_sigaction *sa_int, t_sigaction *sa_quit)
 {

@@ -12,7 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-
 static void	switch_signal_handler(int signal, __sighandler_t handler)
 {
 	struct sigaction	sa;
@@ -22,23 +21,9 @@ static void	switch_signal_handler(int signal, __sighandler_t handler)
 	sigaddset(&sa.sa_mask, signal);
 	sa.sa_flags = 0;
 	sigaction(signal, &sa, NULL);
-	// if (signal == SIGINT)
-	// 	write(1, "[DEBUG] Signal handler for SIGINT switched\n", 43);
-	// if (signal == SIGQUIT)
-	// 	write(1, "[DEBUG] Signal handler for SIGQUIT switched\n", 44);
 }
 
-// int run_heredoc(t_parse *data, t_cmd *cmd, char *delimeter, t_shell *shell)
-// {
-// 	if (!cmd)
-// 		return (EXIT_FAILURE);
-// 	if (cmd->redir && cmd->redir->type == TOKEN_HEREDOC)
-// 		return (fork_heredoc(data, cmd, delimeter, shell));
-// 	cmd = cmd->next;
-// 	return (EXIT_SUCCESS);
-// }
-
-int run_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell)
+int	run_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *shell)
 {
 	if (!redir)
 		return (EXIT_FAILURE);
@@ -89,19 +74,6 @@ int	read_heredoc(t_parse *data, t_redirect *redir, char *delimeter, t_shell *she
 	exit (EXIT_SUCCESS);
 }
 
-char *replace_variables_in_heredoc(char *input, t_parse *data, t_shell *shell);
-
-int heredoc_eof_warning(int line_number, char *delimeter, t_parse *data)
-{
-	data->valid_input = 0;
-	ft_putstr_fd("minishell: warning: here-document at line ", STDERR_FILENO);
-	ft_putnbr_fd(line_number, STDERR_FILENO);
-	ft_putstr_fd(" delimited by end-of-file (wanted `", STDERR_FILENO);
-	ft_putstr_fd(delimeter, STDERR_FILENO);
-	ft_putendl_fd("')", STDERR_FILENO);
-	return (0);
-}
-
 int	read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 {
 	char	*line;
@@ -130,16 +102,3 @@ int	read_line_heredoc(t_parse *data, int fd, char *delimeter, t_shell *shell)
 	return (1);
 }
 
-void	cleanup_heredoc(t_cmd *cmd_p)
-{
-	t_cmd	*cmd;
-
-	cmd = cmd_p;
-
-	while (cmd)
-	{
-		if (cmd->redir->type == TOKEN_HEREDOC)
-			if (cmd->redir->file != NULL)
-				unlink(cmd->redir->file);
-	}
-}

@@ -150,6 +150,7 @@ void init_expand_var(t_expand_var *expand, char *input);
 void	handle_pid_var(char *input, int *i, char *result, int *res_index);
 void reset_expand_var(t_expand_var *expand);
 char *handle_variable(t_expand_var *exp, t_parse *data, t_shell *shell);
+void process_quote_env(char *input, t_parse *data, t_expand_var *exp);
 
 //---------tokenize----------//
 void	split_tokens(char *input, t_parse *data);
@@ -159,6 +160,7 @@ void	add_token_to_list(t_parse *data, t_token *new_token);
 void	classify_token_types(t_parse *data, t_shell *shell);
 char	*create_heredoc(void);
 void	finalize_splitting(t_parse *data);
+int		validate_heredoc(t_token *next, t_parse *data);
 
 //--------utils_token--------//
 void	print_tokens(t_token *token_list);
@@ -167,11 +169,21 @@ void	free_tokens(t_token *head);
 int		validate_input(t_token *tokens, t_parse *data, t_shell *shell);
 char	*ft_itoa(int n);
 void	process_quote(char *input, t_parse *data, int *i);
+void	trim_quotes(char *str);
+void	trim_file_quotes(char *str);
 
 //-----------Parse-----------//
 void	parse_tokens(t_parse *data, t_shell *shell);
 void	print_command_stack(t_cmd *cmd_stack); //for testing
 void	free_command_stack(t_cmd *cmd_stack);
+int		init_cmd_redir(t_parse *data, t_cmd **current_cmd);
+void	add_redirection_to_cmd(t_cmd *cmd, t_redirect *new_redir);
+void	add_cmd_to_token(t_token *cur_tkn, t_parse *data,
+			t_cmd **current_cmd);
+void	add_argument_to_cmd(t_cmd *cmd, char *arg);
+void	init_cmd_cmd(t_cmd **current_cmd, t_parse *data, char *cmd_value);
+bool	is_builtin_(char *cmd);
+void	add_cmd_to_list(t_parse *data, t_cmd *new_cmd);
 
 //-----------utils------------//
 char	*ft_strdup(const char *src);
@@ -185,6 +197,7 @@ void	handle_sigquit(int sig);
 void	handle_sigint(int sig);
 void	inside_process_signals(t_sigact *sa_int, t_sigact *sa_quit);
 void	outside_process_signals(t_sigact *sa_int, t_sigact *sa_quit);
+
 
 //------tokenize_and_parse-------//
 void	tokenize(t_parse *parse, t_shell *shell,
@@ -234,6 +247,10 @@ int		read_heredoc(t_parse *data, t_redirect *redir,
 void	cleanup_heredoc(t_cmd *cmd_p);
 int		read_line_heredoc(t_parse *data, int fd,
 			char *delimeter, t_shell *shell);
+int		heredoc_exit(t_redirect *redir, t_parse *data,
+			int exit_code, t_shell *shell);
+char	*replace_variables_in_heredoc(char *input, t_parse *data,
+			t_shell *shell);
 
 //---------builtins-----------//
 int		builtin_env(char **argv, t_shell *shell);
@@ -269,6 +286,7 @@ int		invalid_argument_count(int ret);
 int		malloc_error(size_t n);
 int		ambiguous_redirect_error(char *token);
 void	exit_perror(const char *msg);
+int		heredoc_eof_warning(int line_number, char *delimeter, t_parse *data);
 
 //---------utils-----------//
 void	free_array(char **array);

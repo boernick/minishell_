@@ -12,15 +12,10 @@
 
 #include "../../includes/minishell.h"
 
-//WORKING
-//Go trough the list of tokens and correcltly split up WORD_TOKENS
-//to be arguments or commands
-// Function declarations
 int		check_empty_variable(t_token *current_token, t_parse *data, t_shell *shell);
 void	classify_command_token(t_token *current_token, int *cmd_flag);
 void	classify_file_arg(t_token **current_token);
 void	classify_word_arg(t_token *current_token);
-
 
 void classify_token_types(t_parse *data, t_shell *shell)
 {

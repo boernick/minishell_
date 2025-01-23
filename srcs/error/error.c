@@ -12,7 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-
 int	syntax_error(char *token, t_parse *data)
 {
 	data->valid_input = 0;
