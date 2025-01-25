@@ -11,74 +11,42 @@
 /* ************************************************************************** */
 #include "../../includes/minishell.h"
 
-int	find_first_quote(char *str)
+void	trim_quotes_handler(char *input, t_parse *data, int *i)
+{
+	if (input[*i] == '\'' && !data->in_double_quote)
+	{
+		data->in_single_quote = !data->in_single_quote;
+		(*i)++;
+	}
+	else if (input[*i] == '\"' && !data->in_single_quote)
+	{
+		data->in_double_quote = !data->in_double_quote;
+		(*i)++;
+	}
+}
+
+void	trim_quotes(char *str, t_parse *data)
 {
 	int	i;
+	int	j;
 
 	i = 0;
+	j = 0;
+	data->in_double_quote = 0;
+	data->in_single_quote = 0;
 	while (str[i] != '\0')
 	{
-		if (str[i] == '\'' || str[i] == '\"')
-			return (i);
-		i++;
+		if ((str[i] == '\'' && !data->in_double_quote)
+			|| (str[i] == '\"' && !data->in_single_quote))
+			trim_quotes_handler(str, data, &i);
+		else
+		{
+			str[j] = str[i];
+			j++;
+			i++;
+		}
 	}
-	return (-1);
-}
-
-int	find_matching_quote(char *str, char quote_char, int start)
-{
-	int	i;
-
-	i = start + 1;
-	while (str[i])
-	{
-		if (str[i] == quote_char)
-			return (i);
-		i++;
-	}
-	return (-1);
-}
-
-void	trim_and_shift(char *str, int start, int end, int len)
-{
-	int	i;
-
-	i = start;
-	while (i < len)
-	{
-		str[i] = str[i + 1];
-		i++;
-	}
-	len--;
-	i = end - 1;
-	while (i < len)
-	{
-		str[i] = str[i + 1];
-		i++;
-	}
-	str[len - 1] = '\0';
-}
-
-void	trim_quotes(char *str)
-{
-	int		len;
-	int		start;
-	int		end;
-	char	quote_char;
-
-	len = 0;
-	start = -1;
-	end = -1;
-	while (str[len])
-		len++;
-	start = find_first_quote(str);
-	if (start == -1)
-		return ;
-	quote_char = str[start];
-	end = find_matching_quote(str, quote_char, start);
-	if (end == -1 || end <= start)
-		return ;
-	trim_and_shift(str, start, end, len);
+	str[j] = '\0';
 }
 
 void	trim_file_quotes(char *str)

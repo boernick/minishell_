@@ -96,7 +96,7 @@ void	replace_single_token_env_var(t_token *token,
 	}
 	else
 		free(new_value);
-	trim_quotes(token->value);
+	trim_quotes(token->value, data);
 }
 
 void	replace_env_variables_in_tokens(t_token *tokens, t_parse *data,

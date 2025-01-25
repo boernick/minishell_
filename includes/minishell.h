@@ -160,7 +160,7 @@ char	*trim_whitespace(char *str); // not used
 void	free_tokens(t_token *head);
 int		validate_input(t_token *tokens, t_parse *data, t_shell *shell);
 void	process_quote(char *input, t_parse *data, int *i);
-void	trim_quotes(char *str);
+void	trim_quotes(char *str, t_parse *date);
 void	trim_file_quotes(char *str);
 
 //-----------Parse-----------//
