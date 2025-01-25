@@ -84,7 +84,8 @@ char	*generate_temp_filename(void)
 	filename[i++] = '.';
 	filename[i++] = 't';
 	filename[i++] = 'x';
-	filename[i] = 't';
+	filename[i++] = 't';
+	filename[i] = '\0';
 	counter++;
 	return (filename);
 }
