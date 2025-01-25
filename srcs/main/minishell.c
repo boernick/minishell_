@@ -68,6 +68,7 @@ void	run_child_exec(t_execution *pipex, t_shell *shell)
 		run_builtin(pipex->cmd->argv, shell);
 	else
 		shell->last_exit = run_ex(pipex->cmd, envlst_to_array(shell));
+	cleanup_child(shell, pipex);
 	exit(shell->last_exit);
 }
 

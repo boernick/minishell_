@@ -305,6 +305,7 @@ int		check_folder(char *filename);
 //---------minishell-----------//
 void	exec_mini(t_shell *shell, t_execution *pipex);
 void	cleanup(t_parse *parse, t_shell *shell, t_execution *pipex);
+void 	cleanup_child(t_shell *shell, t_execution *pipex);
 void	run_mini(t_parse *parse, t_shell *shell, t_execution *pipex);
 
 #endif

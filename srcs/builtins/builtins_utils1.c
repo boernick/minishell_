@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils1.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/19 15:05:24 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/19 18:40:42 by nboer            ###   ########.fr       */
+/*   Updated: 2025/01/25 20:23:18 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ int	cd_check_error(int err_status, char *dir)
 char	*cd_update_path(t_shell *shell, char *str)
 {
 	char	*path;
+	char	*tmp;
 
 	if (str[0] == '/')
 		path = ft_strdup("");
@@ -69,7 +70,9 @@ char	*cd_update_path(t_shell *shell, char *str)
 		path = ft_strjoin(shell->cwd, "/");
 	if (!path)
 		return (NULL);
+	tmp = path;
 	path = ft_strjoin(path, str);
+	free(tmp);
 	if (!path)
 		return (NULL);
 	return (path);
