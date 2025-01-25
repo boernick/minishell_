@@ -43,7 +43,7 @@ int	check_folder(char *filename)
 	last_dash = (ft_strrchr(filename, '/'));
 	if (last_dash)
 	{
-		folder_path = ft_strndup(filename, last_dash - filename);
+		folder_path = strndup(filename, last_dash - filename);
 		if (access(folder_path, F_OK) == -1)
 		{
 			free(folder_path);

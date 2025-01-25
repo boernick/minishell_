@@ -109,6 +109,6 @@ int	main(int argc, char **argv, char **envp)
 		free_tokens(parse.head);
 		parse.head = NULL;
 	}
-	cleanup(&parse, &shell);
+	cleanup(&parse, &shell, &pipex);
 	return (shell.last_exit);
 }

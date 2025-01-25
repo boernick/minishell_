@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   run_mini.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: prichugh <prichugh@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/21 15:51:09 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/23 14:08:01 by prichugh         ###   ########.fr       */
+/*   Updated: 2025/01/25 18:31:23 by nick             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,5 +19,6 @@ void	run_mini(t_parse *parse, t_shell *shell, t_execution *pipex)
 	{
 		pipex->cmd = parse->cmd;
 		exec_mini(shell, pipex);
+		close_start_fds(pipex);
 	}
 }
