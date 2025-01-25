@@ -130,6 +130,7 @@ typedef struct s_execution
 	int		outfile;
 	int		start_in;
 	int		start_out;
+	t_token	*head;
 	t_cmd	*cmd;
 }	t_execution;
 
