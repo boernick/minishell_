@@ -50,9 +50,9 @@ pid_t	run_single_cmd(t_shell *shell, t_execution *pipex, pid_t *pids)
 	pids[pipex->index_cmd] = fork_child();
 	if (pids[pipex->index_cmd] == 0)
 	{
-		free_tokens(pipex->head);
 		if (redir_status == 1)
 		{
+			clean_pipes(pipex);
 			cleanup_child(shell, pipex);
 			exit(1);
 		}
