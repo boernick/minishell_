@@ -229,7 +229,6 @@ void	reset_fds(t_execution *pipex);
 void	close_fd_in_out(t_cmd *cmd);
 void	close_start_fds(t_execution *pipex);
 
-
 //---------heredoc-----------//
 int		run_heredoc(t_parse *data, t_redirect *redir,
 			char *delimeter, t_shell *shell);
@@ -306,7 +305,7 @@ int		check_folder(char *filename);
 //---------minishell-----------//
 void	exec_mini(t_shell *shell, t_execution *pipex);
 void	cleanup(t_parse *parse, t_shell *shell, t_execution *pipex);
-void 	cleanup_child(t_shell *shell, t_execution *pipex);
+void	cleanup_child(t_shell *shell, t_execution *pipex);
 void	run_mini(t_parse *parse, t_shell *shell, t_execution *pipex);
 
 #endif

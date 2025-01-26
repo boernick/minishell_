@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nick <nick@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/21 15:32:30 by nboer             #+#    #+#             */
-/*   Updated: 2025/01/25 20:45:14 by nick             ###   ########.fr       */
+/*   Updated: 2025/01/26 12:14:12 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	close_start_fds(t_execution *pipex)
 	if (pipex->start_in != -2)
 	{
 		close(pipex->start_in);
-		pipex->start_in = -2;	
+		pipex->start_in = -2;
 	}
 	if (pipex->start_out != -2)
 	{
@@ -35,7 +35,7 @@ void	cleanup(t_parse *parse, t_shell *shell, t_execution *pipex)
 	free_envlst(shell->env_lst);
 }
 
-void cleanup_child(t_shell *shell, t_execution *pipex)
+void	cleanup_child(t_shell *shell, t_execution *pipex)
 {
 	close_start_fds(pipex);
 	free_envlst(shell->env_lst);

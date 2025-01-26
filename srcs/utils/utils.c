@@ -23,7 +23,10 @@ int	handle_file(char *filename, int type)
 	else if (type == TOKEN_REDIR_OUT)
 	{
 		if (check_folder(filename) != EXIT_SUCCESS)
-			return (invalid_filedir(filename));
+		{
+			invalid_filedir(filename);
+			return (-1);
+		}
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	}
 	else if (type == TOKEN_REDIR_APPEND)
@@ -43,7 +46,7 @@ int	check_folder(char *filename)
 	last_dash = (ft_strrchr(filename, '/'));
 	if (last_dash)
 	{
-		folder_path = strndup(filename, last_dash - filename);
+		folder_path = ft_strndup(filename, last_dash - filename);
 		if (access(folder_path, F_OK) == -1)
 		{
 			free(folder_path);
