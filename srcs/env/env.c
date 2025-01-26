@@ -95,7 +95,9 @@ int	env_del(t_shell *shell, char *env)
 
 	lst = shell->env_lst;
 	prev = NULL;
-	l = ft_strlen(env);
+	l = 0;
+	while (env[l] && env[l] != '=')
+		l++;
 	while (lst)
 	{
 		if ((!ft_strncmp(lst->content, env, l) && lst->content[l] == '=') || 
